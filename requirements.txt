@@ -1,3 +1,8 @@
-speechbrain
-pydub
+# speechbrain
+# pydub
 numpy
+pytube
+moviepy
+tqdm
+pandas
+coloredlogs
