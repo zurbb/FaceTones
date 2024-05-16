@@ -1,1 +1,6 @@
-.[!*/]
+# Ignore all folders that start with .
+.*/
+# Ignore everything in the data folder except .py and .csv files
+data/*
+!data/*.py
+!data/*.csv
