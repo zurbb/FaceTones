@@ -8,17 +8,21 @@ import shutil
 import coloredlogs, logging
 from moviepy.editor import VideoFileClip
 from PIL import Image
+import threading
 
 logger = logging.getLogger()
 coloredlogs.install()
 
 SUBCLIP_DIR = "data/subclip"
 VIDEO_DIR = "data/video"
-ERROR_FILE = "errors.txt"
+ERROR_FILE = "data/errors.txt"
+SUCCESS_FILE= "data/success.txt"
 AUDIO_DIR = "data/audio"
 DATASET_CSV = "data/avspeech_test.csv"
 IMAGE_DIR = "data/images"
 DOWNLOAD_CHUNK_SIZE = 10
+NUM_OF_THREADS = 5
+SEMAPHORE = threading.Semaphore(1)
 
 YOUTUBE_ID= "YouTubeID" 
 START_SEGMENT = "startSegment"
@@ -57,7 +61,7 @@ def download_and_save_video_subclips(youtube_id: str, start_time: float, end_tim
                                             end_time=end_time)
         return True
     except Exception as e:
-        logger.error(f"Error downloading video {youtube_id} : {e}")
+        logger.error(f"Error downloading video {youtube_id}")
         return False
 
 
@@ -86,7 +90,7 @@ def extract_audio(video_name: str)->bool:
 
 
 
-def extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5):
+def extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5)->bool:
     """
     Extracts images from a subclip and saves them in the target directory.
 
@@ -111,6 +115,8 @@ def extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5):
         cropped_frame = crop_image(frame, x_coord, y_coord)
         img = Image.fromarray(cropped_frame)
         img.save(image_path)
+    return os.path.exsist(image_path)
+
 
 def crop_image(image: np.ndarray, x_coord: float, y_coord: float):
     width, height = image.shape[1], image.shape[0]
@@ -121,46 +127,34 @@ def crop_image(image: np.ndarray, x_coord: float, y_coord: float):
                           x_coord - closest_edge_distance:x_coord + closest_edge_distance]
     return cropped_image
     
-
-
 def get_relative_path(path: str):
     return os.path.join(os.getcwd(), path)
-
 
 def ensure_dir_ready():
 
     logger.info("claering all dir")
-    shutil.rmtree(VIDEO_DIR)
-    os.mkdir(VIDEO_DIR)
-    
-    shutil.rmtree(SUBCLIP_DIR)
-    os.mkdir(SUBCLIP_DIR)
-    
-    shutil.rmtree(AUDIO_DIR)
-    os.mkdir(AUDIO_DIR)
-    
-    shutil.rmtree(IMAGE_DIR)
-    os.mkdir(IMAGE_DIR) 
+    dirs = [VIDEO_DIR, SUBCLIP_DIR, AUDIO_DIR, IMAGE_DIR]
+    for directory in dirs:
+        if os.path.exists(directory):
+            shutil.rmtree(directory)
+        os.mkdir(directory)
+
     
     logger.info("cleaned all dir")
 
-if __name__ == "__main__":
-    
-    ensure_dir_ready()
-    
-    dataset_info = pd.read_csv(get_relative_path(DATASET_CSV), sep=",")
-    dataset_info = dataset_info[:3]
-    num_of_chunks = np.ceil(len(dataset_info) / DOWNLOAD_CHUNK_SIZE)
-    dataset_info_chunks = np.array_split(dataset_info, num_of_chunks)
-    
-    
-    for info_chunk in tqdm.tqdm(dataset_info_chunks,colour="green", desc=f"preprocessing videos in chunks of {DOWNLOAD_CHUNK_SIZE}"):
+def preprocess_video_chunks(thread_dataset_info_chunks, thread_id):
+    for info_chunk in thread_dataset_info_chunks:
         
         logger.info("Deleting all temp files")
-        shutil.rmtree(VIDEO_DIR)
-        os.mkdir(VIDEO_DIR)
-        shutil.rmtree(SUBCLIP_DIR)
-        os.mkdir(SUBCLIP_DIR)
+        shutil.rmtree(VIDEO_DIR, ignore_errors=True)
+        os.mkdir(VIDEO_DIR) if not os.path.exists(VIDEO_DIR) else None
+
+        shutil.rmtree(SUBCLIP_DIR, ignore_errors=True)
+        os.mkdir(SUBCLIP_DIR) if not os.path.exists(SUBCLIP_DIR) else None
+        logger.info("Deleted all temp files")
+        logger.info(len(list(os.listdir(IMAGE_DIR))))
+        success_ids = []
+        fail_ids = []
         
         for index, row in info_chunk.iterrows():
             
@@ -170,10 +164,43 @@ if __name__ == "__main__":
             name_to_save = f"{youtube_id}_{index}"
             if not download_and_save_video_subclips(youtube_id, start_time, end_time, name_to_save):
                 logger.warning(f"Failed to download video {youtube_id}")
+                fail_ids.append(name_to_save)
                 continue
             if not extract_audio(name_to_save):
                 logger.warning(f"Failed to extract audio from video {youtube_id}")
+                fail_ids.append(name_to_save)
                 continue
             
-            extract_images_from_subclip(name_to_save, x_coord, y_coord, number_of_images=1)
+            if not  extract_images_from_subclip(name_to_save, x_coord, y_coord, number_of_images=1):
+                logger.warning(f"Failed to extract images from video {youtube_id}")
+                fail_ids.append(name_to_save)
+                continue
+            
+            success_ids.append(name_to_save)
+            
+if __name__ == "__main__":
     
+    ensure_dir_ready()
+    
+    dataset_info = pd.read_csv(get_relative_path(DATASET_CSV), sep=",")
+    dataset_info = dataset_info[:100]
+    num_of_chunks = np.ceil(len(dataset_info) / DOWNLOAD_CHUNK_SIZE)
+    dataset_info_chunks = np.array_split(dataset_info, num_of_chunks)
+    
+    
+    preprocess_video_chunks(dataset_info_chunks,0)
+    
+    # threads = []
+    # # Calculate the number of chunks each thread will handle
+    # chunks_per_thread = len(dataset_info_chunks) // NUM_OF_THREADS 
+    # for i in range(NUM_OF_THREADS):
+    #     start_index = i * chunks_per_thread
+    #     end_index = start_index + chunks_per_thread  if i < NUM_OF_THREADS - 1 else len(dataset_info_chunks)
+    #     thread = threading.Thread(target=preprocess_video_chunks, args=(dataset_info_chunks[start_index:end_index],i))
+    #     threads.append(thread)
+    #     thread.start() 
+
+    # # Wait for all threads to finish
+    # for thread in threads:
+    #     thread.join()
+        

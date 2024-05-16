@@ -4,3 +4,5 @@
 data/*
 !data/*.py
 !data/*.csv
+!data/*.txt
+
