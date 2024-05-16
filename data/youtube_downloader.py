@@ -9,9 +9,7 @@ import coloredlogs, logging
 from moviepy.editor import VideoFileClip
 from PIL import Image
 import threading
-
-logger = logging.getLogger()
-coloredlogs.install()
+import time
 
 SUBCLIP_DIR = "data/subclip"
 VIDEO_DIR = "data/video"
@@ -21,7 +19,7 @@ AUDIO_DIR = "data/audio"
 DATASET_CSV = "data/avspeech_test.csv"
 IMAGE_DIR = "data/images"
 DOWNLOAD_CHUNK_SIZE = 10
-NUM_OF_THREADS = 5
+NUM_OF_THREADS = 20
 SEMAPHORE = threading.Semaphore(1)
 
 YOUTUBE_ID= "YouTubeID" 
@@ -29,6 +27,11 @@ START_SEGMENT = "startSegment"
 END_SEGMENT = "endSegment"
 X_COORDINATE = "Xcoordinate"
 Y_COORDINATE = "Ycoordinate"
+UNIQUE_ID = "unique_id"
+
+
+logger = logging.getLogger()
+coloredlogs.install()
 
 def _download_and_trim_youtube_video(url: str, full_video_dir: str, full_video_name: str, subclip_dir: str,
                                             subclip_name: str, start_time: float, end_time: float):
@@ -61,7 +64,7 @@ def download_and_save_video_subclips(youtube_id: str, start_time: float, end_tim
                                             end_time=end_time)
         return True
     except Exception as e:
-        logger.error(f"Error downloading video {youtube_id}")
+        logger.error(f"Error downloading video {youtube_id}. error details: {e}")
         return False
 
 
@@ -115,7 +118,7 @@ def extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5)-
         cropped_frame = crop_image(frame, x_coord, y_coord)
         img = Image.fromarray(cropped_frame)
         img.save(image_path)
-    return os.path.exsist(image_path)
+    return os.path.exists(target_dir)
 
 
 def crop_image(image: np.ndarray, x_coord: float, y_coord: float):
@@ -130,29 +133,21 @@ def crop_image(image: np.ndarray, x_coord: float, y_coord: float):
 def get_relative_path(path: str):
     return os.path.join(os.getcwd(), path)
 
-def ensure_dir_ready():
-
-    logger.info("claering all dir")
-    dirs = [VIDEO_DIR, SUBCLIP_DIR, AUDIO_DIR, IMAGE_DIR]
-    for directory in dirs:
-        if os.path.exists(directory):
-            shutil.rmtree(directory)
-        os.mkdir(directory)
-
-    
-    logger.info("cleaned all dir")
 
 def preprocess_video_chunks(thread_dataset_info_chunks, thread_id):
+    proccessed = 0
     for info_chunk in thread_dataset_info_chunks:
-        
-        logger.info("Deleting all temp files")
-        shutil.rmtree(VIDEO_DIR, ignore_errors=True)
-        os.mkdir(VIDEO_DIR) if not os.path.exists(VIDEO_DIR) else None
+        if thread_id == 0:
+            SEMAPHORE.acquire()
+            logger.info("Deleting all temp files")
+            shutil.rmtree(VIDEO_DIR, ignore_errors=True)
+            os.mkdir(VIDEO_DIR) if not os.path.exists(VIDEO_DIR) else None
 
-        shutil.rmtree(SUBCLIP_DIR, ignore_errors=True)
-        os.mkdir(SUBCLIP_DIR) if not os.path.exists(SUBCLIP_DIR) else None
-        logger.info("Deleted all temp files")
-        logger.info(len(list(os.listdir(IMAGE_DIR))))
+            shutil.rmtree(SUBCLIP_DIR, ignore_errors=True)
+            os.mkdir(SUBCLIP_DIR) if not os.path.exists(SUBCLIP_DIR) else None
+            logger.info("Deleted all temp files")
+            SEMAPHORE.release()
+            
         success_ids = []
         fail_ids = []
         
@@ -170,37 +165,68 @@ def preprocess_video_chunks(thread_dataset_info_chunks, thread_id):
                 logger.warning(f"Failed to extract audio from video {youtube_id}")
                 fail_ids.append(name_to_save)
                 continue
-            
             if not  extract_images_from_subclip(name_to_save, x_coord, y_coord, number_of_images=1):
                 logger.warning(f"Failed to extract images from video {youtube_id}")
                 fail_ids.append(name_to_save)
                 continue
-            
             success_ids.append(name_to_save)
-            
+        
+        SEMAPHORE.acquire()    
+        with open(SUCCESS_FILE, "a") as f:
+            for success_id in success_ids:
+                f.write(f"{success_id}\n")
+                
+        with open(ERROR_FILE, "a") as f:
+            for fail_id in fail_ids:
+                f.write(f"{fail_id}\n")
+        SEMAPHORE.release()
+
+        proccessed += DOWNLOAD_CHUNK_SIZE
+        logger.info(f"Thread {thread_id} processing {proccessed} videos at {time.time() - time_zero}")
+
+
 if __name__ == "__main__":
     
-    ensure_dir_ready()
+    time_zero = time.time()
+
     
     dataset_info = pd.read_csv(get_relative_path(DATASET_CSV), sep=",")
-    dataset_info = dataset_info[:100]
+    logger.info(f"Loaded dataset with {len(dataset_info)} videos. time taken {time.time() - time_zero}")
+    dataset_info[UNIQUE_ID] = dataset_info[YOUTUBE_ID] + "_" + dataset_info.index.astype(str)
+    
+    seen = set()
+    
+    with open(SUCCESS_FILE, "r") as f:
+        success = [i.strip() for i in f]
+        seen.update(success)
+        
+    with open(ERROR_FILE, "r") as f:
+        errors = [i.strip() for i in f]
+        seen.update(errors)
+    
+    before = len(dataset_info)
+    dataset_info = dataset_info[~dataset_info[UNIQUE_ID].isin(seen)]    
+    
+    logger.info(f"Removed {before - len(dataset_info)} already processed videos")
+    
+    dataset_info = dataset_info[:200]
     num_of_chunks = np.ceil(len(dataset_info) / DOWNLOAD_CHUNK_SIZE)
     dataset_info_chunks = np.array_split(dataset_info, num_of_chunks)
     
-    
-    preprocess_video_chunks(dataset_info_chunks,0)
-    
-    # threads = []
-    # # Calculate the number of chunks each thread will handle
-    # chunks_per_thread = len(dataset_info_chunks) // NUM_OF_THREADS 
-    # for i in range(NUM_OF_THREADS):
-    #     start_index = i * chunks_per_thread
-    #     end_index = start_index + chunks_per_thread  if i < NUM_OF_THREADS - 1 else len(dataset_info_chunks)
-    #     thread = threading.Thread(target=preprocess_video_chunks, args=(dataset_info_chunks[start_index:end_index],i))
-    #     threads.append(thread)
-    #     thread.start() 
+    threads = []
+    # Calculate the number of chunks each thread will handle
+    chunks_per_thread = len(dataset_info_chunks) // NUM_OF_THREADS 
+    for i in range(NUM_OF_THREADS):
+        start_index = i * chunks_per_thread
+        end_index = start_index + chunks_per_thread  if i < NUM_OF_THREADS - 1 else len(dataset_info_chunks)
+        thread = threading.Thread(target=preprocess_video_chunks, args=(dataset_info_chunks[start_index:end_index],i))
+        threads.append(thread)
+        thread.start() 
 
-    # # Wait for all threads to finish
-    # for thread in threads:
-    #     thread.join()
+    # Wait for all threads to finish
+    for thread in threads:
+        thread.join()
+    
+    
+    logger.info(f"Finished processing {len(dataset_info)} videos.\n Time taken {time.time() - time_zero}. average time per video {(time.time() - time_zero) / len(dataset_info)}")
         
