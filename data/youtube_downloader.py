@@ -23,8 +23,8 @@ DATASET_CSV =  f"data/avspeech_{TEST_OR_TRAIN}.csv"
 IMAGE_DIR =  f"data/{TEST_OR_TRAIN}/images"
 
 DOWNLOAD_CHUNK_SIZE = 40
-NUM_OF_THREADS = 8
-DATA_LIMIT_FOR_TEST = 320
+NUM_OF_THREADS = 16
+DATA_LIMIT_FOR_TEST = 640
 SEMAPHORE = threading.Semaphore(1)
 
 YOUTUBE_ID= "YouTubeID" 
@@ -189,8 +189,8 @@ def clean_file_from_dirs(file_name):
 def preprocess_video_chunks(thread_dataset_info_chunks, thread_id):
     for info_chunk in thread_dataset_info_chunks:
         
-        success_ids = []
-        fail_ids = []
+        success_ids = set()
+        fail_ids = set()
         
         for index, row in info_chunk.iterrows():
          
@@ -208,17 +208,17 @@ def preprocess_video_chunks(thread_dataset_info_chunks, thread_id):
             name_to_save = f"{youtube_id}_{index}"
             if not _download_and_save_video_subclips(youtube_id, start_time, end_time, name_to_save):
                 logger.warning(f"Failed to download video {youtube_id}")
-                fail_ids.append(name_to_save)
+                fail_ids.add(name_to_save)
                 continue
             if not _extract_audio(name_to_save):
                 logger.warning(f"Failed to extract audio from video {youtube_id}")
-                fail_ids.append(name_to_save)
+                fail_ids.add(name_to_save)
                 continue
             if not  _extract_images_from_subclip(name_to_save, x_coord, y_coord, number_of_images=1):
                 logger.warning(f"Failed to extract images from video {youtube_id}")
-                fail_ids.append(name_to_save)
+                fail_ids.add(name_to_save)
                 continue
-            success_ids.append(name_to_save)
+            success_ids.add(name_to_save)
             clean_file_from_dirs(name_to_save)
             
             with COUNTER_LOCK:
@@ -243,7 +243,7 @@ def open_dirs_and_files_if_not_exists():
     dirs = [VIDEO_DIR, SUBCLIP_DIR, AUDIO_DIR, IMAGE_DIR]
     for dir in dirs:
         if not os.path.exists(dir):
-            os.mkdir(dir)
+            os.makedirs(dir)
     for file in [ERROR_FILE, SUCCESS_FILE]:
         if not os.path.exists(file):
             with open(file, "w") as f:
@@ -273,7 +273,7 @@ if __name__ == "__main__":
     
     logger.info(f"Removed {before - len(dataset_info)} already processed videos")
     
-    dataset_info = dataset_info[:DATA_LIMIT_FOR_TEST]
+    dataset_info = dataset_info[:DATA_LIMIT_FOR_TEST] # TODO: remove for actual run
     num_of_chunks = np.ceil(len(dataset_info) / DOWNLOAD_CHUNK_SIZE)
     dataset_info_chunks = np.array_split(dataset_info, num_of_chunks)
     
