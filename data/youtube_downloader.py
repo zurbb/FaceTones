@@ -22,7 +22,7 @@ AUDIO_DIR =  f"data/{TEST_OR_TRAIN}/audio"
 DATASET_CSV =  f"data/avspeech_{TEST_OR_TRAIN}.csv"
 IMAGE_DIR =  f"data/{TEST_OR_TRAIN}/images"
 
-DOWNLOAD_CHUNK_SIZE = 40
+DOWNLOAD_CHUNK_SIZE = 50
 NUM_OF_THREADS = 16
 DATA_LIMIT_FOR_TEST = 640
 SEMAPHORE = threading.Semaphore(1)
@@ -273,7 +273,7 @@ if __name__ == "__main__":
     
     logger.info(f"Removed {before - len(dataset_info)} already processed videos")
     
-    dataset_info = dataset_info[:DATA_LIMIT_FOR_TEST] # TODO: remove for actual run
+    # dataset_info = dataset_info[:DATA_LIMIT_FOR_TEST] # TODO: remove for actual run
     num_of_chunks = np.ceil(len(dataset_info) / DOWNLOAD_CHUNK_SIZE)
     dataset_info_chunks = np.array_split(dataset_info, num_of_chunks)
     
