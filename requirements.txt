@@ -1,5 +1,5 @@
-# speechbrain
-# pydub
+speechbrain
+pydub
 numpy
 pytube
 moviepy
