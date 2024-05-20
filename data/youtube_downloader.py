@@ -144,9 +144,9 @@ def _extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5)
         #     os.mkdir(target_dir)
         clip = VideoFileClip(subclip_path)
         duration = clip.duration
+        image_path = os.path.join(IMAGE_DIR, f"{video_id}_{i}.jpg")
         for i in range(number_of_images):
             frame = clip.get_frame(t=i * duration / number_of_images)
-            image_path = os.path.join(IMAGE_DIR, f"{video_id}_{i}.jpg")
             if frame.dtype != np.uint8:
                 frame = frame.astype(np.uint8)
             # crop the image around the face given by x and y coordinates.
@@ -156,7 +156,7 @@ def _extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5)
     except Exception as e:
         logger.error(f"Error extracting images from video {video_id}. error details: {e}")
         return False
-    return os.path.exists(target_dir)
+    return os.path.exists(image_path)
 
 
 def _crop_image(image: np.ndarray, x_coord: float, y_coord: float):
