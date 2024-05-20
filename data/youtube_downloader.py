@@ -139,14 +139,11 @@ def _extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5)
     """
     try:
         subclip_path = os.path.join(SUBCLIP_DIR, f"{video_id}.mp4")
-        # target_dir = os.path.join(IMAGE_DIR, video_id)
-        # if not os.path.exists(target_dir):
-        #     os.mkdir(target_dir)
         clip = VideoFileClip(subclip_path)
         duration = clip.duration
-        image_path = os.path.join(IMAGE_DIR, f"{video_id}_{i}.jpg")
         for i in range(number_of_images):
             frame = clip.get_frame(t=i * duration / number_of_images)
+            image_path = os.path.join(IMAGE_DIR, f"{video_id}_{i}.jpg")
             if frame.dtype != np.uint8:
                 frame = frame.astype(np.uint8)
             # crop the image around the face given by x and y coordinates.
@@ -156,7 +153,7 @@ def _extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5)
     except Exception as e:
         logger.error(f"Error extracting images from video {video_id}. error details: {e}")
         return False
-    return os.path.exists(image_path)
+    return True
 
 
 def _crop_image(image: np.ndarray, x_coord: float, y_coord: float):
@@ -205,7 +202,7 @@ def preprocess_video_chunks(thread_dataset_info_chunks, thread_id):
             youtube_id, start_time, end_time   = row[YOUTUBE_ID], row[START_SEGMENT], row[END_SEGMENT]
             x_coord, y_coord = row[X_COORDINATE], row[Y_COORDINATE]
             
-            name_to_save = f"{youtube_id}_{index}"
+            name_to_save = row[UNIQUE_ID]
             if not _download_and_save_video_subclips(youtube_id, start_time, end_time, name_to_save):
                 logger.warning(f"Failed to download video {youtube_id}")
                 fail_ids.add(name_to_save)
