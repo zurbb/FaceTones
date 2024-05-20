@@ -139,14 +139,14 @@ def _extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5)
     """
     try:
         subclip_path = os.path.join(SUBCLIP_DIR, f"{video_id}.mp4")
-        target_dir = os.path.join(IMAGE_DIR, video_id)
-        if not os.path.exists(target_dir):
-            os.mkdir(target_dir)
+        # target_dir = os.path.join(IMAGE_DIR, video_id)
+        # if not os.path.exists(target_dir):
+        #     os.mkdir(target_dir)
         clip = VideoFileClip(subclip_path)
         duration = clip.duration
         for i in range(number_of_images):
             frame = clip.get_frame(t=i * duration / number_of_images)
-            image_path = os.path.join(target_dir, f"{video_id}_{i}.jpg")
+            image_path = os.path.join(IMAGE_DIR, f"{video_id}_{i}.jpg")
             if frame.dtype != np.uint8:
                 frame = frame.astype(np.uint8)
             # crop the image around the face given by x and y coordinates.
@@ -269,9 +269,12 @@ if __name__ == "__main__":
         seen.update(errors)
     
     before = len(dataset_info)
-    dataset_info = dataset_info[~dataset_info[UNIQUE_ID].isin(seen)]    
+    unique_videos = dataset_info.drop_duplicates(subset=[YOUTUBE_ID], keep="first")
+    logger.info(f"unique videos: {len(unique_videos)}")
+    dataset_info = unique_videos[~unique_videos[UNIQUE_ID].isin(seen)]    
     
-    logger.info(f"Removed {before - len(dataset_info)} already processed videos")
+    logger.info(f"Removed {len(unique_videos) - len(dataset_info)} already processed videos")
+    logger.info(f"Remaining videos: {len(dataset_info)}")
     
     # dataset_info = dataset_info[:DATA_LIMIT_FOR_TEST] # TODO: remove for actual run
     num_of_chunks = np.ceil(len(dataset_info) / DOWNLOAD_CHUNK_SIZE)
