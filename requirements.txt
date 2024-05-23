@@ -9,3 +9,4 @@ coloredlogs
 pillow
 opencv-python
 transformers
+torch
