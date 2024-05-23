@@ -8,3 +8,4 @@ pandas
 coloredlogs
 pillow
 opencv-python
+transformers

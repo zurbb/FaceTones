@@ -4,26 +4,20 @@ import torchaudio
 from pydub import AudioSegment
 import os
 import torch
+import io
 
-# plsease make sure to install ffmpeg
-# sudo apt-get install ffmpeg -y
+os.environ['HF_HOME'] = os.path.join(os.getcwd(), '.cache')
 
-class Voice2Vec:
+class VoiceToVec:
     def __init__(self):
-        self.classifier = EncoderClassifier.from_hparams(source="speechbrain/spkrec-xvect-voxceleb", savedir="pretrained_models/spkrec-xvect-voxceleb")
+        self.encoder = EncoderClassifier.from_hparams(source="speechbrain/spkrec-xvect-voxceleb")
 
-    def embed(self, voice_path) -> torch.Tensor:
-        """
-        Embeds the given voice file into a torch.Size([1, 512]) embedding
-
-        Parameters:
-            voice_path (str): The path to the voice file.
-
-        Returns:
-            torch.Tensor: torch.Size([1, 512]) embedding.
-        """
-        if not os.path.exists(voice_path):
-            raise ValueError(f"The provided voice path: {voice_path} does not exist.")
-        signal, fs = torchaudio.load(voice_path)
-        embeddings = self.classifier.encode_batch(signal)
-        return embeddings
+    def get_embedding(self, mp3_path: str, new_freq: int =16000) -> torch.Tensor:
+        audio = AudioSegment.from_mp3(mp3_path)
+        wav_io = io.BytesIO()
+        audio.export(wav_io, format="wav")
+        signal, fs = torchaudio.load(wav_io)
+        signal = signal.mean(dim=0, keepdim=True) # Convert stereo to mono
+        signal = torchaudio.transforms.Resample(orig_freq=fs, new_freq=new_freq)(signal)
+        embedding = self.encoder.encode_batch(signal)
+        return embedding
