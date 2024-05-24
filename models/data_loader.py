@@ -18,7 +18,7 @@ IMAGE_SUFFIX = "_0.jpg"
 VOICE_SUFFIX = ".mp3"
 
 class ImagesVoicesDataset(Dataset):
-    def __init__(self, images_dir, voices_dir, transform=None, voice_transform=None):
+    def __init__(self, images_dir, voices_dir, transform=None, voice_transform=None, limit_size=None):
         self.images_dir = images_dir
         self.voices_dir = voices_dir
         self.transform = transform
@@ -28,6 +28,8 @@ class ImagesVoicesDataset(Dataset):
         image_ids = [img.split(IMAGE_SUFFIX)[0] for img in image_files]
         voice_ids = [voice.split(VOICE_SUFFIX)[0] for voice in voice_files]
         ids = list(set(image_ids).intersection(set(voice_ids)))
+        if limit_size:
+            ids = ids[:limit_size]
         self.images = [f"{id}{IMAGE_SUFFIX}" for id in ids]
         self.voices = [f"{id}{VOICE_SUFFIX}" for id in ids]
         self.images_and_voices_file_names = list(zip(self.images, self.voices))
@@ -59,13 +61,13 @@ transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
-def get_train_loader(images_dir, voices_dir, batch_size=4, shuffle=True, num_workers=4):
-    logging.debug("Creating train loader")
+def get_train_loader(images_dir, voices_dir, batch_size=4, shuffle=True, num_workers=4, limit_size=None):
+    logging.debug("Creating loader")
     voice_embedder = VoiceToVec()
     logger.debug("Voice embedder created")
     voice_transform = voice_embedder.get_embedding 
     logger.debug("Creating DatasetLoader")
-    train_dataset = ImagesVoicesDataset(images_dir, voices_dir, transform=transform, voice_transform=voice_transform)
+    train_dataset = ImagesVoicesDataset(images_dir, voices_dir, transform=transform, voice_transform=voice_transform, limit_size=limit_size)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, collate_fn=custom_collate_fn)
     logger.debug("Train loader created")
     return train_loader

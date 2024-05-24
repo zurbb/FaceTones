@@ -22,5 +22,4 @@ class VoiceToVec:
         signal = torchaudio.transforms.Resample(orig_freq=fs, new_freq=new_freq)(signal)
         embedding = self.encoder.encode_batch(signal)
         embedding = embedding.squeeze()
-        logger.debug(f"Embedding shape: {embedding.shape}")
         return embedding

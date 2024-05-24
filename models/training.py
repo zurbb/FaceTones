@@ -11,7 +11,11 @@ from data_loader import get_train_loader
 
 
 import coloredlogs, logging
-import time
+
+
+for logger_name in logging.Logger.manager.loggerDict:
+    logger2 = logging.getLogger(logger_name)
+    logger2.propagate = False
 
 logger = logging.getLogger()
 
@@ -43,7 +47,6 @@ class ImageVoiceClassifier(nn.Module):
         )
         
     def forward(self, x):
-        logger.debug(f"Making forward with input shape: {x.shape}")
         logits = self.convolutional_layers(x)
         return logits
 
@@ -51,54 +54,45 @@ class ImageVoiceClassifier(nn.Module):
 
 # Define your loss function
 def cosine_similarity_loss(outputs, voices):
-    logger.debug(f"Making cosine_similarity_loss with outputs shape: {outputs.shape} and voices shape: {voices.shape}")
     cosine_similarity = nn.CosineSimilarity(dim=1)(outputs, voices)
     loss = 1 - cosine_similarity.mean()  # subtract from 1 to make it a minimization problem
-    logger.debug(f"Loss: {loss}")
     return loss
 
 
 # Load and preprocess your "imagesVoices" dataset
 # Split it into training and validation sets
-def train(train_data_loader, model, loss_fn, optimizer, num_epochs=1):
+def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_epochs=1):
     size = len(train_data_loader.dataset)
     # Training loop
     # for epoch in range(num_epochs):
     for Batch_number, (images, voices) in enumerate(train_data_loader):
-        logger.debug(f"Batch number: {Batch_number}")
-        logger.debug(f"Images shape: {images.shape}")
         # Forward pass
         outputs = model(images)
         loss = loss_fn(outputs, voices)
 
-        if Batch_number % 1 == 0:
+        if Batch_number % 20 == 0:
             loss, current = torch.mean(loss), (Batch_number + 1) * len(images)
             logger.debug(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+            # Validate your model on the validation set
+            with torch.no_grad():
+                val_loss = 0
+                num_batches = 0
+                for images, voices in validation_loader:
+                    outputs = model(images)
+                    val_loss += loss_fn(outputs, voices)
+                    num_batches += 1
+                logger.debug(f"Validation Error: {val_loss.item()/num_batches:>7f}")
         # Backward and optimize
-        logger.debug("Backward and optimize")
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        logger.debug("Backward and optimize done")
-        if Batch_number == 10:
-             break
-    
-
-
-        # # Validate your model on the validation set
-        # with torch.no_grad():
-        #     for images, voices in validation_loader:
-        #         outputs = model(images)
-        #         val_loss = loss_fn(outputs, voices)
-        #         logger.debug(f"Validation Error: {val_loss.item():>7f}")
-
-
-        # Print training and validation metrics
+        logger.debug(f"batch: {Batch_number} done.") if Batch_number%10==0 else None
 
 
 if __name__ == '__main__':
-    # Your code here
 
+    LIMIT_SIZE = 2048
+    VALIDATION_SIZE = 1024
     # Create an instance of your network
     model = ImageVoiceClassifier().to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -107,8 +101,11 @@ if __name__ == '__main__':
     # Load your dataset
     images_dir = os.path.join(os.getcwd(), "data/test/images")
     voices_dir = os.path.join(os.getcwd(), "data/test/audio")
-    train_dataset = get_train_loader(images_dir, voices_dir, batch_size=2)
-    train(train_dataset, model, cosine_similarity_loss, optimizer, num_epochs=1)
+    test_images_dir = os.path.join(os.getcwd(), "data/test/images")
+    test_voices_dir = os.path.join(os.getcwd(), "data/test/audio")
+    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=16, limit_size=LIMIT_SIZE)
+    validation_dataloader = get_train_loader(images_dir, voices_dir, batch_size=16, limit_size=VALIDATION_SIZE)
+    train(train_dataloader, validation_dataloader, model, cosine_similarity_loss, optimizer, num_epochs=1)
 
     # Save your trained model
     torch.save(model.state_dict(), 'image_voice_classifier.pth')

@@ -1,8 +1,13 @@
 # Ignore all folders that start with .
 .*/
-# Ignore everything in the data folder except .py and .csv files
+# Ignore everything in the data folder except .py and .txt files
 data/*
 !data/*.py
-!data/*.csv
 !data/*.txt
+
 pretrained_models
+models/__pycache__/
+*.pth
+sample_image.png
+sbatch.sh
+.nfs00000001b916a81e00000474
