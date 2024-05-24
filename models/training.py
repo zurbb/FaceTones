@@ -4,6 +4,14 @@ import torch.nn as nn
 import torch.optim as optim
 from data_loader import get_train_loader
 
+
+
+import coloredlogs, logging
+import time
+
+logger = logging.getLogger()
+coloredlogs.install()
+
 # Get cpu, gpu or mps device for training.
 device = (
     "cuda"
@@ -27,7 +35,7 @@ class ImageVoiceClassifier(nn.Module):
         )
         
     def forward(self, x):
-        print(f"Input shape: {x.shape}")
+        logger.debug(f"Making forward with input shape: {x.shape}")
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
@@ -36,8 +44,10 @@ class ImageVoiceClassifier(nn.Module):
 
 # Define your loss function
 def cosine_similarity_loss(outputs, voices):
+    logger.debug(f"Making cosine_similarity_loss with outputs shape: {outputs.shape} and voices shape: {voices.shape}")
     cosine_similarity = nn.CosineSimilarity(dim=1)(outputs, voices)
     loss = 1 - cosine_similarity.mean()  # subtract from 1 to make it a minimization problem
+    logger.debug(f"Loss: {loss}")
     return loss
 
 
@@ -48,21 +58,21 @@ def train(train_data_loader, model, loss_fn, optimizer, num_epochs=1):
     # Training loop
     # for epoch in range(num_epochs):
     for Batch_number, (images, voices) in enumerate(train_data_loader):
-        print(f"Batch number: {Batch_number}")
-        print(f"Images shape: {images.shape}")
+        logger.debug(f"Batch number: {Batch_number}")
+        logger.debug(f"Images shape: {images.shape}")
         # Forward pass
         outputs = model(images)
         loss = loss_fn(outputs, voices)
 
         if Batch_number % 1 == 0:
             loss, current = torch.mean(loss), (Batch_number + 1) * len(images)
-            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+            logger.debug(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
         # Backward and optimize
-        print("Backward and optimize")
+        logger.debug("Backward and optimize")
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        print("Backward and optimize done")
+        logger.debug("Backward and optimize done")
         if Batch_number == 10:
              break
     
@@ -73,7 +83,7 @@ def train(train_data_loader, model, loss_fn, optimizer, num_epochs=1):
         #     for images, voices in validation_loader:
         #         outputs = model(images)
         #         val_loss = loss_fn(outputs, voices)
-        #         print(f"Validation Error: {val_loss.item():>7f}")
+        #         logger.debug(f"Validation Error: {val_loss.item():>7f}")
 
 
         # Print training and validation metrics
@@ -86,7 +96,7 @@ if __name__ == '__main__':
     model = ImageVoiceClassifier().to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    print(model)
+    logger.debug(f"Model created:\n{model}")
 
     # Load your dataset
     images_dir = "data/train/images"

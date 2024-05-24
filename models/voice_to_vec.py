@@ -5,6 +5,11 @@ from pydub import AudioSegment
 import os
 import torch
 import io
+import coloredlogs, logging
+import time
+
+logger = logging.getLogger()
+coloredlogs.install()
 
 os.environ['HF_HOME'] = os.path.join(os.getcwd(), '.cache')
 
@@ -13,7 +18,8 @@ class VoiceToVec:
         self.encoder = EncoderClassifier.from_hparams(source="speechbrain/spkrec-xvect-voxceleb")
 
     def get_embedding(self, mp3_path: str, new_freq: int =16000) -> torch.Tensor:
-        print("embedding:", mp3_path)
+        start = time.time()
+        logger.info(f"Getting embedding for {mp3_path}")
         audio = AudioSegment.from_mp3(mp3_path)
         wav_io = io.BytesIO()
         audio.export(wav_io, format="wav")
@@ -21,5 +27,5 @@ class VoiceToVec:
         signal = signal.mean(dim=0, keepdim=True) # Convert stereo to mono
         signal = torchaudio.transforms.Resample(orig_freq=fs, new_freq=new_freq)(signal)
         embedding = self.encoder.encode_batch(signal)
-        print("finished embedding")
+        logger.info(f"Embedding for {mp3_path} obtained in {time.time() - start} seconds")
         return embedding
