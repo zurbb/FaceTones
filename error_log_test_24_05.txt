@@ -4057,3 +4057,43 @@
 2024-05-24 15:57:20 ohm-54 root[793658] WARNING Failed to download video Ta7sYeAXatA
 2024-05-24 15:57:26 ohm-54 root[793658] ERROR Error downloading video p4xlSvFq6-k. error details: p4xlSvFq6-k is unavailable
 2024-05-24 15:57:26 ohm-54 root[793658] WARNING Failed to download video p4xlSvFq6-k
+2024-05-24 15:58:35 ohm-54 root[793658] INFO Total proccessed 7820 videos at 20235.96
+2024-05-24 15:59:07 ohm-54 root[793658] ERROR Error downloading video LaqFlcjb-2I. error details: LaqFlcjb-2I is unavailable
+2024-05-24 15:59:07 ohm-54 root[793658] WARNING Failed to download video LaqFlcjb-2I
+2024-05-24 15:59:24 ohm-54 root[793658] ERROR Error downloading video leTwEzva3yg. error details: leTwEzva3yg is a private video
+2024-05-24 15:59:24 ohm-54 root[793658] WARNING Failed to download video leTwEzva3yg
+2024-05-24 15:59:24 ohm-54 root[793658] ERROR Error downloading video UTjisgxps90. error details: UTjisgxps90 is unavailable
+2024-05-24 15:59:24 ohm-54 root[793658] WARNING Failed to download video UTjisgxps90
+2024-05-24 15:59:28 ohm-54 root[793658] ERROR Error downloading video Ip4tB6M09aQ. error details: Ip4tB6M09aQ is a private video
+2024-05-24 15:59:28 ohm-54 root[793658] WARNING Failed to download video Ip4tB6M09aQ
+2024-05-24 15:59:48 ohm-54 root[793658] ERROR Error downloading video RBHJhD5HeK0. error details: RBHJhD5HeK0 is age restricted, and can't be accessed without logging in.
+2024-05-24 15:59:48 ohm-54 root[793658] WARNING Failed to download video RBHJhD5HeK0
+2024-05-24 15:59:51 ohm-54 root[793658] INFO Total proccessed 7860 videos at 20312.73
+2024-05-24 15:59:53 ohm-54 root[793658] ERROR Error downloading video Ak_QeY9BHKk. error details: Ak_QeY9BHKk is age restricted, and can't be accessed without logging in.
+2024-05-24 15:59:53 ohm-54 root[793658] WARNING Failed to download video Ak_QeY9BHKk
+2024-05-24 15:59:58 ohm-54 root[793658] ERROR Error downloading video TYYr7G6sVOA. error details: TYYr7G6sVOA is unavailable
+2024-05-24 15:59:58 ohm-54 root[793658] WARNING Failed to download video TYYr7G6sVOA
+2024-05-24 16:00:04 ohm-54 root[793658] ERROR Error downloading video JwbCKwAd-Nw. error details: JwbCKwAd-Nw is unavailable
+2024-05-24 16:00:04 ohm-54 root[793658] WARNING Failed to download video JwbCKwAd-Nw
+2024-05-24 16:00:08 ohm-54 root[793658] ERROR Error downloading video s7954QI7QoA. error details: s7954QI7QoA is unavailable
+2024-05-24 16:00:08 ohm-54 root[793658] WARNING Failed to download video s7954QI7QoA
+2024-05-24 16:00:10 ohm-54 root[793658] ERROR Error downloading video 0NrD9MqmKPI. error details: 0NrD9MqmKPI is age restricted, and can't be accessed without logging in.
+2024-05-24 16:00:10 ohm-54 root[793658] WARNING Failed to download video 0NrD9MqmKPI
+2024-05-24 16:00:22 ohm-54 root[793658] ERROR Error downloading video kMXuSfmpGsk. error details: kMXuSfmpGsk is age restricted, and can't be accessed without logging in.
+2024-05-24 16:00:22 ohm-54 root[793658] WARNING Failed to download video kMXuSfmpGsk
+2024-05-24 16:00:28 ohm-54 root[793658] ERROR Error downloading video VoVSvlNzznc. error details: VoVSvlNzznc is a private video
+2024-05-24 16:00:28 ohm-54 root[793658] WARNING Failed to download video VoVSvlNzznc
+2024-05-24 16:00:55 ohm-54 root[793658] ERROR Error downloading video WQjraymP17k. error details: WQjraymP17k is unavailable
+2024-05-24 16:00:55 ohm-54 root[793658] WARNING Failed to download video WQjraymP17k
+2024-05-24 16:01:08 ohm-54 root[793658] ERROR Error downloading video 05gAnIzt01E. error details: 05gAnIzt01E is unavailable
+2024-05-24 16:01:08 ohm-54 root[793658] WARNING Failed to download video 05gAnIzt01E
+2024-05-24 16:01:08 ohm-54 root[793658] INFO Total proccessed 7900 videos at 20389.63
+2024-05-24 16:01:13 ohm-54 root[793658] ERROR Error downloading video 2oHa7bMCbDs. error details: 2oHa7bMCbDs is a private video
+2024-05-24 16:01:13 ohm-54 root[793658] WARNING Failed to download video 2oHa7bMCbDs
+2024-05-24 16:01:29 ohm-54 root[793658] ERROR Error downloading video 52mh5r6KFp8. error details: 52mh5r6KFp8 is a private video
+2024-05-24 16:01:29 ohm-54 root[793658] WARNING Failed to download video 52mh5r6KFp8
+2024-05-24 16:01:34 ohm-54 root[793658] ERROR Error downloading video zzGcvHI0DHU. error details: zzGcvHI0DHU is unavailable
+2024-05-24 16:01:34 ohm-54 root[793658] WARNING Failed to download video zzGcvHI0DHU
+2024-05-24 16:01:41 ohm-54 root[793658] INFO Total proccessed 7920 videos at 20422.34
+2024-05-24 16:01:42 ohm-54 root[793658] ERROR Error downloading video W8UKBNZhkUw. error details: W8UKBNZhkUw is a private video
+2024-05-24 16:01:42 ohm-54 root[793658] WARNING Failed to download video W8UKBNZhkUw
