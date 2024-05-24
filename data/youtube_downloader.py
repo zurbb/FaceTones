@@ -252,7 +252,6 @@ if __name__ == "__main__":
     logger.info(f"Loaded dataset with {len(dataset_info)} videos. time taken {round(time.time() - TIME_ZERO,2)}")
     dataset_info[UNIQUE_ID] = dataset_info[YOUTUBE_ID] + "_" + dataset_info.index.astype(str)
     
-    
     seen = set()
     
     with open(SUCCESS_FILE, "r") as f:

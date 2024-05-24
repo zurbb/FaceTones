@@ -1,3 +1,8 @@
+import os
+
+
+os.environ['HF_HOME'] = os.path.join(os.getcwd(), '.cache')
+os.environ['TRANSFORMERS_CACHE'] = os.path.join(os.getcwd(), '.cache')
 import torch
 
 import torch.nn as nn
@@ -5,12 +10,14 @@ import torch.optim as optim
 from data_loader import get_train_loader
 
 
-
 import coloredlogs, logging
 import time
 
 logger = logging.getLogger()
-coloredlogs.install()
+
+coloredlogs.install(level='NOTSET', logger=logger)
+
+
 
 # Get cpu, gpu or mps device for training.
 device = (
@@ -25,19 +32,19 @@ device = (
 class ImageVoiceClassifier(nn.Module):
     def __init__(self):
         super().__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(3*128*128, 64*64),
-            nn.ReLU(),
-            nn.Linear(64*64, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512)
+        self.convolutional_layers = nn.Sequential(
+            nn.Conv2d(3, 3, kernel_size=3, stride=2, padding=1),  # output 3,64,64
+            nn.ReLU(),  # output 3,64,64
+            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # output 3,32,32
+            nn.Conv2d(3, 1, kernel_size=3, stride=1, padding=1),  # output 1,32,32
+            nn.ReLU(),  # output 1,32,32
+            nn.Flatten(),  # output 1,32*32
+            nn.Linear(1024, 512)  # output 1,512
         )
         
     def forward(self, x):
         logger.debug(f"Making forward with input shape: {x.shape}")
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
+        logits = self.convolutional_layers(x)
         return logits
 
 
@@ -97,10 +104,9 @@ if __name__ == '__main__':
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     logger.debug(f"Model created:\n{model}")
-
     # Load your dataset
-    images_dir = "data/train/images"
-    voices_dir = "data/train/audio"
+    images_dir = os.path.join(os.getcwd(), "data/test/images")
+    voices_dir = os.path.join(os.getcwd(), "data/test/audio")
     train_dataset = get_train_loader(images_dir, voices_dir, batch_size=2)
     train(train_dataset, model, cosine_similarity_loss, optimizer, num_epochs=1)
 

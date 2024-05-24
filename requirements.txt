@@ -10,3 +10,4 @@ pillow
 opencv-python
 transformers
 torch
+torchvision
