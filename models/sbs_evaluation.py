@@ -18,16 +18,20 @@ def match_voice_to_image(image_path, voice1_path, voice2_path):
     image = load_image(image_path)
     voice_to_vec = VoiceToVec()
     # Perform inference:
-    model_path = "image_voice_classifier.pth"
+    # model_path = "image_voice_classifier.pth"
+    model_path = "NNCosine.pth"
+
     model = ImageVoiceClassifier()
     model.load_state_dict(torch.load(model_path))
     with torch.inference_mode():
         model.eval()  # Set the model to evaluation mode
         image_features = model(image.unsqueeze(0))  # Pass the image through the model
-    voice_1_features = voice_to_vec.get_embedding(voice1_path)
-    voice_2_features = voice_to_vec.get_embedding(voice2_path)
+    voice_1_features = voice_to_vec.get_embedding(voice1_path).unsqueeze(0)
+    voice_2_features = voice_to_vec.get_embedding(voice2_path).unsqueeze(0)
     voice_1_match = cosine_similarity_loss(image_features, voice_1_features)
+    print(f"Voice 1 match: {voice_1_match}")
     voice_2_match = cosine_similarity_loss(image_features, voice_2_features)
+    print(f"Voice 2 match: {voice_2_match}")
 
     # Compare the model output and determine the matching voice
     if voice_1_match < voice_2_match:

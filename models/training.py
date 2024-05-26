@@ -51,11 +51,13 @@ class ImageVoiceClassifier(nn.Module):
         return logits
 
 
+LOSS = nn.CosineEmbeddingLoss()
 
 # Define your loss function
 def cosine_similarity_loss(outputs, voices):
-    cosine_similarity = nn.CosineSimilarity(dim=1)(outputs, voices)
-    loss = 1 - cosine_similarity.mean()  # subtract from 1 to make it a minimization problem
+    # TODO: maybe get size from constants and take labels out of the function
+    labels = torch.ones(outputs.size(0)).to(outputs.device)
+    loss = LOSS(outputs, voices, labels)
     return loss
 
 
@@ -91,7 +93,7 @@ def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_e
 
 if __name__ == '__main__':
 
-    LIMIT_SIZE = 2048
+    LIMIT_SIZE = 16384
     VALIDATION_SIZE = 1024
     # Create an instance of your network
     model = ImageVoiceClassifier().to(device)
@@ -108,4 +110,4 @@ if __name__ == '__main__':
     train(train_dataloader, validation_dataloader, model, cosine_similarity_loss, optimizer, num_epochs=1)
 
     # Save your trained model
-    torch.save(model.state_dict(), 'image_voice_classifier.pth')
+    torch.save(model.state_dict(), 'NNCosine.pth')
