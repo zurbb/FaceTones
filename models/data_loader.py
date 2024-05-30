@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from PIL import Image
 from voice_to_vec import VoiceToVec
-
+from torchvision.transforms.functional import pil_to_tensor
 
 import coloredlogs, logging
 import time
@@ -49,22 +49,21 @@ class ImagesVoicesDataset(Dataset):
         img_path = os.path.join(self.images_dir, img_name)
         voice_path = os.path.join(self.voices_dir, voice_name)
         image = Image.open(img_path)
-
-        return image , voice_path
+        if self.transform:
+            image = self.transform(image)
+        voice_embedding = self.voice_transform(voice_path)
+        return image , voice_embedding
     
 
     # Custom collate function
     def custom_collate_fn(self, batch):
         images = torch.stack([item[0] for item in batch])
-        voices_paths = torch.stack([item[1] for item in batch])
-        if self.dino:
+        voices = torch.stack([item[1] for item in batch])
+        if self.dino_embedding:
             images = self.dino.get_embedding(images)
-        elif self.transform:
-            images = self.transform(images)
-        voice_embeddings = self.voice_transform(voices_paths)
-        return images, voice_embeddings
+            images = images.unsqueeze(1)
+        return images, voices
 
-# Create an instance of the ImagesDataset class
 transform = transforms.Compose([
     transforms.Resize((128,128)),
     transforms.ToTensor()
@@ -77,6 +76,6 @@ def get_train_loader(images_dir, voices_dir, batch_size=4, shuffle=True, num_wor
     voice_transform = voice_embedder.get_embedding 
     logger.debug("Creating DatasetLoader")
     train_dataset = ImagesVoicesDataset(images_dir, voices_dir, transform=transform, voice_transform=voice_transform, limit_size=limit_size, dino_embedding=dino)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, collate_fn=custom_collate_fn)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, collate_fn=train_dataset.custom_collate_fn)
     logger.debug("Train loader created")
     return train_loader
