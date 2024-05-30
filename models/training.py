@@ -8,10 +8,16 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from data_loader import get_train_loader
-
+from absl import app, flags
 
 import coloredlogs, logging
 
+FLAGS = flags.FLAGS
+LIMIT_SIZE = flags.DEFINE_integer("limit_size", 2048, "Limit size of the dataset")
+VALIDATION_SIZE = flags.DEFINE_integer("validation_size", 128, "Validation size of the dataset")
+BATCH_SIZE = flags.DEFINE_integer("batch_size", 16, "Batch size of the dataset")
+RUN_NAME = flags.DEFINE_string("run_name", None, "Name of the run", required=True)
+EPOCHS = flags.DEFINE_integer("epochs", 1, "Number of epochs to train the model")
 
 for logger_name in logging.Logger.manager.loggerDict:
     logger2 = logging.getLogger(logger_name)
@@ -67,8 +73,8 @@ class ImageVoiceClassifier(nn.Module):
         )
         embed_dim = 1024 if not dino else 816
         self.multihead = nn.MultiheadAttention(embed_dim=embed_dim, num_heads=8) 
-        self.final_layer = nn.Linear(1024, 512)  # output 1,512
-        self.dino_final_layer = nn.Linear(816, 512)  # output 1,512
+        self.final_layer = nn.Linear(1024, 768)  # output 1,768
+        self.dino_final_layer = nn.Linear(816, 768)  # output 1,768
         if dino:
             self.convolutional_layers = self.dino_convolution_layers
             self.final_layer = self.dino_final_layer
@@ -107,7 +113,7 @@ def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_e
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            if Batch_number%10==0:
+            if Batch_number%100==0:
                 logger.debug(f"batch: {Batch_number} done.")
                 logger.debug(f"loss: {loss:>7f}")
 
@@ -123,12 +129,12 @@ def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_e
                 val_loss += loss_fn(outputs, voices)
                 num_batches += 1
             logger.debug(f"Validation Error: {val_loss.item()/num_batches:>7f}")
+        torch.save(model.state_dict(), os.path.join(os.getcwd(), 'trained_models', RUN_NAME.value,f'checkpoint_{epoch}.pth'))
 
 
-if __name__ == '__main__':
-
-    LIMIT_SIZE = 16384
-    VALIDATION_SIZE = 128
+def main(argv):
+    if not os.path.exists(os.path.join(os.getcwd(), 'trained_models', RUN_NAME.value)):
+        os.mkdir(os.path.join(os.getcwd(), 'trained_models', RUN_NAME.value))
     # Create an instance of your network
     model = ImageVoiceClassifier(dino=True).to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -138,13 +144,15 @@ if __name__ == '__main__':
     print(f'{total_params:,} total parameters.')
     logger.debug(f"Model created:\n{model}")
     # Load your dataset
-    images_dir = os.path.join(os.getcwd(), "data/test/images")
-    voices_dir = os.path.join(os.getcwd(), "data/test/audio")
+    images_dir = os.path.join(os.getcwd(), "data/train/images")
+    voices_dir = os.path.join(os.getcwd(), "data/train/audio")
     test_images_dir = os.path.join(os.getcwd(), "data/test/images")
     test_voices_dir = os.path.join(os.getcwd(), "data/test/audio")
-    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=16, limit_size=LIMIT_SIZE, dino=True)
-    validation_dataloader = get_train_loader(images_dir, voices_dir, batch_size=16, limit_size=VALIDATION_SIZE, dino=True)
-    train(train_dataloader, validation_dataloader, model, cosine_similarity_loss, optimizer, num_epochs=1)
+    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE.value, limit_size=LIMIT_SIZE.value, dino=True)
+    validation_dataloader = get_train_loader(test_images_dir, test_voices_dir, batch_size=BATCH_SIZE.value, limit_size=VALIDATION_SIZE.value, dino=True)
+    train(train_dataloader, validation_dataloader, model, cosine_similarity_loss, optimizer, num_epochs=EPOCHS.value)
 
-    # Save your trained model
-    torch.save(model.state_dict(), 'multihead_30_05.pth')
+
+if __name__ == '__main__':
+    app.run(main)
+
