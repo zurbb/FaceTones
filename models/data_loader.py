@@ -1,3 +1,4 @@
+from image_embedding import DinoEmbedding
 import torch
 from torch.utils.data import Dataset
 import os
@@ -18,7 +19,7 @@ IMAGE_SUFFIX = "_0.jpg"
 VOICE_SUFFIX = ".mp3"
 
 class ImagesVoicesDataset(Dataset):
-    def __init__(self, images_dir, voices_dir, transform=None, voice_transform=None, limit_size=None):
+    def __init__(self, images_dir, voices_dir, transform=None, voice_transform=None, limit_size=None, dino_embedding=False):
         self.images_dir = images_dir
         self.voices_dir = voices_dir
         self.transform = transform
@@ -33,6 +34,11 @@ class ImagesVoicesDataset(Dataset):
         self.images = [f"{id}{IMAGE_SUFFIX}" for id in ids]
         self.voices = [f"{id}{VOICE_SUFFIX}" for id in ids]
         self.images_and_voices_file_names = list(zip(self.images, self.voices))
+        self.dino_embedding = dino_embedding
+        if self.dino_embedding:
+            self.dino = DinoEmbedding()
+        else:
+            self.dino = None
 
 
     def __len__(self):
@@ -43,17 +49,20 @@ class ImagesVoicesDataset(Dataset):
         img_path = os.path.join(self.images_dir, img_name)
         voice_path = os.path.join(self.voices_dir, voice_name)
         image = Image.open(img_path)
-        if self.transform:
-            image = self.transform(image)
-        voice_embedding = self.voice_transform(voice_path)
-        return image , voice_embedding
+
+        return image , voice_path
     
 
-# Custom collate function
-def custom_collate_fn(batch):
-    images = torch.stack([item[0] for item in batch])
-    voices = torch.stack([item[1] for item in batch])
-    return images, voices
+    # Custom collate function
+    def custom_collate_fn(self, batch):
+        images = torch.stack([item[0] for item in batch])
+        voices_paths = torch.stack([item[1] for item in batch])
+        if self.dino:
+            images = self.dino.get_embedding(images)
+        elif self.transform:
+            images = self.transform(images)
+        voice_embeddings = self.voice_transform(voices_paths)
+        return images, voice_embeddings
 
 # Create an instance of the ImagesDataset class
 transform = transforms.Compose([
@@ -61,13 +70,13 @@ transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
-def get_train_loader(images_dir, voices_dir, batch_size=4, shuffle=True, num_workers=4, limit_size=None):
+def get_train_loader(images_dir, voices_dir, batch_size=4, shuffle=True, num_workers=4, limit_size=None, dino=False):
     logging.debug("Creating loader")
     voice_embedder = VoiceToVec()
     logger.debug("Voice embedder created")
     voice_transform = voice_embedder.get_embedding 
     logger.debug("Creating DatasetLoader")
-    train_dataset = ImagesVoicesDataset(images_dir, voices_dir, transform=transform, voice_transform=voice_transform, limit_size=limit_size)
+    train_dataset = ImagesVoicesDataset(images_dir, voices_dir, transform=transform, voice_transform=voice_transform, limit_size=limit_size, dino_embedding=dino)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, collate_fn=custom_collate_fn)
     logger.debug("Train loader created")
     return train_loader
