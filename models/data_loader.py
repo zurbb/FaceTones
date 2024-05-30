@@ -6,7 +6,7 @@ from torchvision.io import read_image
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from PIL import Image
-from voice_to_vec import VoiceToVec
+from voice_to_vec import VoiceToVec, WavLM
 from torchvision.transforms.functional import pil_to_tensor
 
 import coloredlogs, logging
@@ -19,11 +19,12 @@ IMAGE_SUFFIX = "_0.jpg"
 VOICE_SUFFIX = ".mp3"
 
 class ImagesVoicesDataset(Dataset):
-    def __init__(self, images_dir, voices_dir, transform=None, voice_transform=None, limit_size=None, dino_embedding=False):
+    def __init__(self, images_dir, voices_dir, transform=None, voice_transformer=None, limit_size=None, dino_embedding=False):
         self.images_dir = images_dir
         self.voices_dir = voices_dir
         self.transform = transform
-        self.voice_transform = voice_transform
+        self.voice_transform = voice_transformer.get_signals
+        self.voice_embedder = voice_transformer.get_embedding
         image_files = os.listdir(images_dir)
         voice_files = os.listdir(voices_dir)
         image_ids = [img.split(IMAGE_SUFFIX)[0] for img in image_files]
@@ -52,6 +53,7 @@ class ImagesVoicesDataset(Dataset):
         if self.transform:
             image = self.transform(image)
         voice_embedding = self.voice_transform(voice_path)
+        voice_embedding = self.voice_embedder(voice_embedding)
         return image , voice_embedding
     
 
@@ -71,11 +73,11 @@ transform = transforms.Compose([
 
 def get_train_loader(images_dir, voices_dir, batch_size=4, shuffle=True, num_workers=4, limit_size=None, dino=False):
     logging.debug("Creating loader")
-    voice_embedder = VoiceToVec()
+    # voice_embedder = VoiceToVec()
+    voice_embedder = WavLM()
     logger.debug("Voice embedder created")
-    voice_transform = voice_embedder.get_embedding 
     logger.debug("Creating DatasetLoader")
-    train_dataset = ImagesVoicesDataset(images_dir, voices_dir, transform=transform, voice_transform=voice_transform, limit_size=limit_size, dino_embedding=dino)
+    train_dataset = ImagesVoicesDataset(images_dir, voices_dir, transform=transform, voice_transformer=voice_embedder, limit_size=limit_size, dino_embedding=dino)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, collate_fn=train_dataset.custom_collate_fn)
     logger.debug("Train loader created")
     return train_loader

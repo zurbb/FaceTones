@@ -17,7 +17,7 @@ class DinoEmbedding:
         self.model.config.return_dict = False
 
     def get_embedding(self, images):
-        inputs = self.processor(images=images, return_tensors="pt").to(self.device)
+        inputs = self.processor(images=images, return_tensors="pt", do_rescale=False).to(self.device)
         with torch.no_grad():
             # traced_model = torch.jit.trace(self.model, [inputs.pixel_values])
             # outputs = traced_model(inputs.pixel_values)
