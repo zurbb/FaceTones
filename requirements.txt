@@ -11,3 +11,5 @@ opencv-python
 transformers
 torch
 torchvision
+sklearn
+matplotlib
