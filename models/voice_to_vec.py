@@ -1,7 +1,7 @@
 import os
 
-os.environ['HF_HOME'] = os.path.join(os.getcwd(), '.cache')
-os.environ['TRANSFORMERS_CACHE'] = os.path.join(os.getcwd(), '.cache')
+# os.environ['HF_HOME'] = os.path.join(os.getcwd(), '.cache')
+# os.environ['TRANSFORMERS_CACHE'] = os.path.join(os.getcwd(), '.cache')
 from speechbrain.inference.speaker import EncoderClassifier
 import torchaudio
 from pydub import AudioSegment

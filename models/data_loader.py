@@ -9,6 +9,7 @@ from PIL import Image
 from voice_to_vec import VoiceToVec, WavLM
 from torchvision.transforms.functional import pil_to_tensor
 
+
 import coloredlogs, logging
 import time
 
@@ -73,8 +74,8 @@ transform = transforms.Compose([
 
 def get_train_loader(images_dir, voices_dir, batch_size=4, shuffle=True, num_workers=4, limit_size=None, dino=False):
     logging.debug("Creating loader")
-    # voice_embedder = VoiceToVec()
-    voice_embedder = WavLM()
+    voice_embedder = VoiceToVec()
+    # voice_embedder = WavLM()
     logger.debug("Voice embedder created")
     logger.debug("Creating DatasetLoader")
     train_dataset = ImagesVoicesDataset(images_dir, voices_dir, transform=transform, voice_transformer=voice_embedder, limit_size=limit_size, dino_embedding=dino)

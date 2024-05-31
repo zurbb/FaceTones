@@ -1,23 +1,28 @@
 import os
-
-
 os.environ['HF_HOME'] = os.path.join(os.getcwd(), '.cache')
-os.environ['TRANSFORMERS_CACHE'] = os.path.join(os.getcwd(), '.cache')
+# os.environ['TRANSFORMERS_CACHE'] = os.path.join(os.getcwd(), '.cache')
 import torch
-
 import torch.nn as nn
 import torch.optim as optim
 from data_loader import get_train_loader
-from absl import app, flags
-
 import coloredlogs, logging
+import argparse
 
-FLAGS = flags.FLAGS
-LIMIT_SIZE = flags.DEFINE_integer("limit_size", 2048, "Limit size of the dataset")
-VALIDATION_SIZE = flags.DEFINE_integer("validation_size", 128, "Validation size of the dataset")
-BATCH_SIZE = flags.DEFINE_integer("batch_size", 16, "Batch size of the dataset")
-RUN_NAME = flags.DEFINE_string("run_name", None, "Name of the run", required=True)
-EPOCHS = flags.DEFINE_integer("epochs", 1, "Number of epochs to train the model")
+parser = argparse.ArgumentParser()
+parser.add_argument("--limit_size", type=int, default=5000, help="Limit size of the dataset")
+parser.add_argument("--validation_size", type=int, default=128, help="Validation size of the dataset")
+parser.add_argument("--batch_size", type=int, default=16, help="Batch size of the dataset")
+parser.add_argument("--run_name", type=str, required=True, help="Name of the run")
+parser.add_argument("--epochs", type=int, default=1, help="Number of epochs to train the model")
+args = parser.parse_args()
+
+LIMIT_SIZE = args.limit_size
+VALIDATION_SIZE = args.validation_size
+BATCH_SIZE = args.batch_size
+RUN_NAME = args.run_name
+EPOCHS = args.epochs
+ROOT_DIR = '/cs/ep/120/Voice-Image-Classifier/'
+
 
 for logger_name in logging.Logger.manager.loggerDict:
     logger2 = logging.getLogger(logger_name)
@@ -25,8 +30,7 @@ for logger_name in logging.Logger.manager.loggerDict:
 
 logger = logging.getLogger()
 
-coloredlogs.install(level='NOTSET', logger=logger)
-
+coloredlogs.install(logger=logger)
 
 
 # Get cpu, gpu or mps device for training.
@@ -73,8 +77,8 @@ class ImageVoiceClassifier(nn.Module):
         )
         embed_dim = 1024 if not dino else 816
         self.multihead = nn.MultiheadAttention(embed_dim=embed_dim, num_heads=8) 
-        self.final_layer = nn.Linear(1024, 768)  # output 1,768
-        self.dino_final_layer = nn.Linear(816, 768)  # output 1,768
+        self.final_layer = nn.Linear(1024, 512)  # output 1,768
+        self.dino_final_layer = nn.Linear(816, 512)  # output 1,768
         if dino:
             self.convolutional_layers = self.dino_convolution_layers
             self.final_layer = self.dino_final_layer
@@ -100,59 +104,69 @@ def cosine_similarity_loss(outputs, voices):
 
 # Load and preprocess your "imagesVoices" dataset
 # Split it into training and validation sets
-def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_epochs=1):
+def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_epochs):
     size = len(train_data_loader.dataset)
     # Training loop
     for epoch in range(num_epochs):
         for Batch_number, (images, voices) in enumerate(train_data_loader):
-            # Forward pass
-            outputs = model(images)
-            loss = loss_fn(outputs, voices)
+            try:
+                # Forward pass
+                outputs = model(images)
+                loss = loss_fn(outputs, voices)
 
-            # Backward and optimize
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            if Batch_number%100==0:
-                logger.debug(f"batch: {Batch_number} done.")
-                logger.debug(f"loss: {loss:>7f}")
+                # Backward and optimize
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                if Batch_number%10==0:
+                    logger.info(f"batch: {Batch_number+1} done.")
+                    logger.info(f"loss: {loss:>7f}")
+            except Exception as e:
+                logger.error(f"Error in batch {Batch_number+1}: {e}")
 
-        logger.debug(f"Epoch: {epoch} done.")    
+        logger.info(f"Epoch: {epoch+1} done.")    
         loss, current = torch.mean(loss), (Batch_number + 1) * len(images)
-        logger.debug(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+        logger.info(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
         # Validate your model on the validation set
         with torch.no_grad():
             val_loss = 0
             num_batches = 0
             for images, voices in validation_loader:
-                outputs = model(images)
-                val_loss += loss_fn(outputs, voices)
+                try:
+                    outputs = model(images)
+                    val_loss += loss_fn(outputs, voices)
+                except Exception as e:
+                    logger.error(f"Error in validation batch {num_batches+1}: {e}")
                 num_batches += 1
-            logger.debug(f"Validation Error: {val_loss.item()/num_batches:>7f}")
-        torch.save(model.state_dict(), os.path.join(os.getcwd(), 'trained_models', RUN_NAME.value,f'checkpoint_{epoch}.pth'))
+            logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
+        torch.save(model.state_dict(), os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
 
 
-def main(argv):
-    if not os.path.exists(os.path.join(os.getcwd(), 'trained_models', RUN_NAME.value)):
-        os.mkdir(os.path.join(os.getcwd(), 'trained_models', RUN_NAME.value))
+def main():
+    if not os.path.exists(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME)):
+        os.mkdir(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME))
     # Create an instance of your network
     model = ImageVoiceClassifier(dino=True).to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     for param in model.parameters():
-        print(param.size())
+        logger.info(param.size())
     total_params = sum(p.numel() for p in model.parameters())
-    print(f'{total_params:,} total parameters.')
-    logger.debug(f"Model created:\n{model}")
+    logger.info(f'{total_params:,} total parameters.')
+    logger.info(f"Model created:\n{model}")
     # Load your dataset
-    images_dir = os.path.join(os.getcwd(), "data/train/images")
-    voices_dir = os.path.join(os.getcwd(), "data/train/audio")
-    test_images_dir = os.path.join(os.getcwd(), "data/test/images")
-    test_voices_dir = os.path.join(os.getcwd(), "data/test/audio")
-    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE.value, limit_size=LIMIT_SIZE.value, dino=True)
-    validation_dataloader = get_train_loader(test_images_dir, test_voices_dir, batch_size=BATCH_SIZE.value, limit_size=VALIDATION_SIZE.value, dino=True)
-    train(train_dataloader, validation_dataloader, model, cosine_similarity_loss, optimizer, num_epochs=EPOCHS.value)
+    images_dir = os.path.join(ROOT_DIR, "data/train/images")
+    voices_dir = os.path.join(ROOT_DIR, "data/train/audio")
+    test_images_dir = os.path.join(ROOT_DIR, "data/test/images")
+    test_voices_dir = os.path.join(ROOT_DIR, "data/test/audio")
+    logger.info("Creating train data loader")
+    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE, limit_size=LIMIT_SIZE, dino=True)
+    logger.info("Creating test data loader")
+    validation_dataloader = get_train_loader(test_images_dir, test_voices_dir, batch_size=BATCH_SIZE, limit_size=VALIDATION_SIZE, dino=True)
+    logger.info("Starting training")
+    train(train_dataloader, validation_dataloader, model, cosine_similarity_loss, optimizer, num_epochs=EPOCHS)
 
 
 if __name__ == '__main__':
-    app.run(main)
+    torch.multiprocessing.set_start_method('spawn', force=True)
+    main()
 
