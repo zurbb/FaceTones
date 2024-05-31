@@ -8,10 +8,16 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from data_loader import get_train_loader
-
+from absl import app, flags
 
 import coloredlogs, logging
 
+FLAGS = flags.FLAGS
+LIMIT_SIZE = flags.DEFINE_integer("limit_size", 2048, "Limit size of the dataset")
+VALIDATION_SIZE = flags.DEFINE_integer("validation_size", 128, "Validation size of the dataset")
+BATCH_SIZE = flags.DEFINE_integer("batch_size", 16, "Batch size of the dataset")
+RUN_NAME = flags.DEFINE_string("run_name", None, "Name of the run", required=True)
+EPOCHS = flags.DEFINE_integer("epochs", 1, "Number of epochs to train the model")
 
 for logger_name in logging.Logger.manager.loggerDict:
     logger2 = logging.getLogger(logger_name)
@@ -34,20 +40,51 @@ device = (
 
 # Define your neural network architecture
 class ImageVoiceClassifier(nn.Module):
-    def __init__(self):
+    def __init__(self, dino=False):
         super().__init__()
+        self.dropout = nn.Dropout(0.2)  # Dropout layer
         self.convolutional_layers = nn.Sequential(
-            nn.Conv2d(3, 3, kernel_size=3, stride=2, padding=1),  # output 3,64,64
-            nn.ReLU(),  # output 3,64,64
-            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # output 3,32,32
-            nn.Conv2d(3, 1, kernel_size=3, stride=1, padding=1),  # output 1,32,32
+            # input 3,128,128
+            nn.Conv2d(3, 12, kernel_size=3, stride=2, padding=1),  # output 12,64,64
+            nn.ReLU(),
+            self.dropout,
+            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # output 3,32,32 
+            nn.Conv2d(12, 4, kernel_size=3, stride=1, padding=1), # output 4,32,32
             nn.ReLU(),  # output 1,32,32
-            nn.Flatten(),  # output 1,32*32
-            nn.Linear(1024, 512)  # output 1,512
+            self.dropout,
+            nn.Conv2d(4, 1, kernel_size=3, stride=1, padding=1),  # output 1,32,32
+            nn.ReLU(),  # output 1,32,32
+            self.dropout,
+            nn.Flatten(),  # output 1,1024
         )
+        self.dino_convolution_layers = nn.Sequential(
+            #input 1,257,768
+            nn.Conv2d(1, 8, kernel_size=3, stride=2, padding=1),  # output 8,129,384
+            nn.ReLU(),
+            self.dropout,
+            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # output 12,65,192
+            nn.Conv2d(8, 2, kernel_size=3, stride=2, padding=1),  # output 2,33,96
+            nn.ReLU(), 
+            self.dropout,
+            nn.Conv2d(2, 1, kernel_size=3, stride=2, padding=1),  # output 1,17,48
+            nn.ReLU(), 
+            self.dropout,
+            nn.Flatten(),  # output 1,816
+        )
+        embed_dim = 1024 if not dino else 816
+        self.multihead = nn.MultiheadAttention(embed_dim=embed_dim, num_heads=8) 
+        self.final_layer = nn.Linear(1024, 768)  # output 1,768
+        self.dino_final_layer = nn.Linear(816, 768)  # output 1,768
+        if dino:
+            self.convolutional_layers = self.dino_convolution_layers
+            self.final_layer = self.dino_final_layer
+        
         
     def forward(self, x):
-        logits = self.convolutional_layers(x)
+        logits = self.convolutional_layers(x.to(device))
+        attn_output, _ = self.multihead(logits.to(device), logits.to(device), logits.to(device), need_weights=False)
+        attn_output = self.dropout(attn_output.to(device))  # Apply dropout
+        logits = self.final_layer(attn_output.to(device))
         return logits
 
 
@@ -57,7 +94,7 @@ LOSS = nn.CosineEmbeddingLoss()
 def cosine_similarity_loss(outputs, voices):
     # TODO: maybe get size from constants and take labels out of the function
     labels = torch.ones(outputs.size(0)).to(outputs.device)
-    loss = LOSS(outputs, voices, labels)
+    loss = LOSS(outputs, voices.to(outputs.device), labels)
     return loss
 
 
@@ -66,48 +103,56 @@ def cosine_similarity_loss(outputs, voices):
 def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_epochs=1):
     size = len(train_data_loader.dataset)
     # Training loop
-    # for epoch in range(num_epochs):
-    for Batch_number, (images, voices) in enumerate(train_data_loader):
-        # Forward pass
-        outputs = model(images)
-        loss = loss_fn(outputs, voices)
+    for epoch in range(num_epochs):
+        for Batch_number, (images, voices) in enumerate(train_data_loader):
+            # Forward pass
+            outputs = model(images)
+            loss = loss_fn(outputs, voices)
 
-        if Batch_number % 20 == 0:
-            loss, current = torch.mean(loss), (Batch_number + 1) * len(images)
-            logger.debug(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-            # Validate your model on the validation set
-            with torch.no_grad():
-                val_loss = 0
-                num_batches = 0
-                for images, voices in validation_loader:
-                    outputs = model(images)
-                    val_loss += loss_fn(outputs, voices)
-                    num_batches += 1
-                logger.debug(f"Validation Error: {val_loss.item()/num_batches:>7f}")
-        # Backward and optimize
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        logger.debug(f"batch: {Batch_number} done.") if Batch_number%10==0 else None
+            # Backward and optimize
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            if Batch_number%100==0:
+                logger.debug(f"batch: {Batch_number} done.")
+                logger.debug(f"loss: {loss:>7f}")
+
+        logger.debug(f"Epoch: {epoch} done.")    
+        loss, current = torch.mean(loss), (Batch_number + 1) * len(images)
+        logger.debug(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+        # Validate your model on the validation set
+        with torch.no_grad():
+            val_loss = 0
+            num_batches = 0
+            for images, voices in validation_loader:
+                outputs = model(images)
+                val_loss += loss_fn(outputs, voices)
+                num_batches += 1
+            logger.debug(f"Validation Error: {val_loss.item()/num_batches:>7f}")
+        torch.save(model.state_dict(), os.path.join(os.getcwd(), 'trained_models', RUN_NAME.value,f'checkpoint_{epoch}.pth'))
+
+
+def main(argv):
+    if not os.path.exists(os.path.join(os.getcwd(), 'trained_models', RUN_NAME.value)):
+        os.mkdir(os.path.join(os.getcwd(), 'trained_models', RUN_NAME.value))
+    # Create an instance of your network
+    model = ImageVoiceClassifier(dino=True).to(device)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    for param in model.parameters():
+        print(param.size())
+    total_params = sum(p.numel() for p in model.parameters())
+    print(f'{total_params:,} total parameters.')
+    logger.debug(f"Model created:\n{model}")
+    # Load your dataset
+    images_dir = os.path.join(os.getcwd(), "data/train/images")
+    voices_dir = os.path.join(os.getcwd(), "data/train/audio")
+    test_images_dir = os.path.join(os.getcwd(), "data/test/images")
+    test_voices_dir = os.path.join(os.getcwd(), "data/test/audio")
+    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE.value, limit_size=LIMIT_SIZE.value, dino=True)
+    validation_dataloader = get_train_loader(test_images_dir, test_voices_dir, batch_size=BATCH_SIZE.value, limit_size=VALIDATION_SIZE.value, dino=True)
+    train(train_dataloader, validation_dataloader, model, cosine_similarity_loss, optimizer, num_epochs=EPOCHS.value)
 
 
 if __name__ == '__main__':
+    app.run(main)
 
-    LIMIT_SIZE = 16384
-    VALIDATION_SIZE = 1024
-    # Create an instance of your network
-    model = ImageVoiceClassifier().to(device)
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
-
-    logger.debug(f"Model created:\n{model}")
-    # Load your dataset
-    images_dir = os.path.join(os.getcwd(), "data/test/images")
-    voices_dir = os.path.join(os.getcwd(), "data/test/audio")
-    test_images_dir = os.path.join(os.getcwd(), "data/test/images")
-    test_voices_dir = os.path.join(os.getcwd(), "data/test/audio")
-    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=16, limit_size=LIMIT_SIZE)
-    validation_dataloader = get_train_loader(images_dir, voices_dir, batch_size=16, limit_size=VALIDATION_SIZE)
-    train(train_dataloader, validation_dataloader, model, cosine_similarity_loss, optimizer, num_epochs=1)
-
-    # Save your trained model
-    torch.save(model.state_dict(), 'NNCosine.pth')
