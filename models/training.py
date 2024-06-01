@@ -8,19 +8,17 @@ from data_loader import get_train_loader
 import coloredlogs, logging
 import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--limit_size", type=int, default=5000, help="Limit size of the dataset")
-parser.add_argument("--validation_size", type=int, default=128, help="Validation size of the dataset")
-parser.add_argument("--batch_size", type=int, default=16, help="Batch size of the dataset")
-parser.add_argument("--run_name", type=str, required=True, help="Name of the run")
-parser.add_argument("--epochs", type=int, default=1, help="Number of epochs to train the model")
-args = parser.parse_args()
 
-LIMIT_SIZE = args.limit_size
-VALIDATION_SIZE = args.validation_size
-BATCH_SIZE = args.batch_size
-RUN_NAME = args.run_name
-EPOCHS = args.epochs
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--limit_size", type=int, default=5000, help="Limit size of the dataset")
+    parser.add_argument("--validation_size", type=int, default=128, help="Validation size of the dataset")
+    parser.add_argument("--batch_size", type=int, default=16, help="Batch size of the dataset")
+    parser.add_argument("--run_name", type=str, required=True, help="Name of the run")
+    parser.add_argument("--epochs", type=int, default=1, help="Number of epochs to train the model")
+    args = parser.parse_args()
+    return args
+
 ROOT_DIR = '/cs/ep/120/Voice-Image-Classifier/'
 
 
@@ -120,14 +118,15 @@ def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_e
                 optimizer.step()
                 if Batch_number%10==0:
                     logger.info(f"batch: {Batch_number+1} done.")
-                    logger.info(f"loss: {loss:>7f}")
+                    logger.info(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
             except Exception as e:
                 logger.error(f"Error in batch {Batch_number+1}: {e}")
 
         logger.info(f"Epoch: {epoch+1} done.")    
         loss, current = torch.mean(loss), (Batch_number + 1) * len(images)
         logger.info(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-        # Validate your model on the validation set
+
+        # Validate the model on the validation set
         with torch.no_grad():
             val_loss = 0
             num_batches = 0
@@ -167,6 +166,13 @@ def main():
 
 
 if __name__ == '__main__':
+    args = parse_args()
+    LIMIT_SIZE = args.limit_size
+    VALIDATION_SIZE = args.validation_size
+    BATCH_SIZE = args.batch_size
+    RUN_NAME = args.run_name
+    EPOCHS = args.epochs
+    
     torch.multiprocessing.set_start_method('spawn', force=True)
     main()
 
