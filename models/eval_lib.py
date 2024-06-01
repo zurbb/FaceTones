@@ -5,9 +5,9 @@ import os
 from data_loader import get_train_loader
 
 
-def load_model_by_checkpoint(checkpoint_path:str)->ImageVoiceClassifier:
+def load_model_by_checkpoint(checkpoint_name:str)->ImageVoiceClassifier:
     model = ImageVoiceClassifier()
-    model.load_state_dict(torch.load(checkpoint_path))
+    model.load_state_dict(torch.load(os.path.join(ROOT_DIR,checkpoint_name)))
     return model
 
 def load_validation_data(limit_size:int, batch_size:int, use_dino:bool)->torch.utils.data.DataLoader:
