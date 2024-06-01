@@ -72,7 +72,7 @@ transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
-def get_train_loader(images_dir, voices_dir, batch_size=4, shuffle=True, num_workers=4, limit_size=None, dino=False):
+def get_train_loader(images_dir, voices_dir, batch_size=4, shuffle=True, num_workers=16, limit_size=None, dino=False):
     logging.debug("Creating loader")
     voice_embedder = VoiceToVec()
     # voice_embedder = WavLM()

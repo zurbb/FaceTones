@@ -99,7 +99,13 @@ def cosine_similarity_loss(outputs, voices):
     loss = LOSS(outputs, voices.to(outputs.device), labels)
     return loss
 
-
+def save_checkpoint(model, optimizer, epoch, loss, path):
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': loss,
+    }, path)
 # Load and preprocess your "imagesVoices" dataset
 # Split it into training and validation sets
 def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_epochs):
@@ -138,7 +144,7 @@ def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_e
                     logger.error(f"Error in validation batch {num_batches+1}: {e}")
                 num_batches += 1
             logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
-        torch.save(model.state_dict(), os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
+        save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
 
 
 def main():
