@@ -2,7 +2,16 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
+from sklearn.metrics.pairwise import cosine_similarity
 
+# Get cpu, gpu or mps device for training.
+device = (
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps"
+    if torch.backends.mps.is_available()
+    else "cpu"
+)
 class ImageToVoice(nn.Module):
     
     def __init__(self):
@@ -61,3 +70,23 @@ class CosineTripletLoss(nn.Module):
         losses = F.relu(pos_distance - neg_distance + self.margin)
         return losses.mean()
 
+
+class ContrastiveCoiseLoss(nn.Module):
+    def __init__(self):
+        super(ContrastiveCoiseLoss, self).__init__()
+
+
+# take all outputs and calculate the similarty between them and the voices ->sim_matrix 
+# for each outputs i:
+# loss = 1 - exp(sim_matirx[i])/(sum(exp(sim_matrix[j])) + sim_matrix[i]) // j!=i
+# the overall loss is the mean of all losses  
+    def forward(self, outputs, voices):
+        sim_matrix = cosine_similarity(outputs, voices)
+        losses = []
+        for i in range(outputs.size(0)):
+            numerator = torch.exp(sim_matrix[i])
+            denominator = torch.sum(torch.exp(sim_matrix)) + sim_matrix[i]
+            loss = 1 - numerator / denominator
+            losses.append(loss)
+        loss = torch.mean(torch.stack(losses))
+        return loss
