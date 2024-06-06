@@ -8,7 +8,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--validation_size", type=int, default=128, help="Validation size of the dataset")
 parser.add_argument("--model_checkpoint", type=str, required=True, help="Checkpoint file name")
 parser.add_argument("--result_file_path", type=str, required=True, help="Path to the result file (txt)")
-parser.add_argument("--use_dino",action="store_true", default=True, help="Flag to indicate whether to use DINO")
 
 print("Parsing arguments")
 args = parser.parse_args()
@@ -16,6 +15,7 @@ print("Arguments parsed")
 IMAGE_DIR = "data/test/images/"
 AUDIO_DIR = "data/test/audio/"
 RESULT_FILE_PATH = args.result_file_path
+ROOT_DIR = "/cs/ep/120/Voice-Image-Classifier/"
 
 def write_results(results: dict):
     # experiment_args = {
@@ -25,9 +25,8 @@ def write_results(results: dict):
     #     "model_checkpoint": args.model_checkpoint
     # }
     
-    root_dir = "/cs/ep/120/Voice-Image-Classifier/"
-    image_dir = root_dir + IMAGE_DIR
-    voice_dir = root_dir + AUDIO_DIR
+    image_dir = ROOT_DIR + IMAGE_DIR
+    voice_dir = ROOT_DIR + AUDIO_DIR
     scores = [value[0] for value in results.values()]
     true_names = [value[1] for value in results.values()]
     false_names = [value[2] for value in results.values()]
@@ -52,15 +51,12 @@ def write_results(results: dict):
             f.write("\n")
 
 
-
-
-            
 def main():
-    model =  lib.load_model_by_checkpoint(args.model_checkpoint)
+    model =  lib.load_model_by_checkpoint(f"{args.model_checkpoint}")
     model.eval()
     with torch.inference_mode():
         print("Loading validation data")
-        validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=32, use_dino=args.use_dino)
+        validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=32, use_dino=True)
         with tqdm.tqdm(total=np.ciel(args.validation_size/args.batch_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
             idx = 0
             results = {}
@@ -92,7 +88,6 @@ def main():
             print(f"median score: {np.median([value[0] for value in results.values()])}")
             print(f"variability: {np.var([value[0] for value in results.values()])}")
     write_results(results)
-
 
     
 if __name__ == "__main__":

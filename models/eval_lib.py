@@ -1,6 +1,6 @@
 from model_config_lib import ImageToVoice
 import torch
-from training import ROOT_DIR
+from training import ROOT_DIR, device
 import os
 from data_loader import get_train_loader
 import coloredlogs, logging
@@ -12,11 +12,9 @@ coloredlogs.install()
 def load_model_by_checkpoint(checkpoint_name:str)->ImageToVoice:
     logger.info(f"geting model {checkpoint_name}")
     model = ImageToVoice()
-    model.load_state_dict(torch.load(os.path.join(ROOT_DIR,checkpoint_name)))
-    logger.info(f"loaded model")
-    model = ImageToVoice(dino=True)
     checkpoint = torch.load(os.path.join(ROOT_DIR,'trained_models',checkpoint_name), map_location=torch.device('cpu'))
     model.load_state_dict(checkpoint["model_state_dict"])
+    logger.info(f"loaded model")
     return model
 
 def load_validation_data(limit_size:int, batch_size:int, use_dino:bool)->torch.utils.data.DataLoader:
