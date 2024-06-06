@@ -15,11 +15,9 @@ def load_model_by_checkpoint(checkpoint_name:str)->ImageVoiceClassifier:
     model = ImageVoiceClassifier()
     model.load_state_dict(torch.load(os.path.join(ROOT_DIR,checkpoint_name)))
     logger.info(f"loaded model")
-=======
     model = ImageVoiceClassifier(dino=True)
     checkpoint = torch.load(os.path.join(ROOT_DIR,'trained_models',checkpoint_name), map_location=torch.device('cpu'))
     model.load_state_dict(checkpoint["model_state_dict"])
->>>>>>> 3f83e566866bbbdf9a25d0e76b642e9030a7e976
     return model
 
 def load_validation_data(limit_size:int, batch_size:int, use_dino:bool)->torch.utils.data.DataLoader:

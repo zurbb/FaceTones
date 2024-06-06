@@ -8,6 +8,7 @@ import torch.nn.functional as F
 from data_loader import get_train_loader
 import coloredlogs, logging
 import argparse
+from model_config_lib import ImageToVoice
 
 
 def parse_args():
@@ -41,86 +42,7 @@ device = (
     else "cpu"
 )
 
-# Define your neural network architecture
-class ImageVoiceClassifier(nn.Module):
-    def __init__(self, dino=False):
-        super().__init__()
-        self.dropout = nn.Dropout(0.1)  # Dropout layer
-        self.convolutional_layers = nn.Sequential(
-            # input 3,128,128
-            nn.Conv2d(3, 12, kernel_size=3, stride=2, padding=1),  # output 12,64,64
-            nn.ReLU(),
-            self.dropout,
-            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # output 3,32,32 
-            nn.Conv2d(12, 4, kernel_size=3, stride=1, padding=1), # output 4,32,32
-            nn.ReLU(),  # output 1,32,32
-            self.dropout,
-            nn.Conv2d(4, 1, kernel_size=3, stride=1, padding=1),  # output 1,32,32
-            nn.ReLU(),  # output 1,32,32
-            self.dropout,
-            nn.Flatten(),  # output 1,1024
-        )
-        self.dino_convolution_layers = nn.Sequential(
-            #input 1,257,768
-            nn.Conv2d(1, 8, kernel_size=3, stride=2, padding=1),  # output 8,129,384
-            nn.ReLU(),
-            #self.dropout,
-            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # output 12,65,192
-            nn.Conv2d(8, 2, kernel_size=3, stride=2, padding=1),  # output 2,33,96
-            nn.ReLU(), 
-            #self.dropout,
-            nn.Conv2d(2, 1, kernel_size=3, stride=2, padding=1),  # output 1,17,48
-            nn.ReLU(), 
-            self.dropout,
-            nn.Flatten(),  # output 1,816
-        )
-        embed_dim = 1024 if not dino else 816
-        self.multihead = nn.MultiheadAttention(embed_dim=embed_dim, num_heads=8) 
-        self.final_layer = nn.Linear(1024, 512)  # output 1,768
-        self.dino_final_layer = nn.Linear(816, 512)  # output 1,768
-        if dino:
-            self.convolutional_layers = self.dino_convolution_layers
-            self.final_layer = self.dino_final_layer
-        
-        
-    def forward(self, x):
-        logits = self.convolutional_layers(x.to(device))
-        attn_output, _ = self.multihead(logits.to(device), logits.to(device), logits.to(device), need_weights=False)
-        attn_output = self.dropout(attn_output.to(device))  # Apply dropout
-        logits = self.final_layer(attn_output.to(device))
-        return logits
 
-
-class CosineTripletLoss(nn.Module):
-    def __init__(self, margin):
-        super(CosineTripletLoss, self).__init__()
-        self.margin = margin
-
-    def forward(self, anchor, positive, negative):
-        pos_distance = nn.CosineEmbeddingLoss(anchor, positive) # close ==> 0
-        neg_distance = nn.CosineEmbeddingLoss(anchor, negative) # far ==> 1
-        losses = F.relu(pos_distance - neg_distance + self.margin)
-        return losses.mean()
-# LOSS = nn.CosineEmbeddingLoss()
-LOSS = CosineTripletLoss(margin=0.8)
-
-# Define your loss function
-def cosine_similarity_loss(outputs, voices):
-    # TODO: maybe get size from constants and take labels out of the function
-    # Calculate triplet loss
-    voices = voices.to(outputs.device)
-    anchor = outputs
-    positive = voices
-    # Shift voices to get negative samples
-    shift = torch.randint(1, voices.size(0), (1,)).item()
-    indices = torch.arange(voices.size(0)).to(outputs.device)
-    indices = (indices + shift) % voices.size(0)
-    negative = voices[indices]
-
-    loss = LOSS(anchor, positive, negative)
-    # labels = torch.ones(outputs.size(0)).to(outputs.device)
-    # loss = LOSS(outputs, voices.to(outputs.device), labels)
-    return loss
 
 def save_checkpoint(model, optimizer, epoch, loss, path):
     torch.save({
@@ -139,7 +61,7 @@ def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_e
             try:
                 # Forward pass
                 outputs = model(images)
-                loss = loss_fn(outputs, voices)
+                loss = model.loss(outputs, voices)
 
                 # Backward and optimize
                 optimizer.zero_grad()
@@ -174,14 +96,14 @@ def main():
     if not os.path.exists(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME)):
         os.mkdir(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME))
     # Create an instance of your network
-    model = ImageVoiceClassifier(dino=True).to(device)
+    model = ImageToVoice().to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     for param in model.parameters():
         logger.info(param.size())
     total_params = sum(p.numel() for p in model.parameters())
     logger.info(f'{total_params:,} total parameters.')
     logger.info(f"Model created:\n{model}")
-    # Load your dataset
+    logger.indo(f"\nOptimizet:\n{optimizer}")
     images_dir = os.path.join(ROOT_DIR, "data/train/images")
     voices_dir = os.path.join(ROOT_DIR, "data/train/audio")
     test_images_dir = os.path.join(ROOT_DIR, "data/test/images")
