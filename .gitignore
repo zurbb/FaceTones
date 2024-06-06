@@ -12,3 +12,4 @@ sample_image.png
 sbatch.sh
 .nfs00000001b916a81e00000474
 models/heatmap.png
+logs

@@ -4,6 +4,7 @@ os.environ['HF_HOME'] = os.path.join(os.getcwd(), '.cache')
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 from data_loader import get_train_loader
 import coloredlogs, logging
 import argparse
@@ -44,7 +45,7 @@ device = (
 class ImageVoiceClassifier(nn.Module):
     def __init__(self, dino=False):
         super().__init__()
-        self.dropout = nn.Dropout(0.2)  # Dropout layer
+        self.dropout = nn.Dropout(0.1)  # Dropout layer
         self.convolutional_layers = nn.Sequential(
             # input 3,128,128
             nn.Conv2d(3, 12, kernel_size=3, stride=2, padding=1),  # output 12,64,64
@@ -90,13 +91,35 @@ class ImageVoiceClassifier(nn.Module):
         return logits
 
 
-LOSS = nn.CosineEmbeddingLoss()
+class CosineTripletLoss(nn.Module):
+    def __init__(self, margin):
+        super(CosineTripletLoss, self).__init__()
+        self.margin = margin
+
+    def forward(self, anchor, positive, negative):
+        pos_distance = nn.CosineEmbeddingLoss(anchor, positive) # close ==> 0
+        neg_distance = nn.CosineEmbeddingLoss(anchor, negative) # far ==> 1
+        losses = F.relu(pos_distance - neg_distance + self.margin)
+        return losses.mean()
+# LOSS = nn.CosineEmbeddingLoss()
+LOSS = CosineTripletLoss(margin=0.8)
 
 # Define your loss function
 def cosine_similarity_loss(outputs, voices):
     # TODO: maybe get size from constants and take labels out of the function
-    labels = torch.ones(outputs.size(0)).to(outputs.device)
-    loss = LOSS(outputs, voices.to(outputs.device), labels)
+    # Calculate triplet loss
+    voices = voices.to(outputs.device)
+    anchor = outputs
+    positive = voices
+    # Shift voices to get negative samples
+    shift = torch.randint(1, voices.size(0), (1,)).item()
+    indices = torch.arange(voices.size(0)).to(outputs.device)
+    indices = (indices + shift) % voices.size(0)
+    negative = voices[indices]
+
+    loss = LOSS(anchor, positive, negative)
+    # labels = torch.ones(outputs.size(0)).to(outputs.device)
+    # loss = LOSS(outputs, voices.to(outputs.device), labels)
     return loss
 
 def save_checkpoint(model, optimizer, epoch, loss, path):
@@ -106,13 +129,13 @@ def save_checkpoint(model, optimizer, epoch, loss, path):
         'optimizer_state_dict': optimizer.state_dict(),
         'loss': loss,
     }, path)
-# Load and preprocess your "imagesVoices" dataset
-# Split it into training and validation sets
+
+
 def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_epochs):
     size = len(train_data_loader.dataset)
     # Training loop
     for epoch in range(num_epochs):
-        for Batch_number, (images, voices) in enumerate(train_data_loader):
+        for Batch_number, (images, voices, _) in enumerate(train_data_loader):
             try:
                 # Forward pass
                 outputs = model(images)
@@ -122,9 +145,9 @@ def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_e
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                if Batch_number%10==0:
+                if Batch_number%100==0:
                     logger.info(f"batch: {Batch_number+1} done.")
-                    logger.info(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+                    logger.info(f"loss: {loss:>7f}")
             except Exception as e:
                 logger.error(f"Error in batch {Batch_number+1}: {e}")
 
@@ -136,7 +159,7 @@ def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_e
         with torch.no_grad():
             val_loss = 0
             num_batches = 0
-            for images, voices in validation_loader:
+            for images, voices, _ in validation_loader:
                 try:
                     outputs = model(images)
                     val_loss += loss_fn(outputs, voices)

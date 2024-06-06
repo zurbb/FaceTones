@@ -1,0 +1,4 @@
+1. external configuration documentation
+2. tensorboard
+3. get Id of evaluation images/Voices - and see what data we are good and bad at
+4.Use negative examples - ask Yossi
