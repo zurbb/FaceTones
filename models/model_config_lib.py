@@ -1,4 +1,7 @@
+
 import torch.nn as nn
+import torch
+import torch.nn.functional as F
 
 class ImageToVoice(nn.Module):
     
@@ -20,7 +23,7 @@ class ImageToVoice(nn.Module):
             nn.Flatten(),  # output 1,816
         )
         self.multihead = nn.MultiheadAttention(embed_dim=816, num_heads=8) 
-        self.self.final_layer = nn.Linear(816, 512)  # output 1,768
+        self.final_layer = nn.Linear(816, 512)  # output 1,768
         self.loss = CosineTripletLoss(margin=0.8)
         
     def forward(self, x):

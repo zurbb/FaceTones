@@ -10,7 +10,6 @@ coloredlogs.install()
 
 
 def load_model_by_checkpoint(checkpoint_name:str)->ImageVoiceClassifier:
-<<<<<<< HEAD
     logger.info(f"geting model {checkpoint_name}")
     model = ImageVoiceClassifier()
     model.load_state_dict(torch.load(os.path.join(ROOT_DIR,checkpoint_name)))
