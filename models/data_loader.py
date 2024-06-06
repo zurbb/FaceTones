@@ -55,7 +55,7 @@ class ImagesVoicesDataset(Dataset):
             image = self.transform(image)
         voice_embedding = self.voice_transform(voice_path)
         voice_embedding = self.voice_embedder(voice_embedding)
-        return image , voice_embedding
+        return image , voice_embedding, img_name
     
 
     # Custom collate function
@@ -65,7 +65,8 @@ class ImagesVoicesDataset(Dataset):
         if self.dino_embedding:
             images = self.dino.get_embedding(images)
             images = images.unsqueeze(1)
-        return images, voices
+        image_names = [item[2] for item in batch]
+        return images, voices, image_names
 
 transform = transforms.Compose([
     transforms.Resize((128,128)),

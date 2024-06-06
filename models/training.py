@@ -4,23 +4,22 @@ os.environ['HF_HOME'] = os.path.join(os.getcwd(), '.cache')
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 from data_loader import get_train_loader
 import coloredlogs, logging
 import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--limit_size", type=int, default=5000, help="Limit size of the dataset")
-parser.add_argument("--validation_size", type=int, default=128, help="Validation size of the dataset")
-parser.add_argument("--batch_size", type=int, default=16, help="Batch size of the dataset")
-parser.add_argument("--run_name", type=str, required=True, help="Name of the run")
-parser.add_argument("--epochs", type=int, default=1, help="Number of epochs to train the model")
-args = parser.parse_args()
 
-LIMIT_SIZE = args.limit_size
-VALIDATION_SIZE = args.validation_size
-BATCH_SIZE = args.batch_size
-RUN_NAME = args.run_name
-EPOCHS = args.epochs
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--limit_size", type=int, default=5000, help="Limit size of the dataset")
+    parser.add_argument("--validation_size", type=int, default=128, help="Validation size of the dataset")
+    parser.add_argument("--batch_size", type=int, default=16, help="Batch size of the dataset")
+    parser.add_argument("--run_name", type=str, required=True, help="Name of the run")
+    parser.add_argument("--epochs", type=int, default=1, help="Number of epochs to train the model")
+    args = parser.parse_args()
+    return args
+
 ROOT_DIR = '/cs/ep/120/Voice-Image-Classifier/'
 
 
@@ -92,13 +91,35 @@ class ImageVoiceClassifier(nn.Module):
         return logits
 
 
-LOSS = nn.CosineEmbeddingLoss()
+class CosineTripletLoss(nn.Module):
+    def __init__(self, margin):
+        super(CosineTripletLoss, self).__init__()
+        self.margin = margin
+
+    def forward(self, anchor, positive, negative):
+        pos_distance = nn.CosineEmbeddingLoss(anchor, positive) # close ==> 0
+        neg_distance = nn.CosineEmbeddingLoss(anchor, negative) # far ==> 1
+        losses = F.relu(pos_distance - neg_distance + self.margin)
+        return losses.mean()
+# LOSS = nn.CosineEmbeddingLoss()
+LOSS = CosineTripletLoss(margin=0.8)
 
 # Define your loss function
 def cosine_similarity_loss(outputs, voices):
     # TODO: maybe get size from constants and take labels out of the function
-    labels = torch.ones(outputs.size(0)).to(outputs.device)
-    loss = LOSS(outputs, voices.to(outputs.device), labels)
+    # Calculate triplet loss
+    voices = voices.to(outputs.device)
+    anchor = outputs
+    positive = voices
+    # Shift voices to get negative samples
+    shift = torch.randint(1, voices.size(0), (1,)).item()
+    indices = torch.arange(voices.size(0)).to(outputs.device)
+    indices = (indices + shift) % voices.size(0)
+    negative = voices[indices]
+
+    loss = LOSS(anchor, positive, negative)
+    # labels = torch.ones(outputs.size(0)).to(outputs.device)
+    # loss = LOSS(outputs, voices.to(outputs.device), labels)
     return loss
 
 def save_checkpoint(model, optimizer, epoch, loss, path):
@@ -108,13 +129,13 @@ def save_checkpoint(model, optimizer, epoch, loss, path):
         'optimizer_state_dict': optimizer.state_dict(),
         'loss': loss,
     }, path)
-# Load and preprocess your "imagesVoices" dataset
-# Split it into training and validation sets
+
+
 def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_epochs):
     size = len(train_data_loader.dataset)
     # Training loop
     for epoch in range(num_epochs):
-        for Batch_number, (images, voices) in enumerate(train_data_loader):
+        for Batch_number, (images, voices, _) in enumerate(train_data_loader):
             try:
                 # Forward pass
                 outputs = model(images)
@@ -124,7 +145,7 @@ def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_e
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                if Batch_number%10==0:
+                if Batch_number%100==0:
                     logger.info(f"batch: {Batch_number+1} done.")
                     logger.info(f"loss: {loss:>7f}")
             except Exception as e:
@@ -133,11 +154,12 @@ def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_e
         logger.info(f"Epoch: {epoch+1} done.")    
         loss, current = torch.mean(loss), (Batch_number + 1) * len(images)
         logger.info(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-        # Validate your model on the validation set
+
+        # Validate the model on the validation set
         with torch.no_grad():
             val_loss = 0
             num_batches = 0
-            for images, voices in validation_loader:
+            for images, voices, _ in validation_loader:
                 try:
                     outputs = model(images)
                     val_loss += loss_fn(outputs, voices)
@@ -173,6 +195,13 @@ def main():
 
 
 if __name__ == '__main__':
+    args = parse_args()
+    LIMIT_SIZE = args.limit_size
+    VALIDATION_SIZE = args.validation_size
+    BATCH_SIZE = args.batch_size
+    RUN_NAME = args.run_name
+    EPOCHS = args.epochs
+    
     torch.multiprocessing.set_start_method('spawn', force=True)
     main()
 

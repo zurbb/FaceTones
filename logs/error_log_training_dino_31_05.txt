@@ -1,0 +1,1102 @@
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([8, 1, 3, 3])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([8])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([2, 8, 3, 3])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([2])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([1, 2, 3, 3])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([1])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([2448, 816])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([2448])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([816, 816])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([816])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([512, 816])
+2024-05-31 13:58:42 binky-03 root[685672] INFO torch.Size([512])
+2024-05-31 13:58:42 binky-03 root[685672] INFO 3,085,237 total parameters.
+2024-05-31 13:58:42 binky-03 root[685672] INFO Model created:
+ImageVoiceClassifier(
+  (dropout): Dropout(p=0.2, inplace=False)
+  (convolutional_layers): Sequential(
+    (0): Conv2d(1, 8, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+    (1): ReLU()
+    (2): Dropout(p=0.2, inplace=False)
+    (3): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=True)
+    (4): Conv2d(8, 2, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+    (5): ReLU()
+    (6): Dropout(p=0.2, inplace=False)
+    (7): Conv2d(2, 1, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+    (8): ReLU()
+    (9): Dropout(p=0.2, inplace=False)
+    (10): Flatten(start_dim=1, end_dim=-1)
+  )
+  (dino_convolution_layers): Sequential(
+    (0): Conv2d(1, 8, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+    (1): ReLU()
+    (2): Dropout(p=0.2, inplace=False)
+    (3): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=True)
+    (4): Conv2d(8, 2, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+    (5): ReLU()
+    (6): Dropout(p=0.2, inplace=False)
+    (7): Conv2d(2, 1, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+    (8): ReLU()
+    (9): Dropout(p=0.2, inplace=False)
+    (10): Flatten(start_dim=1, end_dim=-1)
+  )
+  (multihead): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=816, out_features=816, bias=True)
+  )
+  (final_layer): Linear(in_features=816, out_features=512, bias=True)
+  (dino_final_layer): Linear(in_features=816, out_features=512, bias=True)
+)
+2024-05-31 13:58:42 binky-03 root[685672] INFO Creating train data loader
+2024-05-31 13:58:51 binky-03 root[685672] INFO Creating test data loader
+2024-05-31 13:58:53 binky-03 root[685672] INFO Starting training
+2024-05-31 13:59:47 binky-03 root[685672] INFO batch: 1 done.
+2024-05-31 13:59:47 binky-03 root[685672] INFO loss: 1.045634
+2024-05-31 14:00:02 binky-03 root[685672] INFO batch: 11 done.
+2024-05-31 14:00:02 binky-03 root[685672] INFO loss: 0.070993
+2024-05-31 14:00:38 binky-03 root[685672] INFO batch: 21 done.
+2024-05-31 14:00:38 binky-03 root[685672] INFO loss: 0.058996
+2024-05-31 14:01:21 binky-03 root[685672] INFO batch: 31 done.
+2024-05-31 14:01:21 binky-03 root[685672] INFO loss: 0.059981
+2024-05-31 14:01:53 binky-03 root[685672] INFO batch: 41 done.
+2024-05-31 14:01:53 binky-03 root[685672] INFO loss: 0.059628
+2024-05-31 14:02:40 binky-03 root[685672] INFO batch: 51 done.
+2024-05-31 14:02:40 binky-03 root[685672] INFO loss: 0.058502
+2024-05-31 14:03:12 binky-03 root[685672] INFO batch: 61 done.
+2024-05-31 14:03:12 binky-03 root[685672] INFO loss: 0.061062
+2024-05-31 14:04:01 binky-03 root[685672] INFO batch: 71 done.
+2024-05-31 14:04:01 binky-03 root[685672] INFO loss: 0.060818
+2024-05-31 14:04:35 binky-03 root[685672] INFO batch: 81 done.
+2024-05-31 14:04:35 binky-03 root[685672] INFO loss: 0.057430
+2024-05-31 14:05:24 binky-03 root[685672] INFO batch: 91 done.
+2024-05-31 14:05:24 binky-03 root[685672] INFO loss: 0.060080
+2024-05-31 14:05:57 binky-03 root[685672] INFO batch: 101 done.
+2024-05-31 14:05:57 binky-03 root[685672] INFO loss: 0.054259
+2024-05-31 14:06:47 binky-03 root[685672] INFO batch: 111 done.
+2024-05-31 14:06:47 binky-03 root[685672] INFO loss: 0.057785
+2024-05-31 14:07:20 binky-03 root[685672] INFO batch: 121 done.
+2024-05-31 14:07:20 binky-03 root[685672] INFO loss: 0.054405
+2024-05-31 14:08:09 binky-03 root[685672] INFO batch: 131 done.
+2024-05-31 14:08:09 binky-03 root[685672] INFO loss: 0.058284
+2024-05-31 14:08:43 binky-03 root[685672] INFO batch: 141 done.
+2024-05-31 14:08:43 binky-03 root[685672] INFO loss: 0.055730
+2024-05-31 14:09:34 binky-03 root[685672] INFO batch: 151 done.
+2024-05-31 14:09:34 binky-03 root[685672] INFO loss: 0.056935
+2024-05-31 14:10:07 binky-03 root[685672] INFO batch: 161 done.
+2024-05-31 14:10:07 binky-03 root[685672] INFO loss: 0.058530
+2024-05-31 14:10:57 binky-03 root[685672] INFO batch: 171 done.
+2024-05-31 14:10:57 binky-03 root[685672] INFO loss: 0.060494
+2024-05-31 14:11:30 binky-03 root[685672] INFO batch: 181 done.
+2024-05-31 14:11:30 binky-03 root[685672] INFO loss: 0.052444
+2024-05-31 14:12:19 binky-03 root[685672] INFO batch: 191 done.
+2024-05-31 14:12:19 binky-03 root[685672] INFO loss: 0.049435
+2024-05-31 14:12:52 binky-03 root[685672] INFO batch: 201 done.
+2024-05-31 14:12:52 binky-03 root[685672] INFO loss: 0.057810
+2024-05-31 14:13:43 binky-03 root[685672] INFO batch: 211 done.
+2024-05-31 14:13:43 binky-03 root[685672] INFO loss: 0.059161
+2024-05-31 14:14:15 binky-03 root[685672] INFO batch: 221 done.
+2024-05-31 14:14:15 binky-03 root[685672] INFO loss: 0.053288
+2024-05-31 14:15:07 binky-03 root[685672] INFO batch: 231 done.
+2024-05-31 14:15:07 binky-03 root[685672] INFO loss: 0.056026
+2024-05-31 14:15:40 binky-03 root[685672] INFO batch: 241 done.
+2024-05-31 14:15:40 binky-03 root[685672] INFO loss: 0.059130
+2024-05-31 14:16:31 binky-03 root[685672] INFO batch: 251 done.
+2024-05-31 14:16:31 binky-03 root[685672] INFO loss: 0.055282
+2024-05-31 14:17:04 binky-03 root[685672] INFO batch: 261 done.
+2024-05-31 14:17:04 binky-03 root[685672] INFO loss: 0.054335
+2024-05-31 14:17:54 binky-03 root[685672] INFO batch: 271 done.
+2024-05-31 14:17:54 binky-03 root[685672] INFO loss: 0.053748
+2024-05-31 14:18:29 binky-03 root[685672] INFO batch: 281 done.
+2024-05-31 14:18:29 binky-03 root[685672] INFO loss: 0.056654
+2024-05-31 14:19:20 binky-03 root[685672] INFO batch: 291 done.
+2024-05-31 14:19:20 binky-03 root[685672] INFO loss: 0.059139
+2024-05-31 14:19:54 binky-03 root[685672] INFO batch: 301 done.
+2024-05-31 14:19:54 binky-03 root[685672] INFO loss: 0.053199
+2024-05-31 14:20:45 binky-03 root[685672] INFO batch: 311 done.
+2024-05-31 14:20:45 binky-03 root[685672] INFO loss: 0.056474
+2024-05-31 14:21:20 binky-03 root[685672] INFO batch: 321 done.
+2024-05-31 14:21:20 binky-03 root[685672] INFO loss: 0.055471
+2024-05-31 14:22:09 binky-03 root[685672] INFO batch: 331 done.
+2024-05-31 14:22:09 binky-03 root[685672] INFO loss: 0.057595
+2024-05-31 14:22:43 binky-03 root[685672] INFO batch: 341 done.
+2024-05-31 14:22:43 binky-03 root[685672] INFO loss: 0.054409
+2024-05-31 14:23:32 binky-03 root[685672] INFO batch: 351 done.
+2024-05-31 14:23:32 binky-03 root[685672] INFO loss: 0.056426
+2024-05-31 14:24:06 binky-03 root[685672] INFO batch: 361 done.
+2024-05-31 14:24:06 binky-03 root[685672] INFO loss: 0.053472
+2024-05-31 14:24:56 binky-03 root[685672] INFO batch: 371 done.
+2024-05-31 14:24:56 binky-03 root[685672] INFO loss: 0.054721
+2024-05-31 14:25:30 binky-03 root[685672] INFO batch: 381 done.
+2024-05-31 14:25:30 binky-03 root[685672] INFO loss: 0.055693
+2024-05-31 14:26:20 binky-03 root[685672] INFO batch: 391 done.
+2024-05-31 14:26:20 binky-03 root[685672] INFO loss: 0.053930
+2024-05-31 14:26:54 binky-03 root[685672] INFO batch: 401 done.
+2024-05-31 14:26:54 binky-03 root[685672] INFO loss: 0.056249
+2024-05-31 14:27:44 binky-03 root[685672] INFO batch: 411 done.
+2024-05-31 14:27:44 binky-03 root[685672] INFO loss: 0.055213
+2024-05-31 14:28:18 binky-03 root[685672] INFO batch: 421 done.
+2024-05-31 14:28:18 binky-03 root[685672] INFO loss: 0.054819
+2024-05-31 14:29:08 binky-03 root[685672] INFO batch: 431 done.
+2024-05-31 14:29:08 binky-03 root[685672] INFO loss: 0.056374
+2024-05-31 14:29:42 binky-03 root[685672] INFO batch: 441 done.
+2024-05-31 14:29:42 binky-03 root[685672] INFO loss: 0.053925
+2024-05-31 14:30:32 binky-03 root[685672] INFO batch: 451 done.
+2024-05-31 14:30:32 binky-03 root[685672] INFO loss: 0.055501
+2024-05-31 14:31:07 binky-03 root[685672] INFO batch: 461 done.
+2024-05-31 14:31:07 binky-03 root[685672] INFO loss: 0.057301
+2024-05-31 14:31:58 binky-03 root[685672] INFO batch: 471 done.
+2024-05-31 14:31:58 binky-03 root[685672] INFO loss: 0.055425
+2024-05-31 14:32:32 binky-03 root[685672] INFO batch: 481 done.
+2024-05-31 14:32:32 binky-03 root[685672] INFO loss: 0.058227
+2024-05-31 14:33:24 binky-03 root[685672] INFO batch: 491 done.
+2024-05-31 14:33:24 binky-03 root[685672] INFO loss: 0.053533
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 14:34:07 binky-03 root[685672] INFO Epoch: 1 done.
+2024-05-31 14:34:07 binky-03 root[685672] INFO loss: 0.054353  [16000/16000]
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 14:36:33 binky-03 root[685672] INFO Validation Error: 0.056738
+2024-05-31 14:37:02 binky-03 root[685672] INFO batch: 1 done.
+2024-05-31 14:37:02 binky-03 root[685672] INFO loss: 0.052622
+2024-05-31 14:37:31 binky-03 root[685672] INFO batch: 11 done.
+2024-05-31 14:37:31 binky-03 root[685672] INFO loss: 0.052921
+2024-05-31 14:38:15 binky-03 root[685672] INFO batch: 21 done.
+2024-05-31 14:38:15 binky-03 root[685672] INFO loss: 0.054691
+2024-05-31 14:38:45 binky-03 root[685672] INFO batch: 31 done.
+2024-05-31 14:38:45 binky-03 root[685672] INFO loss: 0.057655
+2024-05-31 14:39:29 binky-03 root[685672] INFO batch: 41 done.
+2024-05-31 14:39:29 binky-03 root[685672] INFO loss: 0.054048
+2024-05-31 14:40:01 binky-03 root[685672] INFO batch: 51 done.
+2024-05-31 14:40:01 binky-03 root[685672] INFO loss: 0.057254
+2024-05-31 14:40:45 binky-03 root[685672] INFO batch: 61 done.
+2024-05-31 14:40:45 binky-03 root[685672] INFO loss: 0.053961
+2024-05-31 14:41:18 binky-03 root[685672] INFO batch: 71 done.
+2024-05-31 14:41:18 binky-03 root[685672] INFO loss: 0.056416
+2024-05-31 14:42:01 binky-03 root[685672] INFO batch: 81 done.
+2024-05-31 14:42:01 binky-03 root[685672] INFO loss: 0.050267
+2024-05-31 14:42:35 binky-03 root[685672] INFO batch: 91 done.
+2024-05-31 14:42:35 binky-03 root[685672] INFO loss: 0.052969
+2024-05-31 14:43:18 binky-03 root[685672] INFO batch: 101 done.
+2024-05-31 14:43:18 binky-03 root[685672] INFO loss: 0.058545
+2024-05-31 14:43:54 binky-03 root[685672] INFO batch: 111 done.
+2024-05-31 14:43:54 binky-03 root[685672] INFO loss: 0.056911
+2024-05-31 14:44:38 binky-03 root[685672] INFO batch: 121 done.
+2024-05-31 14:44:38 binky-03 root[685672] INFO loss: 0.055629
+2024-05-31 14:45:16 binky-03 root[685672] INFO batch: 131 done.
+2024-05-31 14:45:16 binky-03 root[685672] INFO loss: 0.061894
+2024-05-31 14:46:00 binky-03 root[685672] INFO batch: 141 done.
+2024-05-31 14:46:00 binky-03 root[685672] INFO loss: 0.053489
+2024-05-31 14:46:36 binky-03 root[685672] INFO batch: 151 done.
+2024-05-31 14:46:36 binky-03 root[685672] INFO loss: 0.058120
+2024-05-31 14:47:19 binky-03 root[685672] INFO batch: 161 done.
+2024-05-31 14:47:19 binky-03 root[685672] INFO loss: 0.064067
+2024-05-31 14:47:55 binky-03 root[685672] INFO batch: 171 done.
+2024-05-31 14:47:55 binky-03 root[685672] INFO loss: 0.058008
+2024-05-31 14:48:39 binky-03 root[685672] INFO batch: 181 done.
+2024-05-31 14:48:39 binky-03 root[685672] INFO loss: 0.054984
+2024-05-31 14:49:14 binky-03 root[685672] INFO batch: 191 done.
+2024-05-31 14:49:14 binky-03 root[685672] INFO loss: 0.056029
+2024-05-31 14:49:58 binky-03 root[685672] INFO batch: 201 done.
+2024-05-31 14:49:58 binky-03 root[685672] INFO loss: 0.054890
+2024-05-31 14:50:33 binky-03 root[685672] INFO batch: 211 done.
+2024-05-31 14:50:33 binky-03 root[685672] INFO loss: 0.055795
+2024-05-31 14:51:19 binky-03 root[685672] INFO batch: 221 done.
+2024-05-31 14:51:19 binky-03 root[685672] INFO loss: 0.051599
+2024-05-31 14:51:52 binky-03 root[685672] INFO batch: 231 done.
+2024-05-31 14:51:52 binky-03 root[685672] INFO loss: 0.053694
+2024-05-31 14:52:40 binky-03 root[685672] INFO batch: 241 done.
+2024-05-31 14:52:40 binky-03 root[685672] INFO loss: 0.053253
+2024-05-31 14:53:12 binky-03 root[685672] INFO batch: 251 done.
+2024-05-31 14:53:12 binky-03 root[685672] INFO loss: 0.055852
+2024-05-31 14:54:02 binky-03 root[685672] INFO batch: 261 done.
+2024-05-31 14:54:02 binky-03 root[685672] INFO loss: 0.055435
+2024-05-31 14:54:34 binky-03 root[685672] INFO batch: 271 done.
+2024-05-31 14:54:34 binky-03 root[685672] INFO loss: 0.058457
+2024-05-31 14:55:23 binky-03 root[685672] INFO batch: 281 done.
+2024-05-31 14:55:23 binky-03 root[685672] INFO loss: 0.055045
+2024-05-31 14:55:53 binky-03 root[685672] INFO batch: 291 done.
+2024-05-31 14:55:53 binky-03 root[685672] INFO loss: 0.053674
+2024-05-31 14:56:39 binky-03 root[685672] INFO batch: 301 done.
+2024-05-31 14:56:39 binky-03 root[685672] INFO loss: 0.056741
+2024-05-31 14:57:09 binky-03 root[685672] INFO batch: 311 done.
+2024-05-31 14:57:09 binky-03 root[685672] INFO loss: 0.053859
+2024-05-31 14:57:55 binky-03 root[685672] INFO batch: 321 done.
+2024-05-31 14:57:55 binky-03 root[685672] INFO loss: 0.052684
+2024-05-31 14:58:27 binky-03 root[685672] INFO batch: 331 done.
+2024-05-31 14:58:27 binky-03 root[685672] INFO loss: 0.056834
+2024-05-31 14:59:14 binky-03 root[685672] INFO batch: 341 done.
+2024-05-31 14:59:14 binky-03 root[685672] INFO loss: 0.053641
+2024-05-31 14:59:44 binky-03 root[685672] INFO batch: 351 done.
+2024-05-31 14:59:44 binky-03 root[685672] INFO loss: 0.052296
+2024-05-31 15:00:31 binky-03 root[685672] INFO batch: 361 done.
+2024-05-31 15:00:31 binky-03 root[685672] INFO loss: 0.052413
+2024-05-31 15:01:01 binky-03 root[685672] INFO batch: 371 done.
+2024-05-31 15:01:01 binky-03 root[685672] INFO loss: 0.055875
+2024-05-31 15:01:48 binky-03 root[685672] INFO batch: 381 done.
+2024-05-31 15:01:48 binky-03 root[685672] INFO loss: 0.055074
+2024-05-31 15:02:18 binky-03 root[685672] INFO batch: 391 done.
+2024-05-31 15:02:18 binky-03 root[685672] INFO loss: 0.057291
+2024-05-31 15:03:04 binky-03 root[685672] INFO batch: 401 done.
+2024-05-31 15:03:04 binky-03 root[685672] INFO loss: 0.056962
+2024-05-31 15:03:36 binky-03 root[685672] INFO batch: 411 done.
+2024-05-31 15:03:36 binky-03 root[685672] INFO loss: 0.053442
+2024-05-31 15:04:23 binky-03 root[685672] INFO batch: 421 done.
+2024-05-31 15:04:23 binky-03 root[685672] INFO loss: 0.053433
+2024-05-31 15:04:54 binky-03 root[685672] INFO batch: 431 done.
+2024-05-31 15:04:54 binky-03 root[685672] INFO loss: 0.056095
+2024-05-31 15:05:42 binky-03 root[685672] INFO batch: 441 done.
+2024-05-31 15:05:42 binky-03 root[685672] INFO loss: 0.055187
+2024-05-31 15:06:13 binky-03 root[685672] INFO batch: 451 done.
+2024-05-31 15:06:13 binky-03 root[685672] INFO loss: 0.053429
+2024-05-31 15:07:00 binky-03 root[685672] INFO batch: 461 done.
+2024-05-31 15:07:00 binky-03 root[685672] INFO loss: 0.056061
+2024-05-31 15:07:30 binky-03 root[685672] INFO batch: 471 done.
+2024-05-31 15:07:30 binky-03 root[685672] INFO loss: 0.054170
+2024-05-31 15:08:18 binky-03 root[685672] INFO batch: 481 done.
+2024-05-31 15:08:18 binky-03 root[685672] INFO loss: 0.054296
+2024-05-31 15:08:48 binky-03 root[685672] INFO batch: 491 done.
+2024-05-31 15:08:48 binky-03 root[685672] INFO loss: 0.057391
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 15:09:20 binky-03 root[685672] INFO Epoch: 2 done.
+2024-05-31 15:09:20 binky-03 root[685672] INFO loss: 0.058244  [16000/16000]
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 15:11:32 binky-03 root[685672] INFO Validation Error: 0.056477
+2024-05-31 15:12:00 binky-03 root[685672] INFO batch: 1 done.
+2024-05-31 15:12:00 binky-03 root[685672] INFO loss: 0.057642
+2024-05-31 15:12:28 binky-03 root[685672] INFO batch: 11 done.
+2024-05-31 15:12:28 binky-03 root[685672] INFO loss: 0.055947
+2024-05-31 15:13:12 binky-03 root[685672] INFO batch: 21 done.
+2024-05-31 15:13:12 binky-03 root[685672] INFO loss: 0.054347
+2024-05-31 15:13:42 binky-03 root[685672] INFO batch: 31 done.
+2024-05-31 15:13:42 binky-03 root[685672] INFO loss: 0.052183
+2024-05-31 15:14:27 binky-03 root[685672] INFO batch: 41 done.
+2024-05-31 15:14:27 binky-03 root[685672] INFO loss: 0.054633
+2024-05-31 15:14:56 binky-03 root[685672] INFO batch: 51 done.
+2024-05-31 15:14:56 binky-03 root[685672] INFO loss: 0.054211
+2024-05-31 15:15:41 binky-03 root[685672] INFO batch: 61 done.
+2024-05-31 15:15:41 binky-03 root[685672] INFO loss: 0.054894
+2024-05-31 15:16:11 binky-03 root[685672] INFO batch: 71 done.
+2024-05-31 15:16:11 binky-03 root[685672] INFO loss: 0.054943
+2024-05-31 15:16:55 binky-03 root[685672] INFO batch: 81 done.
+2024-05-31 15:16:55 binky-03 root[685672] INFO loss: 0.052596
+2024-05-31 15:17:25 binky-03 root[685672] INFO batch: 91 done.
+2024-05-31 15:17:25 binky-03 root[685672] INFO loss: 0.052413
+2024-05-31 15:18:10 binky-03 root[685672] INFO batch: 101 done.
+2024-05-31 15:18:10 binky-03 root[685672] INFO loss: 0.050988
+2024-05-31 15:18:40 binky-03 root[685672] INFO batch: 111 done.
+2024-05-31 15:18:40 binky-03 root[685672] INFO loss: 0.056270
+2024-05-31 15:19:25 binky-03 root[685672] INFO batch: 121 done.
+2024-05-31 15:19:25 binky-03 root[685672] INFO loss: 0.058079
+2024-05-31 15:19:55 binky-03 root[685672] INFO batch: 131 done.
+2024-05-31 15:19:55 binky-03 root[685672] INFO loss: 0.055596
+2024-05-31 15:20:40 binky-03 root[685672] INFO batch: 141 done.
+2024-05-31 15:20:40 binky-03 root[685672] INFO loss: 0.055133
+2024-05-31 15:21:11 binky-03 root[685672] INFO batch: 151 done.
+2024-05-31 15:21:11 binky-03 root[685672] INFO loss: 0.053788
+2024-05-31 15:21:56 binky-03 root[685672] INFO batch: 161 done.
+2024-05-31 15:21:56 binky-03 root[685672] INFO loss: 0.053663
+2024-05-31 15:22:26 binky-03 root[685672] INFO batch: 171 done.
+2024-05-31 15:22:26 binky-03 root[685672] INFO loss: 0.053569
+2024-05-31 15:23:11 binky-03 root[685672] INFO batch: 181 done.
+2024-05-31 15:23:11 binky-03 root[685672] INFO loss: 0.053619
+2024-05-31 15:23:43 binky-03 root[685672] INFO batch: 191 done.
+2024-05-31 15:23:43 binky-03 root[685672] INFO loss: 0.056810
+2024-05-31 15:24:30 binky-03 root[685672] INFO batch: 201 done.
+2024-05-31 15:24:30 binky-03 root[685672] INFO loss: 0.052111
+2024-05-31 15:24:59 binky-03 root[685672] INFO batch: 211 done.
+2024-05-31 15:24:59 binky-03 root[685672] INFO loss: 0.056032
+2024-05-31 15:25:45 binky-03 root[685672] INFO batch: 221 done.
+2024-05-31 15:25:45 binky-03 root[685672] INFO loss: 0.056944
+2024-05-31 15:26:15 binky-03 root[685672] INFO batch: 231 done.
+2024-05-31 15:26:15 binky-03 root[685672] INFO loss: 0.056665
+2024-05-31 15:27:00 binky-03 root[685672] INFO batch: 241 done.
+2024-05-31 15:27:00 binky-03 root[685672] INFO loss: 0.054860
+2024-05-31 15:27:31 binky-03 root[685672] INFO batch: 251 done.
+2024-05-31 15:27:31 binky-03 root[685672] INFO loss: 0.054632
+2024-05-31 15:28:17 binky-03 root[685672] INFO batch: 261 done.
+2024-05-31 15:28:17 binky-03 root[685672] INFO loss: 0.058319
+2024-05-31 15:28:48 binky-03 root[685672] INFO batch: 271 done.
+2024-05-31 15:28:48 binky-03 root[685672] INFO loss: 0.057306
+2024-05-31 15:29:33 binky-03 root[685672] INFO batch: 281 done.
+2024-05-31 15:29:33 binky-03 root[685672] INFO loss: 0.058849
+2024-05-31 15:30:03 binky-03 root[685672] INFO batch: 291 done.
+2024-05-31 15:30:03 binky-03 root[685672] INFO loss: 0.054049
+2024-05-31 15:30:49 binky-03 root[685672] INFO batch: 301 done.
+2024-05-31 15:30:49 binky-03 root[685672] INFO loss: 0.054839
+2024-05-31 15:31:20 binky-03 root[685672] INFO batch: 311 done.
+2024-05-31 15:31:20 binky-03 root[685672] INFO loss: 0.053717
+2024-05-31 15:32:07 binky-03 root[685672] INFO batch: 321 done.
+2024-05-31 15:32:07 binky-03 root[685672] INFO loss: 0.057736
+2024-05-31 15:32:37 binky-03 root[685672] INFO batch: 331 done.
+2024-05-31 15:32:37 binky-03 root[685672] INFO loss: 0.054249
+2024-05-31 15:33:23 binky-03 root[685672] INFO batch: 341 done.
+2024-05-31 15:33:23 binky-03 root[685672] INFO loss: 0.056671
+2024-05-31 15:33:54 binky-03 root[685672] INFO batch: 351 done.
+2024-05-31 15:33:54 binky-03 root[685672] INFO loss: 0.055943
+2024-05-31 15:34:39 binky-03 root[685672] INFO batch: 361 done.
+2024-05-31 15:34:39 binky-03 root[685672] INFO loss: 0.058251
+2024-05-31 15:35:10 binky-03 root[685672] INFO batch: 371 done.
+2024-05-31 15:35:10 binky-03 root[685672] INFO loss: 0.056817
+2024-05-31 15:35:54 binky-03 root[685672] INFO batch: 381 done.
+2024-05-31 15:35:54 binky-03 root[685672] INFO loss: 0.054205
+2024-05-31 15:36:28 binky-03 root[685672] INFO batch: 391 done.
+2024-05-31 15:36:28 binky-03 root[685672] INFO loss: 0.062916
+2024-05-31 15:37:10 binky-03 root[685672] INFO batch: 401 done.
+2024-05-31 15:37:10 binky-03 root[685672] INFO loss: 0.052998
+2024-05-31 15:37:46 binky-03 root[685672] INFO batch: 411 done.
+2024-05-31 15:37:46 binky-03 root[685672] INFO loss: 0.052071
+2024-05-31 15:38:26 binky-03 root[685672] INFO batch: 421 done.
+2024-05-31 15:38:26 binky-03 root[685672] INFO loss: 0.056775
+2024-05-31 15:39:03 binky-03 root[685672] INFO batch: 431 done.
+2024-05-31 15:39:03 binky-03 root[685672] INFO loss: 0.055382
+2024-05-31 15:39:42 binky-03 root[685672] INFO batch: 441 done.
+2024-05-31 15:39:42 binky-03 root[685672] INFO loss: 0.052668
+2024-05-31 15:40:19 binky-03 root[685672] INFO batch: 451 done.
+2024-05-31 15:40:19 binky-03 root[685672] INFO loss: 0.053978
+2024-05-31 15:40:59 binky-03 root[685672] INFO batch: 461 done.
+2024-05-31 15:40:59 binky-03 root[685672] INFO loss: 0.052888
+2024-05-31 15:41:37 binky-03 root[685672] INFO batch: 471 done.
+2024-05-31 15:41:37 binky-03 root[685672] INFO loss: 0.051311
+2024-05-31 15:42:17 binky-03 root[685672] INFO batch: 481 done.
+2024-05-31 15:42:17 binky-03 root[685672] INFO loss: 0.054735
+2024-05-31 15:42:54 binky-03 root[685672] INFO batch: 491 done.
+2024-05-31 15:42:54 binky-03 root[685672] INFO loss: 0.054958
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 15:43:25 binky-03 root[685672] INFO Epoch: 3 done.
+2024-05-31 15:43:25 binky-03 root[685672] INFO loss: 0.055521  [16000/16000]
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 15:45:38 binky-03 root[685672] INFO Validation Error: 0.056245
+2024-05-31 15:46:07 binky-03 root[685672] INFO batch: 1 done.
+2024-05-31 15:46:07 binky-03 root[685672] INFO loss: 0.056521
+2024-05-31 15:46:36 binky-03 root[685672] INFO batch: 11 done.
+2024-05-31 15:46:36 binky-03 root[685672] INFO loss: 0.058784
+2024-05-31 15:47:18 binky-03 root[685672] INFO batch: 21 done.
+2024-05-31 15:47:18 binky-03 root[685672] INFO loss: 0.059532
+2024-05-31 15:47:48 binky-03 root[685672] INFO batch: 31 done.
+2024-05-31 15:47:48 binky-03 root[685672] INFO loss: 0.053669
+2024-05-31 15:48:30 binky-03 root[685672] INFO batch: 41 done.
+2024-05-31 15:48:30 binky-03 root[685672] INFO loss: 0.056812
+2024-05-31 15:49:00 binky-03 root[685672] INFO batch: 51 done.
+2024-05-31 15:49:00 binky-03 root[685672] INFO loss: 0.055176
+2024-05-31 15:49:43 binky-03 root[685672] INFO batch: 61 done.
+2024-05-31 15:49:43 binky-03 root[685672] INFO loss: 0.056892
+2024-05-31 15:50:14 binky-03 root[685672] INFO batch: 71 done.
+2024-05-31 15:50:14 binky-03 root[685672] INFO loss: 0.058107
+2024-05-31 15:50:56 binky-03 root[685672] INFO batch: 81 done.
+2024-05-31 15:50:56 binky-03 root[685672] INFO loss: 0.057068
+2024-05-31 15:51:29 binky-03 root[685672] INFO batch: 91 done.
+2024-05-31 15:51:29 binky-03 root[685672] INFO loss: 0.059448
+2024-05-31 15:52:12 binky-03 root[685672] INFO batch: 101 done.
+2024-05-31 15:52:12 binky-03 root[685672] INFO loss: 0.057496
+2024-05-31 15:52:44 binky-03 root[685672] INFO batch: 111 done.
+2024-05-31 15:52:44 binky-03 root[685672] INFO loss: 0.057793
+2024-05-31 15:53:28 binky-03 root[685672] INFO batch: 121 done.
+2024-05-31 15:53:28 binky-03 root[685672] INFO loss: 0.056432
+2024-05-31 15:53:59 binky-03 root[685672] INFO batch: 131 done.
+2024-05-31 15:53:59 binky-03 root[685672] INFO loss: 0.050871
+2024-05-31 15:54:44 binky-03 root[685672] INFO batch: 141 done.
+2024-05-31 15:54:44 binky-03 root[685672] INFO loss: 0.054801
+2024-05-31 15:55:14 binky-03 root[685672] INFO batch: 151 done.
+2024-05-31 15:55:14 binky-03 root[685672] INFO loss: 0.058535
+2024-05-31 15:55:58 binky-03 root[685672] INFO batch: 161 done.
+2024-05-31 15:55:58 binky-03 root[685672] INFO loss: 0.055332
+2024-05-31 15:56:29 binky-03 root[685672] INFO batch: 171 done.
+2024-05-31 15:56:29 binky-03 root[685672] INFO loss: 0.055541
+2024-05-31 15:57:14 binky-03 root[685672] INFO batch: 181 done.
+2024-05-31 15:57:14 binky-03 root[685672] INFO loss: 0.054985
+2024-05-31 15:57:45 binky-03 root[685672] INFO batch: 191 done.
+2024-05-31 15:57:45 binky-03 root[685672] INFO loss: 0.052638
+2024-05-31 15:58:31 binky-03 root[685672] INFO batch: 201 done.
+2024-05-31 15:58:31 binky-03 root[685672] INFO loss: 0.056681
+2024-05-31 15:59:02 binky-03 root[685672] INFO batch: 211 done.
+2024-05-31 15:59:02 binky-03 root[685672] INFO loss: 0.053038
+2024-05-31 15:59:48 binky-03 root[685672] INFO batch: 221 done.
+2024-05-31 15:59:48 binky-03 root[685672] INFO loss: 0.055255
+2024-05-31 16:00:19 binky-03 root[685672] INFO batch: 231 done.
+2024-05-31 16:00:19 binky-03 root[685672] INFO loss: 0.054050
+2024-05-31 16:01:06 binky-03 root[685672] INFO batch: 241 done.
+2024-05-31 16:01:06 binky-03 root[685672] INFO loss: 0.054256
+2024-05-31 16:01:37 binky-03 root[685672] INFO batch: 251 done.
+2024-05-31 16:01:37 binky-03 root[685672] INFO loss: 0.055288
+2024-05-31 16:02:23 binky-03 root[685672] INFO batch: 261 done.
+2024-05-31 16:02:23 binky-03 root[685672] INFO loss: 0.055479
+2024-05-31 16:02:53 binky-03 root[685672] INFO batch: 271 done.
+2024-05-31 16:02:53 binky-03 root[685672] INFO loss: 0.049555
+2024-05-31 16:03:39 binky-03 root[685672] INFO batch: 281 done.
+2024-05-31 16:03:39 binky-03 root[685672] INFO loss: 0.053654
+2024-05-31 16:04:10 binky-03 root[685672] INFO batch: 291 done.
+2024-05-31 16:04:10 binky-03 root[685672] INFO loss: 0.054093
+2024-05-31 16:04:56 binky-03 root[685672] INFO batch: 301 done.
+2024-05-31 16:04:56 binky-03 root[685672] INFO loss: 0.054669
+2024-05-31 16:05:28 binky-03 root[685672] INFO batch: 311 done.
+2024-05-31 16:05:28 binky-03 root[685672] INFO loss: 0.054845
+2024-05-31 16:06:17 binky-03 root[685672] INFO batch: 321 done.
+2024-05-31 16:06:17 binky-03 root[685672] INFO loss: 0.054263
+2024-05-31 16:06:50 binky-03 root[685672] INFO batch: 331 done.
+2024-05-31 16:06:50 binky-03 root[685672] INFO loss: 0.055521
+2024-05-31 16:07:38 binky-03 root[685672] INFO batch: 341 done.
+2024-05-31 16:07:38 binky-03 root[685672] INFO loss: 0.054842
+2024-05-31 16:08:11 binky-03 root[685672] INFO batch: 351 done.
+2024-05-31 16:08:11 binky-03 root[685672] INFO loss: 0.051160
+2024-05-31 16:09:01 binky-03 root[685672] INFO batch: 361 done.
+2024-05-31 16:09:01 binky-03 root[685672] INFO loss: 0.060476
+2024-05-31 16:09:34 binky-03 root[685672] INFO batch: 371 done.
+2024-05-31 16:09:34 binky-03 root[685672] INFO loss: 0.055338
+2024-05-31 16:10:24 binky-03 root[685672] INFO batch: 381 done.
+2024-05-31 16:10:24 binky-03 root[685672] INFO loss: 0.057212
+2024-05-31 16:10:57 binky-03 root[685672] INFO batch: 391 done.
+2024-05-31 16:10:57 binky-03 root[685672] INFO loss: 0.051130
+2024-05-31 16:11:46 binky-03 root[685672] INFO batch: 401 done.
+2024-05-31 16:11:46 binky-03 root[685672] INFO loss: 0.058670
+2024-05-31 16:12:20 binky-03 root[685672] INFO batch: 411 done.
+2024-05-31 16:12:20 binky-03 root[685672] INFO loss: 0.055484
+2024-05-31 16:13:09 binky-03 root[685672] INFO batch: 421 done.
+2024-05-31 16:13:09 binky-03 root[685672] INFO loss: 0.058639
+2024-05-31 16:13:43 binky-03 root[685672] INFO batch: 431 done.
+2024-05-31 16:13:43 binky-03 root[685672] INFO loss: 0.058674
+2024-05-31 16:14:32 binky-03 root[685672] INFO batch: 441 done.
+2024-05-31 16:14:32 binky-03 root[685672] INFO loss: 0.053730
+2024-05-31 16:15:05 binky-03 root[685672] INFO batch: 451 done.
+2024-05-31 16:15:05 binky-03 root[685672] INFO loss: 0.057255
+2024-05-31 16:15:55 binky-03 root[685672] INFO batch: 461 done.
+2024-05-31 16:15:55 binky-03 root[685672] INFO loss: 0.056159
+2024-05-31 16:16:28 binky-03 root[685672] INFO batch: 471 done.
+2024-05-31 16:16:28 binky-03 root[685672] INFO loss: 0.058113
+2024-05-31 16:17:18 binky-03 root[685672] INFO batch: 481 done.
+2024-05-31 16:17:18 binky-03 root[685672] INFO loss: 0.057523
+2024-05-31 16:17:51 binky-03 root[685672] INFO batch: 491 done.
+2024-05-31 16:17:51 binky-03 root[685672] INFO loss: 0.057456
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 16:18:22 binky-03 root[685672] INFO Epoch: 4 done.
+2024-05-31 16:18:22 binky-03 root[685672] INFO loss: 0.057001  [16000/16000]
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 16:20:44 binky-03 root[685672] INFO Validation Error: 0.056233
+2024-05-31 16:21:12 binky-03 root[685672] INFO batch: 1 done.
+2024-05-31 16:21:12 binky-03 root[685672] INFO loss: 0.056695
+2024-05-31 16:21:42 binky-03 root[685672] INFO batch: 11 done.
+2024-05-31 16:21:42 binky-03 root[685672] INFO loss: 0.054077
+2024-05-31 16:22:28 binky-03 root[685672] INFO batch: 21 done.
+2024-05-31 16:22:28 binky-03 root[685672] INFO loss: 0.057648
+2024-05-31 16:22:58 binky-03 root[685672] INFO batch: 31 done.
+2024-05-31 16:22:58 binky-03 root[685672] INFO loss: 0.057145
+2024-05-31 16:23:45 binky-03 root[685672] INFO batch: 41 done.
+2024-05-31 16:23:45 binky-03 root[685672] INFO loss: 0.051921
+2024-05-31 16:24:16 binky-03 root[685672] INFO batch: 51 done.
+2024-05-31 16:24:16 binky-03 root[685672] INFO loss: 0.056374
+2024-05-31 16:25:03 binky-03 root[685672] INFO batch: 61 done.
+2024-05-31 16:25:03 binky-03 root[685672] INFO loss: 0.059103
+2024-05-31 16:25:34 binky-03 root[685672] INFO batch: 71 done.
+2024-05-31 16:25:34 binky-03 root[685672] INFO loss: 0.054023
+2024-05-31 16:26:22 binky-03 root[685672] INFO batch: 81 done.
+2024-05-31 16:26:22 binky-03 root[685672] INFO loss: 0.054501
+2024-05-31 16:26:54 binky-03 root[685672] INFO batch: 91 done.
+2024-05-31 16:26:54 binky-03 root[685672] INFO loss: 0.054578
+2024-05-31 16:27:42 binky-03 root[685672] INFO batch: 101 done.
+2024-05-31 16:27:42 binky-03 root[685672] INFO loss: 0.052147
+2024-05-31 16:28:14 binky-03 root[685672] INFO batch: 111 done.
+2024-05-31 16:28:14 binky-03 root[685672] INFO loss: 0.057876
+2024-05-31 16:29:02 binky-03 root[685672] INFO batch: 121 done.
+2024-05-31 16:29:02 binky-03 root[685672] INFO loss: 0.055544
+2024-05-31 16:29:33 binky-03 root[685672] INFO batch: 131 done.
+2024-05-31 16:29:33 binky-03 root[685672] INFO loss: 0.055251
+2024-05-31 16:30:21 binky-03 root[685672] INFO batch: 141 done.
+2024-05-31 16:30:21 binky-03 root[685672] INFO loss: 0.053332
+2024-05-31 16:30:53 binky-03 root[685672] INFO batch: 151 done.
+2024-05-31 16:30:53 binky-03 root[685672] INFO loss: 0.055680
+2024-05-31 16:31:41 binky-03 root[685672] INFO batch: 161 done.
+2024-05-31 16:31:41 binky-03 root[685672] INFO loss: 0.054446
+2024-05-31 16:32:13 binky-03 root[685672] INFO batch: 171 done.
+2024-05-31 16:32:13 binky-03 root[685672] INFO loss: 0.056396
+2024-05-31 16:33:02 binky-03 root[685672] INFO batch: 181 done.
+2024-05-31 16:33:02 binky-03 root[685672] INFO loss: 0.055082
+2024-05-31 16:33:34 binky-03 root[685672] INFO batch: 191 done.
+2024-05-31 16:33:34 binky-03 root[685672] INFO loss: 0.054921
+2024-05-31 16:34:22 binky-03 root[685672] INFO batch: 201 done.
+2024-05-31 16:34:22 binky-03 root[685672] INFO loss: 0.061111
+2024-05-31 16:34:55 binky-03 root[685672] INFO batch: 211 done.
+2024-05-31 16:34:55 binky-03 root[685672] INFO loss: 0.053664
+2024-05-31 16:35:42 binky-03 root[685672] INFO batch: 221 done.
+2024-05-31 16:35:42 binky-03 root[685672] INFO loss: 0.052775
+2024-05-31 16:36:15 binky-03 root[685672] INFO batch: 231 done.
+2024-05-31 16:36:15 binky-03 root[685672] INFO loss: 0.053935
+2024-05-31 16:37:03 binky-03 root[685672] INFO batch: 241 done.
+2024-05-31 16:37:03 binky-03 root[685672] INFO loss: 0.057466
+2024-05-31 16:37:36 binky-03 root[685672] INFO batch: 251 done.
+2024-05-31 16:37:36 binky-03 root[685672] INFO loss: 0.054837
+2024-05-31 16:38:24 binky-03 root[685672] INFO batch: 261 done.
+2024-05-31 16:38:24 binky-03 root[685672] INFO loss: 0.051613
+2024-05-31 16:38:56 binky-03 root[685672] INFO batch: 271 done.
+2024-05-31 16:38:56 binky-03 root[685672] INFO loss: 0.054814
+2024-05-31 16:39:44 binky-03 root[685672] INFO batch: 281 done.
+2024-05-31 16:39:44 binky-03 root[685672] INFO loss: 0.057844
+2024-05-31 16:40:17 binky-03 root[685672] INFO batch: 291 done.
+2024-05-31 16:40:17 binky-03 root[685672] INFO loss: 0.053693
+2024-05-31 16:41:06 binky-03 root[685672] INFO batch: 301 done.
+2024-05-31 16:41:06 binky-03 root[685672] INFO loss: 0.055910
+2024-05-31 16:41:40 binky-03 root[685672] INFO batch: 311 done.
+2024-05-31 16:41:40 binky-03 root[685672] INFO loss: 0.056139
+2024-05-31 16:42:29 binky-03 root[685672] INFO batch: 321 done.
+2024-05-31 16:42:29 binky-03 root[685672] INFO loss: 0.057263
+2024-05-31 16:43:02 binky-03 root[685672] INFO batch: 331 done.
+2024-05-31 16:43:02 binky-03 root[685672] INFO loss: 0.054972
+2024-05-31 16:43:52 binky-03 root[685672] INFO batch: 341 done.
+2024-05-31 16:43:52 binky-03 root[685672] INFO loss: 0.057229
+2024-05-31 16:44:25 binky-03 root[685672] INFO batch: 351 done.
+2024-05-31 16:44:25 binky-03 root[685672] INFO loss: 0.061504
+2024-05-31 16:45:13 binky-03 root[685672] INFO batch: 361 done.
+2024-05-31 16:45:13 binky-03 root[685672] INFO loss: 0.051839
+2024-05-31 16:45:47 binky-03 root[685672] INFO batch: 371 done.
+2024-05-31 16:45:47 binky-03 root[685672] INFO loss: 0.052192
+2024-05-31 16:46:36 binky-03 root[685672] INFO batch: 381 done.
+2024-05-31 16:46:36 binky-03 root[685672] INFO loss: 0.056146
+2024-05-31 16:47:09 binky-03 root[685672] INFO batch: 391 done.
+2024-05-31 16:47:09 binky-03 root[685672] INFO loss: 0.058961
+2024-05-31 16:47:59 binky-03 root[685672] INFO batch: 401 done.
+2024-05-31 16:47:59 binky-03 root[685672] INFO loss: 0.055857
+2024-05-31 16:48:32 binky-03 root[685672] INFO batch: 411 done.
+2024-05-31 16:48:32 binky-03 root[685672] INFO loss: 0.058419
+2024-05-31 16:49:20 binky-03 root[685672] INFO batch: 421 done.
+2024-05-31 16:49:20 binky-03 root[685672] INFO loss: 0.052408
+2024-05-31 16:49:53 binky-03 root[685672] INFO batch: 431 done.
+2024-05-31 16:49:53 binky-03 root[685672] INFO loss: 0.052483
+2024-05-31 16:50:42 binky-03 root[685672] INFO batch: 441 done.
+2024-05-31 16:50:42 binky-03 root[685672] INFO loss: 0.055180
+2024-05-31 16:51:15 binky-03 root[685672] INFO batch: 451 done.
+2024-05-31 16:51:15 binky-03 root[685672] INFO loss: 0.053132
+2024-05-31 16:52:05 binky-03 root[685672] INFO batch: 461 done.
+2024-05-31 16:52:05 binky-03 root[685672] INFO loss: 0.057224
+2024-05-31 16:52:38 binky-03 root[685672] INFO batch: 471 done.
+2024-05-31 16:52:38 binky-03 root[685672] INFO loss: 0.054913
+2024-05-31 16:53:27 binky-03 root[685672] INFO batch: 481 done.
+2024-05-31 16:53:27 binky-03 root[685672] INFO loss: 0.053993
+2024-05-31 16:54:00 binky-03 root[685672] INFO batch: 491 done.
+2024-05-31 16:54:00 binky-03 root[685672] INFO loss: 0.052739
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 16:54:32 binky-03 root[685672] INFO Epoch: 5 done.
+2024-05-31 16:54:32 binky-03 root[685672] INFO loss: 0.056860  [16000/16000]
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 16:56:52 binky-03 root[685672] INFO Validation Error: 0.056286
+2024-05-31 16:57:22 binky-03 root[685672] INFO batch: 1 done.
+2024-05-31 16:57:22 binky-03 root[685672] INFO loss: 0.054523
+2024-05-31 16:57:52 binky-03 root[685672] INFO batch: 11 done.
+2024-05-31 16:57:52 binky-03 root[685672] INFO loss: 0.055028
+2024-05-31 16:58:36 binky-03 root[685672] INFO batch: 21 done.
+2024-05-31 16:58:36 binky-03 root[685672] INFO loss: 0.054983
+2024-05-31 16:59:06 binky-03 root[685672] INFO batch: 31 done.
+2024-05-31 16:59:06 binky-03 root[685672] INFO loss: 0.054491
+2024-05-31 16:59:51 binky-03 root[685672] INFO batch: 41 done.
+2024-05-31 16:59:51 binky-03 root[685672] INFO loss: 0.054701
+2024-05-31 17:00:23 binky-03 root[685672] INFO batch: 51 done.
+2024-05-31 17:00:23 binky-03 root[685672] INFO loss: 0.055548
+2024-05-31 17:01:08 binky-03 root[685672] INFO batch: 61 done.
+2024-05-31 17:01:08 binky-03 root[685672] INFO loss: 0.059617
+2024-05-31 17:01:41 binky-03 root[685672] INFO batch: 71 done.
+2024-05-31 17:01:41 binky-03 root[685672] INFO loss: 0.054590
+2024-05-31 17:02:25 binky-03 root[685672] INFO batch: 81 done.
+2024-05-31 17:02:25 binky-03 root[685672] INFO loss: 0.053257
+2024-05-31 17:03:00 binky-03 root[685672] INFO batch: 91 done.
+2024-05-31 17:03:00 binky-03 root[685672] INFO loss: 0.054006
+2024-05-31 17:03:45 binky-03 root[685672] INFO batch: 101 done.
+2024-05-31 17:03:45 binky-03 root[685672] INFO loss: 0.057170
+2024-05-31 17:04:19 binky-03 root[685672] INFO batch: 111 done.
+2024-05-31 17:04:19 binky-03 root[685672] INFO loss: 0.056961
+2024-05-31 17:05:05 binky-03 root[685672] INFO batch: 121 done.
+2024-05-31 17:05:05 binky-03 root[685672] INFO loss: 0.054396
+2024-05-31 17:05:38 binky-03 root[685672] INFO batch: 131 done.
+2024-05-31 17:05:38 binky-03 root[685672] INFO loss: 0.054737
+2024-05-31 17:06:24 binky-03 root[685672] INFO batch: 141 done.
+2024-05-31 17:06:24 binky-03 root[685672] INFO loss: 0.057753
+2024-05-31 17:06:57 binky-03 root[685672] INFO batch: 151 done.
+2024-05-31 17:06:57 binky-03 root[685672] INFO loss: 0.055711
+2024-05-31 17:07:43 binky-03 root[685672] INFO batch: 161 done.
+2024-05-31 17:07:43 binky-03 root[685672] INFO loss: 0.058484
+2024-05-31 17:08:15 binky-03 root[685672] INFO batch: 171 done.
+2024-05-31 17:08:15 binky-03 root[685672] INFO loss: 0.056200
+2024-05-31 17:09:01 binky-03 root[685672] INFO batch: 181 done.
+2024-05-31 17:09:01 binky-03 root[685672] INFO loss: 0.057379
+2024-05-31 17:09:34 binky-03 root[685672] INFO batch: 191 done.
+2024-05-31 17:09:34 binky-03 root[685672] INFO loss: 0.059329
+2024-05-31 17:10:20 binky-03 root[685672] INFO batch: 201 done.
+2024-05-31 17:10:20 binky-03 root[685672] INFO loss: 0.056664
+2024-05-31 17:10:55 binky-03 root[685672] INFO batch: 211 done.
+2024-05-31 17:10:55 binky-03 root[685672] INFO loss: 0.054021
+2024-05-31 17:11:39 binky-03 root[685672] INFO batch: 221 done.
+2024-05-31 17:11:39 binky-03 root[685672] INFO loss: 0.055876
+2024-05-31 17:12:15 binky-03 root[685672] INFO batch: 231 done.
+2024-05-31 17:12:16 binky-03 root[685672] INFO loss: 0.051288
+2024-05-31 17:12:58 binky-03 root[685672] INFO batch: 241 done.
+2024-05-31 17:12:58 binky-03 root[685672] INFO loss: 0.058339
+2024-05-31 17:13:36 binky-03 root[685672] INFO batch: 251 done.
+2024-05-31 17:13:36 binky-03 root[685672] INFO loss: 0.053990
+2024-05-31 17:14:19 binky-03 root[685672] INFO batch: 261 done.
+2024-05-31 17:14:19 binky-03 root[685672] INFO loss: 0.053993
+2024-05-31 17:14:57 binky-03 root[685672] INFO batch: 271 done.
+2024-05-31 17:14:57 binky-03 root[685672] INFO loss: 0.054992
+2024-05-31 17:15:39 binky-03 root[685672] INFO batch: 281 done.
+2024-05-31 17:15:39 binky-03 root[685672] INFO loss: 0.055978
+2024-05-31 17:16:19 binky-03 root[685672] INFO batch: 291 done.
+2024-05-31 17:16:19 binky-03 root[685672] INFO loss: 0.057278
+2024-05-31 17:17:00 binky-03 root[685672] INFO batch: 301 done.
+2024-05-31 17:17:00 binky-03 root[685672] INFO loss: 0.055353
+2024-05-31 17:17:40 binky-03 root[685672] INFO batch: 311 done.
+2024-05-31 17:17:40 binky-03 root[685672] INFO loss: 0.052191
+2024-05-31 17:18:21 binky-03 root[685672] INFO batch: 321 done.
+2024-05-31 17:18:21 binky-03 root[685672] INFO loss: 0.049472
+2024-05-31 17:19:00 binky-03 root[685672] INFO batch: 331 done.
+2024-05-31 17:19:00 binky-03 root[685672] INFO loss: 0.051691
+2024-05-31 17:19:41 binky-03 root[685672] INFO batch: 341 done.
+2024-05-31 17:19:41 binky-03 root[685672] INFO loss: 0.053098
+2024-05-31 17:20:22 binky-03 root[685672] INFO batch: 351 done.
+2024-05-31 17:20:22 binky-03 root[685672] INFO loss: 0.054247
+2024-05-31 17:21:03 binky-03 root[685672] INFO batch: 361 done.
+2024-05-31 17:21:03 binky-03 root[685672] INFO loss: 0.053325
+2024-05-31 17:21:43 binky-03 root[685672] INFO batch: 371 done.
+2024-05-31 17:21:43 binky-03 root[685672] INFO loss: 0.053178
+2024-05-31 17:22:25 binky-03 root[685672] INFO batch: 381 done.
+2024-05-31 17:22:25 binky-03 root[685672] INFO loss: 0.058960
+2024-05-31 17:23:03 binky-03 root[685672] INFO batch: 391 done.
+2024-05-31 17:23:03 binky-03 root[685672] INFO loss: 0.054850
+2024-05-31 17:23:46 binky-03 root[685672] INFO batch: 401 done.
+2024-05-31 17:23:46 binky-03 root[685672] INFO loss: 0.051782
+2024-05-31 17:24:25 binky-03 root[685672] INFO batch: 411 done.
+2024-05-31 17:24:25 binky-03 root[685672] INFO loss: 0.056675
+2024-05-31 17:25:07 binky-03 root[685672] INFO batch: 421 done.
+2024-05-31 17:25:07 binky-03 root[685672] INFO loss: 0.056279
+2024-05-31 17:25:46 binky-03 root[685672] INFO batch: 431 done.
+2024-05-31 17:25:46 binky-03 root[685672] INFO loss: 0.055322
+2024-05-31 17:26:29 binky-03 root[685672] INFO batch: 441 done.
+2024-05-31 17:26:29 binky-03 root[685672] INFO loss: 0.054782
+2024-05-31 17:27:08 binky-03 root[685672] INFO batch: 451 done.
+2024-05-31 17:27:08 binky-03 root[685672] INFO loss: 0.055255
+2024-05-31 17:27:50 binky-03 root[685672] INFO batch: 461 done.
+2024-05-31 17:27:50 binky-03 root[685672] INFO loss: 0.053344
+2024-05-31 17:28:29 binky-03 root[685672] INFO batch: 471 done.
+2024-05-31 17:28:29 binky-03 root[685672] INFO loss: 0.050838
+2024-05-31 17:29:12 binky-03 root[685672] INFO batch: 481 done.
+2024-05-31 17:29:12 binky-03 root[685672] INFO loss: 0.055557
+2024-05-31 17:29:51 binky-03 root[685672] INFO batch: 491 done.
+2024-05-31 17:29:51 binky-03 root[685672] INFO loss: 0.054031
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 17:30:23 binky-03 root[685672] INFO Epoch: 6 done.
+2024-05-31 17:30:23 binky-03 root[685672] INFO loss: 0.053825  [16000/16000]
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 17:32:37 binky-03 root[685672] INFO Validation Error: 0.056056
+2024-05-31 17:33:06 binky-03 root[685672] INFO batch: 1 done.
+2024-05-31 17:33:06 binky-03 root[685672] INFO loss: 0.052311
+2024-05-31 17:33:36 binky-03 root[685672] INFO batch: 11 done.
+2024-05-31 17:33:36 binky-03 root[685672] INFO loss: 0.055660
+2024-05-31 17:34:21 binky-03 root[685672] INFO batch: 21 done.
+2024-05-31 17:34:21 binky-03 root[685672] INFO loss: 0.051576
+2024-05-31 17:34:52 binky-03 root[685672] INFO batch: 31 done.
+2024-05-31 17:34:52 binky-03 root[685672] INFO loss: 0.054608
+2024-05-31 17:35:38 binky-03 root[685672] INFO batch: 41 done.
+2024-05-31 17:35:38 binky-03 root[685672] INFO loss: 0.056852
+2024-05-31 17:36:08 binky-03 root[685672] INFO batch: 51 done.
+2024-05-31 17:36:08 binky-03 root[685672] INFO loss: 0.053839
+2024-05-31 17:36:54 binky-03 root[685672] INFO batch: 61 done.
+2024-05-31 17:36:54 binky-03 root[685672] INFO loss: 0.055207
+2024-05-31 17:37:26 binky-03 root[685672] INFO batch: 71 done.
+2024-05-31 17:37:26 binky-03 root[685672] INFO loss: 0.057315
+2024-05-31 17:38:13 binky-03 root[685672] INFO batch: 81 done.
+2024-05-31 17:38:13 binky-03 root[685672] INFO loss: 0.053752
+2024-05-31 17:38:45 binky-03 root[685672] INFO batch: 91 done.
+2024-05-31 17:38:45 binky-03 root[685672] INFO loss: 0.054932
+2024-05-31 17:39:31 binky-03 root[685672] INFO batch: 101 done.
+2024-05-31 17:39:31 binky-03 root[685672] INFO loss: 0.052694
+2024-05-31 17:40:04 binky-03 root[685672] INFO batch: 111 done.
+2024-05-31 17:40:04 binky-03 root[685672] INFO loss: 0.054360
+2024-05-31 17:40:51 binky-03 root[685672] INFO batch: 121 done.
+2024-05-31 17:40:51 binky-03 root[685672] INFO loss: 0.053235
+2024-05-31 17:41:25 binky-03 root[685672] INFO batch: 131 done.
+2024-05-31 17:41:25 binky-03 root[685672] INFO loss: 0.056287
+2024-05-31 17:42:11 binky-03 root[685672] INFO batch: 141 done.
+2024-05-31 17:42:11 binky-03 root[685672] INFO loss: 0.056524
+2024-05-31 17:42:46 binky-03 root[685672] INFO batch: 151 done.
+2024-05-31 17:42:46 binky-03 root[685672] INFO loss: 0.054949
+2024-05-31 17:43:30 binky-03 root[685672] INFO batch: 161 done.
+2024-05-31 17:43:30 binky-03 root[685672] INFO loss: 0.060802
+2024-05-31 17:44:06 binky-03 root[685672] INFO batch: 171 done.
+2024-05-31 17:44:06 binky-03 root[685672] INFO loss: 0.051599
+2024-05-31 17:44:49 binky-03 root[685672] INFO batch: 181 done.
+2024-05-31 17:44:49 binky-03 root[685672] INFO loss: 0.056388
+2024-05-31 17:45:25 binky-03 root[685672] INFO batch: 191 done.
+2024-05-31 17:45:25 binky-03 root[685672] INFO loss: 0.054419
+2024-05-31 17:46:10 binky-03 root[685672] INFO batch: 201 done.
+2024-05-31 17:46:10 binky-03 root[685672] INFO loss: 0.053290
+2024-05-31 17:46:45 binky-03 root[685672] INFO batch: 211 done.
+2024-05-31 17:46:45 binky-03 root[685672] INFO loss: 0.056453
+2024-05-31 17:47:31 binky-03 root[685672] INFO batch: 221 done.
+2024-05-31 17:47:31 binky-03 root[685672] INFO loss: 0.051302
+2024-05-31 17:48:06 binky-03 root[685672] INFO batch: 231 done.
+2024-05-31 17:48:06 binky-03 root[685672] INFO loss: 0.056768
+2024-05-31 17:48:51 binky-03 root[685672] INFO batch: 241 done.
+2024-05-31 17:48:51 binky-03 root[685672] INFO loss: 0.054331
+2024-05-31 17:49:26 binky-03 root[685672] INFO batch: 251 done.
+2024-05-31 17:49:26 binky-03 root[685672] INFO loss: 0.055685
+2024-05-31 17:50:12 binky-03 root[685672] INFO batch: 261 done.
+2024-05-31 17:50:12 binky-03 root[685672] INFO loss: 0.052512
+2024-05-31 17:50:47 binky-03 root[685672] INFO batch: 271 done.
+2024-05-31 17:50:47 binky-03 root[685672] INFO loss: 0.058238
+2024-05-31 17:51:32 binky-03 root[685672] INFO batch: 281 done.
+2024-05-31 17:51:32 binky-03 root[685672] INFO loss: 0.053445
+2024-05-31 17:52:07 binky-03 root[685672] INFO batch: 291 done.
+2024-05-31 17:52:07 binky-03 root[685672] INFO loss: 0.058177
+2024-05-31 17:52:53 binky-03 root[685672] INFO batch: 301 done.
+2024-05-31 17:52:53 binky-03 root[685672] INFO loss: 0.053787
+2024-05-31 17:53:28 binky-03 root[685672] INFO batch: 311 done.
+2024-05-31 17:53:28 binky-03 root[685672] INFO loss: 0.053193
+2024-05-31 17:54:14 binky-03 root[685672] INFO batch: 321 done.
+2024-05-31 17:54:14 binky-03 root[685672] INFO loss: 0.054846
+2024-05-31 17:54:49 binky-03 root[685672] INFO batch: 331 done.
+2024-05-31 17:54:49 binky-03 root[685672] INFO loss: 0.054268
+2024-05-31 17:55:36 binky-03 root[685672] INFO batch: 341 done.
+2024-05-31 17:55:36 binky-03 root[685672] INFO loss: 0.055477
+2024-05-31 17:56:12 binky-03 root[685672] INFO batch: 351 done.
+2024-05-31 17:56:12 binky-03 root[685672] INFO loss: 0.053855
+2024-05-31 17:56:58 binky-03 root[685672] INFO batch: 361 done.
+2024-05-31 17:56:58 binky-03 root[685672] INFO loss: 0.052516
+2024-05-31 17:57:32 binky-03 root[685672] INFO batch: 371 done.
+2024-05-31 17:57:32 binky-03 root[685672] INFO loss: 0.050501
+2024-05-31 17:58:20 binky-03 root[685672] INFO batch: 381 done.
+2024-05-31 17:58:20 binky-03 root[685672] INFO loss: 0.054090
+2024-05-31 17:58:54 binky-03 root[685672] INFO batch: 391 done.
+2024-05-31 17:58:54 binky-03 root[685672] INFO loss: 0.053752
+2024-05-31 17:59:43 binky-03 root[685672] INFO batch: 401 done.
+2024-05-31 17:59:43 binky-03 root[685672] INFO loss: 0.054543
+2024-05-31 18:00:17 binky-03 root[685672] INFO batch: 411 done.
+2024-05-31 18:00:17 binky-03 root[685672] INFO loss: 0.055912
+2024-05-31 18:01:06 binky-03 root[685672] INFO batch: 421 done.
+2024-05-31 18:01:06 binky-03 root[685672] INFO loss: 0.051000
+2024-05-31 18:01:39 binky-03 root[685672] INFO batch: 431 done.
+2024-05-31 18:01:39 binky-03 root[685672] INFO loss: 0.058843
+2024-05-31 18:02:28 binky-03 root[685672] INFO batch: 441 done.
+2024-05-31 18:02:28 binky-03 root[685672] INFO loss: 0.053539
+2024-05-31 18:03:00 binky-03 root[685672] INFO batch: 451 done.
+2024-05-31 18:03:00 binky-03 root[685672] INFO loss: 0.054040
+2024-05-31 18:03:50 binky-03 root[685672] INFO batch: 461 done.
+2024-05-31 18:03:50 binky-03 root[685672] INFO loss: 0.054720
+2024-05-31 18:04:23 binky-03 root[685672] INFO batch: 471 done.
+2024-05-31 18:04:23 binky-03 root[685672] INFO loss: 0.052622
+2024-05-31 18:05:13 binky-03 root[685672] INFO batch: 481 done.
+2024-05-31 18:05:13 binky-03 root[685672] INFO loss: 0.051228
+2024-05-31 18:05:45 binky-03 root[685672] INFO batch: 491 done.
+2024-05-31 18:05:45 binky-03 root[685672] INFO loss: 0.055699
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 18:06:32 binky-03 root[685672] INFO Epoch: 7 done.
+2024-05-31 18:06:32 binky-03 root[685672] INFO loss: 0.057649  [16000/16000]
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 18:08:50 binky-03 root[685672] INFO Validation Error: 0.056153
+2024-05-31 18:09:19 binky-03 root[685672] INFO batch: 1 done.
+2024-05-31 18:09:19 binky-03 root[685672] INFO loss: 0.050743
+2024-05-31 18:09:48 binky-03 root[685672] INFO batch: 11 done.
+2024-05-31 18:09:48 binky-03 root[685672] INFO loss: 0.055450
+2024-05-31 18:10:34 binky-03 root[685672] INFO batch: 21 done.
+2024-05-31 18:10:34 binky-03 root[685672] INFO loss: 0.052848
+2024-05-31 18:11:04 binky-03 root[685672] INFO batch: 31 done.
+2024-05-31 18:11:04 binky-03 root[685672] INFO loss: 0.052486
+2024-05-31 18:11:49 binky-03 root[685672] INFO batch: 41 done.
+2024-05-31 18:11:49 binky-03 root[685672] INFO loss: 0.055770
+2024-05-31 18:12:19 binky-03 root[685672] INFO batch: 51 done.
+2024-05-31 18:12:19 binky-03 root[685672] INFO loss: 0.057437
+2024-05-31 18:13:05 binky-03 root[685672] INFO batch: 61 done.
+2024-05-31 18:13:05 binky-03 root[685672] INFO loss: 0.055534
+2024-05-31 18:13:36 binky-03 root[685672] INFO batch: 71 done.
+2024-05-31 18:13:36 binky-03 root[685672] INFO loss: 0.053684
+2024-05-31 18:14:24 binky-03 root[685672] INFO batch: 81 done.
+2024-05-31 18:14:24 binky-03 root[685672] INFO loss: 0.050995
+2024-05-31 18:14:55 binky-03 root[685672] INFO batch: 91 done.
+2024-05-31 18:14:55 binky-03 root[685672] INFO loss: 0.051369
+2024-05-31 18:15:42 binky-03 root[685672] INFO batch: 101 done.
+2024-05-31 18:15:42 binky-03 root[685672] INFO loss: 0.054626
+2024-05-31 18:16:14 binky-03 root[685672] INFO batch: 111 done.
+2024-05-31 18:16:14 binky-03 root[685672] INFO loss: 0.055743
+2024-05-31 18:17:01 binky-03 root[685672] INFO batch: 121 done.
+2024-05-31 18:17:01 binky-03 root[685672] INFO loss: 0.057859
+2024-05-31 18:17:33 binky-03 root[685672] INFO batch: 131 done.
+2024-05-31 18:17:33 binky-03 root[685672] INFO loss: 0.055995
+2024-05-31 18:18:20 binky-03 root[685672] INFO batch: 141 done.
+2024-05-31 18:18:20 binky-03 root[685672] INFO loss: 0.054271
+2024-05-31 18:18:53 binky-03 root[685672] INFO batch: 151 done.
+2024-05-31 18:18:53 binky-03 root[685672] INFO loss: 0.054984
+2024-05-31 18:19:41 binky-03 root[685672] INFO batch: 161 done.
+2024-05-31 18:19:41 binky-03 root[685672] INFO loss: 0.054754
+2024-05-31 18:20:12 binky-03 root[685672] INFO batch: 171 done.
+2024-05-31 18:20:12 binky-03 root[685672] INFO loss: 0.057195
+2024-05-31 18:21:01 binky-03 root[685672] INFO batch: 181 done.
+2024-05-31 18:21:01 binky-03 root[685672] INFO loss: 0.057745
+2024-05-31 18:21:32 binky-03 root[685672] INFO batch: 191 done.
+2024-05-31 18:21:32 binky-03 root[685672] INFO loss: 0.056941
+2024-05-31 18:22:20 binky-03 root[685672] INFO batch: 201 done.
+2024-05-31 18:22:20 binky-03 root[685672] INFO loss: 0.059494
+2024-05-31 18:22:51 binky-03 root[685672] INFO batch: 211 done.
+2024-05-31 18:22:51 binky-03 root[685672] INFO loss: 0.059309
+2024-05-31 18:23:40 binky-03 root[685672] INFO batch: 221 done.
+2024-05-31 18:23:40 binky-03 root[685672] INFO loss: 0.053611
+2024-05-31 18:24:11 binky-03 root[685672] INFO batch: 231 done.
+2024-05-31 18:24:11 binky-03 root[685672] INFO loss: 0.055164
+2024-05-31 18:24:59 binky-03 root[685672] INFO batch: 241 done.
+2024-05-31 18:24:59 binky-03 root[685672] INFO loss: 0.054281
+2024-05-31 18:25:31 binky-03 root[685672] INFO batch: 251 done.
+2024-05-31 18:25:31 binky-03 root[685672] INFO loss: 0.055342
+2024-05-31 18:26:19 binky-03 root[685672] INFO batch: 261 done.
+2024-05-31 18:26:19 binky-03 root[685672] INFO loss: 0.057725
+2024-05-31 18:26:51 binky-03 root[685672] INFO batch: 271 done.
+2024-05-31 18:26:51 binky-03 root[685672] INFO loss: 0.053378
+2024-05-31 18:27:39 binky-03 root[685672] INFO batch: 281 done.
+2024-05-31 18:27:39 binky-03 root[685672] INFO loss: 0.055591
+2024-05-31 18:28:12 binky-03 root[685672] INFO batch: 291 done.
+2024-05-31 18:28:12 binky-03 root[685672] INFO loss: 0.056236
+2024-05-31 18:29:00 binky-03 root[685672] INFO batch: 301 done.
+2024-05-31 18:29:00 binky-03 root[685672] INFO loss: 0.056276
+2024-05-31 18:29:33 binky-03 root[685672] INFO batch: 311 done.
+2024-05-31 18:29:33 binky-03 root[685672] INFO loss: 0.056285
+2024-05-31 18:30:21 binky-03 root[685672] INFO batch: 321 done.
+2024-05-31 18:30:21 binky-03 root[685672] INFO loss: 0.050028
+2024-05-31 18:30:54 binky-03 root[685672] INFO batch: 331 done.
+2024-05-31 18:30:54 binky-03 root[685672] INFO loss: 0.055355
+2024-05-31 18:31:41 binky-03 root[685672] INFO batch: 341 done.
+2024-05-31 18:31:41 binky-03 root[685672] INFO loss: 0.055471
+2024-05-31 18:32:15 binky-03 root[685672] INFO batch: 351 done.
+2024-05-31 18:32:15 binky-03 root[685672] INFO loss: 0.055100
+2024-05-31 18:33:02 binky-03 root[685672] INFO batch: 361 done.
+2024-05-31 18:33:02 binky-03 root[685672] INFO loss: 0.052186
+2024-05-31 18:33:36 binky-03 root[685672] INFO batch: 371 done.
+2024-05-31 18:33:36 binky-03 root[685672] INFO loss: 0.055761
+2024-05-31 18:34:23 binky-03 root[685672] INFO batch: 381 done.
+2024-05-31 18:34:23 binky-03 root[685672] INFO loss: 0.054590
+2024-05-31 18:34:59 binky-03 root[685672] INFO batch: 391 done.
+2024-05-31 18:34:59 binky-03 root[685672] INFO loss: 0.052159
+2024-05-31 18:35:45 binky-03 root[685672] INFO batch: 401 done.
+2024-05-31 18:35:45 binky-03 root[685672] INFO loss: 0.058671
+2024-05-31 18:36:21 binky-03 root[685672] INFO batch: 411 done.
+2024-05-31 18:36:21 binky-03 root[685672] INFO loss: 0.052017
+2024-05-31 18:37:05 binky-03 root[685672] INFO batch: 421 done.
+2024-05-31 18:37:05 binky-03 root[685672] INFO loss: 0.054173
+2024-05-31 18:37:42 binky-03 root[685672] INFO batch: 431 done.
+2024-05-31 18:37:42 binky-03 root[685672] INFO loss: 0.055120
+2024-05-31 18:38:26 binky-03 root[685672] INFO batch: 441 done.
+2024-05-31 18:38:26 binky-03 root[685672] INFO loss: 0.054365
+2024-05-31 18:39:02 binky-03 root[685672] INFO batch: 451 done.
+2024-05-31 18:39:02 binky-03 root[685672] INFO loss: 0.053354
+2024-05-31 18:39:47 binky-03 root[685672] INFO batch: 461 done.
+2024-05-31 18:39:47 binky-03 root[685672] INFO loss: 0.056070
+2024-05-31 18:40:23 binky-03 root[685672] INFO batch: 471 done.
+2024-05-31 18:40:23 binky-03 root[685672] INFO loss: 0.059529
+2024-05-31 18:41:08 binky-03 root[685672] INFO batch: 481 done.
+2024-05-31 18:41:08 binky-03 root[685672] INFO loss: 0.059812
+2024-05-31 18:41:44 binky-03 root[685672] INFO batch: 491 done.
+2024-05-31 18:41:44 binky-03 root[685672] INFO loss: 0.057931
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 18:42:17 binky-03 root[685672] INFO Epoch: 8 done.
+2024-05-31 18:42:17 binky-03 root[685672] INFO loss: 0.054127  [16000/16000]
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 18:44:33 binky-03 root[685672] INFO Validation Error: 0.056140
+2024-05-31 18:45:02 binky-03 root[685672] INFO batch: 1 done.
+2024-05-31 18:45:02 binky-03 root[685672] INFO loss: 0.055472
+2024-05-31 18:45:32 binky-03 root[685672] INFO batch: 11 done.
+2024-05-31 18:45:32 binky-03 root[685672] INFO loss: 0.055114
+2024-05-31 18:46:16 binky-03 root[685672] INFO batch: 21 done.
+2024-05-31 18:46:16 binky-03 root[685672] INFO loss: 0.054140
+2024-05-31 18:46:46 binky-03 root[685672] INFO batch: 31 done.
+2024-05-31 18:46:46 binky-03 root[685672] INFO loss: 0.054517
+2024-05-31 18:47:31 binky-03 root[685672] INFO batch: 41 done.
+2024-05-31 18:47:31 binky-03 root[685672] INFO loss: 0.060461
+2024-05-31 18:48:02 binky-03 root[685672] INFO batch: 51 done.
+2024-05-31 18:48:02 binky-03 root[685672] INFO loss: 0.053561
+2024-05-31 18:48:48 binky-03 root[685672] INFO batch: 61 done.
+2024-05-31 18:48:48 binky-03 root[685672] INFO loss: 0.055568
+2024-05-31 18:49:20 binky-03 root[685672] INFO batch: 71 done.
+2024-05-31 18:49:20 binky-03 root[685672] INFO loss: 0.058083
+2024-05-31 18:50:05 binky-03 root[685672] INFO batch: 81 done.
+2024-05-31 18:50:05 binky-03 root[685672] INFO loss: 0.059146
+2024-05-31 18:50:37 binky-03 root[685672] INFO batch: 91 done.
+2024-05-31 18:50:37 binky-03 root[685672] INFO loss: 0.058625
+2024-05-31 18:51:25 binky-03 root[685672] INFO batch: 101 done.
+2024-05-31 18:51:25 binky-03 root[685672] INFO loss: 0.055642
+2024-05-31 18:51:56 binky-03 root[685672] INFO batch: 111 done.
+2024-05-31 18:51:56 binky-03 root[685672] INFO loss: 0.053486
+2024-05-31 18:52:42 binky-03 root[685672] INFO batch: 121 done.
+2024-05-31 18:52:42 binky-03 root[685672] INFO loss: 0.054176
+2024-05-31 18:53:15 binky-03 root[685672] INFO batch: 131 done.
+2024-05-31 18:53:15 binky-03 root[685672] INFO loss: 0.059317
+2024-05-31 18:53:59 binky-03 root[685672] INFO batch: 141 done.
+2024-05-31 18:53:59 binky-03 root[685672] INFO loss: 0.053563
+2024-05-31 18:54:35 binky-03 root[685672] INFO batch: 151 done.
+2024-05-31 18:54:35 binky-03 root[685672] INFO loss: 0.057264
+2024-05-31 18:55:18 binky-03 root[685672] INFO batch: 161 done.
+2024-05-31 18:55:18 binky-03 root[685672] INFO loss: 0.056149
+2024-05-31 18:55:54 binky-03 root[685672] INFO batch: 171 done.
+2024-05-31 18:55:54 binky-03 root[685672] INFO loss: 0.052340
+2024-05-31 18:56:37 binky-03 root[685672] INFO batch: 181 done.
+2024-05-31 18:56:37 binky-03 root[685672] INFO loss: 0.054562
+2024-05-31 18:57:12 binky-03 root[685672] INFO batch: 191 done.
+2024-05-31 18:57:12 binky-03 root[685672] INFO loss: 0.058049
+2024-05-31 18:57:55 binky-03 root[685672] INFO batch: 201 done.
+2024-05-31 18:57:55 binky-03 root[685672] INFO loss: 0.054635
+2024-05-31 18:58:30 binky-03 root[685672] INFO batch: 211 done.
+2024-05-31 18:58:30 binky-03 root[685672] INFO loss: 0.048332
+2024-05-31 18:59:13 binky-03 root[685672] INFO batch: 221 done.
+2024-05-31 18:59:13 binky-03 root[685672] INFO loss: 0.048671
+2024-05-31 18:59:48 binky-03 root[685672] INFO batch: 231 done.
+2024-05-31 18:59:48 binky-03 root[685672] INFO loss: 0.048218
+2024-05-31 19:00:32 binky-03 root[685672] INFO batch: 241 done.
+2024-05-31 19:00:32 binky-03 root[685672] INFO loss: 0.047438
+2024-05-31 19:01:09 binky-03 root[685672] INFO batch: 251 done.
+2024-05-31 19:01:09 binky-03 root[685672] INFO loss: 0.047125
+2024-05-31 19:01:53 binky-03 root[685672] INFO batch: 261 done.
+2024-05-31 19:01:53 binky-03 root[685672] INFO loss: 0.048670
+2024-05-31 19:02:29 binky-03 root[685672] INFO batch: 271 done.
+2024-05-31 19:02:29 binky-03 root[685672] INFO loss: 0.049792
+2024-05-31 19:03:13 binky-03 root[685672] INFO batch: 281 done.
+2024-05-31 19:03:13 binky-03 root[685672] INFO loss: 0.053449
+2024-05-31 19:03:49 binky-03 root[685672] INFO batch: 291 done.
+2024-05-31 19:03:49 binky-03 root[685672] INFO loss: 0.047035
+2024-05-31 19:04:34 binky-03 root[685672] INFO batch: 301 done.
+2024-05-31 19:04:34 binky-03 root[685672] INFO loss: 0.051913
+2024-05-31 19:05:09 binky-03 root[685672] INFO batch: 311 done.
+2024-05-31 19:05:09 binky-03 root[685672] INFO loss: 0.044338
+2024-05-31 19:05:55 binky-03 root[685672] INFO batch: 321 done.
+2024-05-31 19:05:55 binky-03 root[685672] INFO loss: 0.046672
+2024-05-31 19:06:29 binky-03 root[685672] INFO batch: 331 done.
+2024-05-31 19:06:29 binky-03 root[685672] INFO loss: 0.049288
+2024-05-31 19:07:16 binky-03 root[685672] INFO batch: 341 done.
+2024-05-31 19:07:16 binky-03 root[685672] INFO loss: 0.049207
+2024-05-31 19:07:51 binky-03 root[685672] INFO batch: 351 done.
+2024-05-31 19:07:51 binky-03 root[685672] INFO loss: 0.047772
+2024-05-31 19:08:37 binky-03 root[685672] INFO batch: 361 done.
+2024-05-31 19:08:37 binky-03 root[685672] INFO loss: 0.046124
+2024-05-31 19:09:11 binky-03 root[685672] INFO batch: 371 done.
+2024-05-31 19:09:11 binky-03 root[685672] INFO loss: 0.048770
+2024-05-31 19:09:58 binky-03 root[685672] INFO batch: 381 done.
+2024-05-31 19:09:58 binky-03 root[685672] INFO loss: 0.051469
+2024-05-31 19:10:31 binky-03 root[685672] INFO batch: 391 done.
+2024-05-31 19:10:31 binky-03 root[685672] INFO loss: 0.052135
+2024-05-31 19:11:19 binky-03 root[685672] INFO batch: 401 done.
+2024-05-31 19:11:19 binky-03 root[685672] INFO loss: 0.053333
+2024-05-31 19:11:52 binky-03 root[685672] INFO batch: 411 done.
+2024-05-31 19:11:52 binky-03 root[685672] INFO loss: 0.052049
+2024-05-31 19:12:39 binky-03 root[685672] INFO batch: 421 done.
+2024-05-31 19:12:39 binky-03 root[685672] INFO loss: 0.053808
+2024-05-31 19:13:13 binky-03 root[685672] INFO batch: 431 done.
+2024-05-31 19:13:13 binky-03 root[685672] INFO loss: 0.045471
+2024-05-31 19:14:02 binky-03 root[685672] INFO batch: 441 done.
+2024-05-31 19:14:02 binky-03 root[685672] INFO loss: 0.052505
+2024-05-31 19:14:34 binky-03 root[685672] INFO batch: 451 done.
+2024-05-31 19:14:34 binky-03 root[685672] INFO loss: 0.049269
+2024-05-31 19:15:24 binky-03 root[685672] INFO batch: 461 done.
+2024-05-31 19:15:24 binky-03 root[685672] INFO loss: 0.046658
+2024-05-31 19:15:57 binky-03 root[685672] INFO batch: 471 done.
+2024-05-31 19:15:57 binky-03 root[685672] INFO loss: 0.048075
+2024-05-31 19:16:46 binky-03 root[685672] INFO batch: 481 done.
+2024-05-31 19:16:46 binky-03 root[685672] INFO loss: 0.046294
+2024-05-31 19:17:19 binky-03 root[685672] INFO batch: 491 done.
+2024-05-31 19:17:19 binky-03 root[685672] INFO loss: 0.048127
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 19:18:01 binky-03 root[685672] INFO Epoch: 9 done.
+2024-05-31 19:18:01 binky-03 root[685672] INFO loss: 0.046708  [16000/16000]
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 19:20:23 binky-03 root[685672] INFO Validation Error: 0.050645
+2024-05-31 19:20:53 binky-03 root[685672] INFO batch: 1 done.
+2024-05-31 19:20:53 binky-03 root[685672] INFO loss: 0.050947
+2024-05-31 19:21:23 binky-03 root[685672] INFO batch: 11 done.
+2024-05-31 19:21:23 binky-03 root[685672] INFO loss: 0.055816
+2024-05-31 19:22:07 binky-03 root[685672] INFO batch: 21 done.
+2024-05-31 19:22:07 binky-03 root[685672] INFO loss: 0.054068
+2024-05-31 19:22:38 binky-03 root[685672] INFO batch: 31 done.
+2024-05-31 19:22:38 binky-03 root[685672] INFO loss: 0.049610
+2024-05-31 19:23:24 binky-03 root[685672] INFO batch: 41 done.
+2024-05-31 19:23:24 binky-03 root[685672] INFO loss: 0.050583
+2024-05-31 19:23:55 binky-03 root[685672] INFO batch: 51 done.
+2024-05-31 19:23:55 binky-03 root[685672] INFO loss: 0.046880
+2024-05-31 19:24:42 binky-03 root[685672] INFO batch: 61 done.
+2024-05-31 19:24:42 binky-03 root[685672] INFO loss: 0.050388
+2024-05-31 19:25:13 binky-03 root[685672] INFO batch: 71 done.
+2024-05-31 19:25:13 binky-03 root[685672] INFO loss: 0.046557
+2024-05-31 19:26:01 binky-03 root[685672] INFO batch: 81 done.
+2024-05-31 19:26:01 binky-03 root[685672] INFO loss: 0.051537
+2024-05-31 19:26:33 binky-03 root[685672] INFO batch: 91 done.
+2024-05-31 19:26:33 binky-03 root[685672] INFO loss: 0.045737
+2024-05-31 19:27:21 binky-03 root[685672] INFO batch: 101 done.
+2024-05-31 19:27:21 binky-03 root[685672] INFO loss: 0.047046
+2024-05-31 19:27:53 binky-03 root[685672] INFO batch: 111 done.
+2024-05-31 19:27:53 binky-03 root[685672] INFO loss: 0.049892
+2024-05-31 19:28:41 binky-03 root[685672] INFO batch: 121 done.
+2024-05-31 19:28:41 binky-03 root[685672] INFO loss: 0.047341
+2024-05-31 19:29:13 binky-03 root[685672] INFO batch: 131 done.
+2024-05-31 19:29:13 binky-03 root[685672] INFO loss: 0.049026
+2024-05-31 19:30:01 binky-03 root[685672] INFO batch: 141 done.
+2024-05-31 19:30:01 binky-03 root[685672] INFO loss: 0.047673
+2024-05-31 19:30:33 binky-03 root[685672] INFO batch: 151 done.
+2024-05-31 19:30:33 binky-03 root[685672] INFO loss: 0.046317
+2024-05-31 19:31:21 binky-03 root[685672] INFO batch: 161 done.
+2024-05-31 19:31:21 binky-03 root[685672] INFO loss: 0.049789
+2024-05-31 19:31:53 binky-03 root[685672] INFO batch: 171 done.
+2024-05-31 19:31:53 binky-03 root[685672] INFO loss: 0.048569
+2024-05-31 19:32:42 binky-03 root[685672] INFO batch: 181 done.
+2024-05-31 19:32:42 binky-03 root[685672] INFO loss: 0.048813
+2024-05-31 19:33:14 binky-03 root[685672] INFO batch: 191 done.
+2024-05-31 19:33:14 binky-03 root[685672] INFO loss: 0.048134
+2024-05-31 19:34:02 binky-03 root[685672] INFO batch: 201 done.
+2024-05-31 19:34:02 binky-03 root[685672] INFO loss: 0.051128
+2024-05-31 19:34:34 binky-03 root[685672] INFO batch: 211 done.
+2024-05-31 19:34:34 binky-03 root[685672] INFO loss: 0.047379
+2024-05-31 19:35:24 binky-03 root[685672] INFO batch: 221 done.
+2024-05-31 19:35:24 binky-03 root[685672] INFO loss: 0.049537
+2024-05-31 19:35:56 binky-03 root[685672] INFO batch: 231 done.
+2024-05-31 19:35:56 binky-03 root[685672] INFO loss: 0.047720
+2024-05-31 19:36:44 binky-03 root[685672] INFO batch: 241 done.
+2024-05-31 19:36:44 binky-03 root[685672] INFO loss: 0.045182
+2024-05-31 19:37:16 binky-03 root[685672] INFO batch: 251 done.
+2024-05-31 19:37:16 binky-03 root[685672] INFO loss: 0.043412
+2024-05-31 19:38:04 binky-03 root[685672] INFO batch: 261 done.
+2024-05-31 19:38:04 binky-03 root[685672] INFO loss: 0.052015
+2024-05-31 19:38:37 binky-03 root[685672] INFO batch: 271 done.
+2024-05-31 19:38:37 binky-03 root[685672] INFO loss: 0.050871
+2024-05-31 19:39:25 binky-03 root[685672] INFO batch: 281 done.
+2024-05-31 19:39:25 binky-03 root[685672] INFO loss: 0.044265
+2024-05-31 19:39:58 binky-03 root[685672] INFO batch: 291 done.
+2024-05-31 19:39:58 binky-03 root[685672] INFO loss: 0.051944
+2024-05-31 19:40:46 binky-03 root[685672] INFO batch: 301 done.
+2024-05-31 19:40:46 binky-03 root[685672] INFO loss: 0.052292
+2024-05-31 19:41:18 binky-03 root[685672] INFO batch: 311 done.
+2024-05-31 19:41:18 binky-03 root[685672] INFO loss: 0.043031
+2024-05-31 19:42:06 binky-03 root[685672] INFO batch: 321 done.
+2024-05-31 19:42:06 binky-03 root[685672] INFO loss: 0.047467
+2024-05-31 19:42:39 binky-03 root[685672] INFO batch: 331 done.
+2024-05-31 19:42:39 binky-03 root[685672] INFO loss: 0.048745
+2024-05-31 19:43:27 binky-03 root[685672] INFO batch: 341 done.
+2024-05-31 19:43:27 binky-03 root[685672] INFO loss: 0.048071
+2024-05-31 19:44:00 binky-03 root[685672] INFO batch: 351 done.
+2024-05-31 19:44:00 binky-03 root[685672] INFO loss: 0.054026
+2024-05-31 19:44:48 binky-03 root[685672] INFO batch: 361 done.
+2024-05-31 19:44:48 binky-03 root[685672] INFO loss: 0.048771
+2024-05-31 19:45:20 binky-03 root[685672] INFO batch: 371 done.
+2024-05-31 19:45:20 binky-03 root[685672] INFO loss: 0.051694
+2024-05-31 19:46:09 binky-03 root[685672] INFO batch: 381 done.
+2024-05-31 19:46:09 binky-03 root[685672] INFO loss: 0.051439
+2024-05-31 19:46:42 binky-03 root[685672] INFO batch: 391 done.
+2024-05-31 19:46:42 binky-03 root[685672] INFO loss: 0.047517
+2024-05-31 19:47:31 binky-03 root[685672] INFO batch: 401 done.
+2024-05-31 19:47:31 binky-03 root[685672] INFO loss: 0.045356
+2024-05-31 19:48:05 binky-03 root[685672] INFO batch: 411 done.
+2024-05-31 19:48:05 binky-03 root[685672] INFO loss: 0.046483
+2024-05-31 19:48:54 binky-03 root[685672] INFO batch: 421 done.
+2024-05-31 19:48:54 binky-03 root[685672] INFO loss: 0.042468
+2024-05-31 19:49:27 binky-03 root[685672] INFO batch: 431 done.
+2024-05-31 19:49:27 binky-03 root[685672] INFO loss: 0.050844
+2024-05-31 19:50:14 binky-03 root[685672] INFO batch: 441 done.
+2024-05-31 19:50:14 binky-03 root[685672] INFO loss: 0.049667
+2024-05-31 19:50:47 binky-03 root[685672] INFO batch: 451 done.
+2024-05-31 19:50:47 binky-03 root[685672] INFO loss: 0.045677
+2024-05-31 19:51:35 binky-03 root[685672] INFO batch: 461 done.
+2024-05-31 19:51:35 binky-03 root[685672] INFO loss: 0.049314
+2024-05-31 19:52:08 binky-03 root[685672] INFO batch: 471 done.
+2024-05-31 19:52:08 binky-03 root[685672] INFO loss: 0.050460
+2024-05-31 19:52:56 binky-03 root[685672] INFO batch: 481 done.
+2024-05-31 19:52:56 binky-03 root[685672] INFO loss: 0.049684
+2024-05-31 19:53:29 binky-03 root[685672] INFO batch: 491 done.
+2024-05-31 19:53:29 binky-03 root[685672] INFO loss: 0.051927
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 19:54:01 binky-03 root[685672] INFO Epoch: 10 done.
+2024-05-31 19:54:01 binky-03 root[685672] INFO loss: 0.050943  [16000/16000]
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
+2024-05-31 19:56:22 binky-03 root[685672] INFO Validation Error: 0.050266
+[W CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
