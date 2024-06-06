@@ -7,4 +7,4 @@
 #SBATCH --output=logs/log_training_0606_yedidya.txt
 #SBATCH --job-name=training_02
 umask 022
-/cs/ep/120/Voice-Image-Classifier/.venv/bin/python3 /cs/ep/120/Voice-Image-Classifier/models/training.py --limit_size=16000 --validation_size=1024 --batch_size=32 --run_name=triplet_08_fix --epochs=10
+/cs/ep/120/Voice-Image-Classifier/.venv/bin/python3 /cs/ep/120/Voice-Image-Classifier/models/training.py --limit_size=16000 --validation_size=1024 --batch_size=32 --run_name=contrstive_loss_01 --epochs=10

@@ -2,7 +2,7 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
-from sklearn.metrics.pairwise import cosine_similarity
+# from sklearn.metrics.pairwise import cosine_similarity
 
 # Get cpu, gpu or mps device for training.
 device = (
@@ -21,11 +21,11 @@ class ImageToVoice(nn.Module):
             #input 1,257,768
             nn.Conv2d(1, 8, kernel_size=3, stride=2, padding=1),  # output 8,129,384
             nn.ReLU(),
-            #self.dropout,
+            self.dropout,
             nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # output 12,65,192
             nn.Conv2d(8, 2, kernel_size=3, stride=2, padding=1),  # output 2,33,96
             nn.ReLU(), 
-            #self.dropout,
+            self.dropout,
             nn.Conv2d(2, 1, kernel_size=3, stride=2, padding=1),  # output 1,17,48
             nn.ReLU(), 
             self.dropout,
@@ -34,7 +34,7 @@ class ImageToVoice(nn.Module):
         self.multihead = nn.MultiheadAttention(embed_dim=816, num_heads=8) 
         self.final_layer = nn.Linear(816, 512)  # output 1,768
         # self.loss_func = CosineTripletLoss(margin=0.8)
-        self.loss_func = nn.CosineEmbeddingLoss()
+        self.loss_func = ContrastiveCosineLoss()
         
     def forward(self, x):
         logits = self.convolution_layers(x.to(device))
@@ -44,12 +44,8 @@ class ImageToVoice(nn.Module):
         return logits
     
     def loss(self,outputs, voices):
-        
         voices = voices.to(outputs.device)
-        # anchor = outputs
-        # positive = voices
-        loss = self.loss_func(outputs, voices, torch.ones(outputs.size(0)).to(outputs.device))
-    
+        loss = self.loss_func(outputs, voices)
         return loss
         
 
@@ -66,22 +62,20 @@ class CosineTripletLoss(nn.Module):
         return losses.mean()
 
 
-class ContrastiveCoiseLoss(nn.Module):
+class ContrastiveCosineLoss(nn.Module):
     def __init__(self):
-        super(ContrastiveCoiseLoss, self).__init__()
+        super(ContrastiveCosineLoss, self).__init__()
+        self.k = 2
 
-
-# take all outputs and calculate the similarty between them and the voices ->sim_matrix 
-# for each outputs i:
-# loss = 1 - exp(sim_matirx[i])/(sum(exp(sim_matrix[j])) + sim_matrix[i]) // j!=i
-# the overall loss is the mean of all losses  
     def forward(self, outputs, voices):
-        sim_matrix = cosine_similarity(outputs, voices)
-        losses = []
-        for i in range(outputs.size(0)):
-            numerator = torch.exp(sim_matrix[i])
-            denominator = torch.sum(torch.exp(sim_matrix)) + sim_matrix[i]
-            loss = 1 - numerator / denominator
-            losses.append(loss)
-        loss = torch.mean(torch.stack(losses))
-        return loss
+        sim_vector = F.cosine_similarity(outputs, voices)
+        numerator = torch.exp(sim_vector)
+        sum_negatives = torch.zeros(outputs.size(0)).to(outputs.device)
+        for i in range(1, self.k+1):
+            shifted_voices = torch.roll(voices, shifts=i, dims=0)
+            sum_negatives += torch.exp(F.cosine_similarity(outputs, shifted_voices))
+
+        denominator = numerator + sum_negatives
+        # log_sim = torch.log(numerator / denominator)
+        loss = 1 - numerator / denominator
+        return torch.mean(loss)
