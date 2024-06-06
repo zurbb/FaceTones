@@ -3,9 +3,18 @@ import torch
 from training import ROOT_DIR
 import os
 from data_loader import get_train_loader
+import coloredlogs, logging
+
+logger = logging.getLogger()
+coloredlogs.install()
 
 
 def load_model_by_checkpoint(checkpoint_name:str)->ImageVoiceClassifier:
+<<<<<<< HEAD
+    logger.info(f"geting model {checkpoint_name}")
+    model = ImageVoiceClassifier()
+    model.load_state_dict(torch.load(os.path.join(ROOT_DIR,checkpoint_name)))
+    logger.info(f"loaded model")
     model = ImageVoiceClassifier(dino=True)
     checkpoint = torch.load(os.path.join(ROOT_DIR,'trained_models',checkpoint_name), map_location=torch.device('cpu'))
     model.load_state_dict(checkpoint["model_state_dict"])

@@ -6102,3 +6102,250 @@ ImageVoiceClassifier(
 2024-06-01 18:13:59 binky-03 root[1956280] INFO loss: 0.045753
 2024-06-01 18:14:16 binky-03 root[1956280] INFO batch: 1861 done.
 2024-06-01 18:14:16 binky-03 root[1956280] INFO loss: 0.045369
+2024-06-01 18:14:25 binky-03 root[1956280] INFO batch: 1871 done.
+2024-06-01 18:14:25 binky-03 root[1956280] INFO loss: 0.047448
+2024-06-01 18:14:40 binky-03 root[1956280] INFO batch: 1881 done.
+2024-06-01 18:14:40 binky-03 root[1956280] INFO loss: 0.044662
+2024-06-01 18:15:05 binky-03 root[1956280] INFO batch: 1891 done.
+2024-06-01 18:15:05 binky-03 root[1956280] INFO loss: 0.045337
+2024-06-01 18:15:14 binky-03 root[1956280] INFO batch: 1901 done.
+2024-06-01 18:15:14 binky-03 root[1956280] INFO loss: 0.048470
+2024-06-01 18:15:30 binky-03 root[1956280] INFO batch: 1911 done.
+2024-06-01 18:15:30 binky-03 root[1956280] INFO loss: 0.046818
+2024-06-01 18:15:53 binky-03 root[1956280] INFO batch: 1921 done.
+2024-06-01 18:15:53 binky-03 root[1956280] INFO loss: 0.051979
+2024-06-01 18:16:04 binky-03 root[1956280] INFO batch: 1931 done.
+2024-06-01 18:16:04 binky-03 root[1956280] INFO loss: 0.044669
+2024-06-01 18:16:18 binky-03 root[1956280] INFO batch: 1941 done.
+2024-06-01 18:16:18 binky-03 root[1956280] INFO loss: 0.042938
+2024-06-01 18:16:29 binky-03 root[1956280] INFO batch: 1951 done.
+2024-06-01 18:16:29 binky-03 root[1956280] INFO loss: 0.048608
+2024-06-01 18:16:43 binky-03 root[1956280] INFO batch: 1961 done.
+2024-06-01 18:16:43 binky-03 root[1956280] INFO loss: 0.043038
+2024-06-01 18:17:08 binky-03 root[1956280] INFO batch: 1971 done.
+2024-06-01 18:17:08 binky-03 root[1956280] INFO loss: 0.046210
+2024-06-01 18:17:18 binky-03 root[1956280] INFO batch: 1981 done.
+2024-06-01 18:17:18 binky-03 root[1956280] INFO loss: 0.047447
+2024-06-01 18:17:33 binky-03 root[1956280] INFO batch: 1991 done.
+2024-06-01 18:17:33 binky-03 root[1956280] INFO loss: 0.047574
+2024-06-01 18:17:58 binky-03 root[1956280] INFO batch: 2001 done.
+2024-06-01 18:17:58 binky-03 root[1956280] INFO loss: 0.047379
+2024-06-01 18:18:07 binky-03 root[1956280] INFO batch: 2011 done.
+2024-06-01 18:18:07 binky-03 root[1956280] INFO loss: 0.044291
+2024-06-01 18:18:22 binky-03 root[1956280] INFO batch: 2021 done.
+2024-06-01 18:18:22 binky-03 root[1956280] INFO loss: 0.047688
+2024-06-01 18:18:30 binky-03 root[1956280] INFO batch: 2031 done.
+2024-06-01 18:18:30 binky-03 root[1956280] INFO loss: 0.048086
+2024-06-01 18:18:48 binky-03 root[1956280] INFO batch: 2041 done.
+2024-06-01 18:18:48 binky-03 root[1956280] INFO loss: 0.043338
+2024-06-01 18:19:13 binky-03 root[1956280] INFO batch: 2051 done.
+2024-06-01 18:19:13 binky-03 root[1956280] INFO loss: 0.053292
+2024-06-01 18:19:19 binky-03 root[1956280] INFO batch: 2061 done.
+2024-06-01 18:19:19 binky-03 root[1956280] INFO loss: 0.046289
+2024-06-01 18:19:38 binky-03 root[1956280] INFO batch: 2071 done.
+2024-06-01 18:19:38 binky-03 root[1956280] INFO loss: 0.044611
+2024-06-01 18:20:03 binky-03 root[1956280] INFO batch: 2081 done.
+2024-06-01 18:20:03 binky-03 root[1956280] INFO loss: 0.044827
+2024-06-01 18:20:08 binky-03 root[1956280] INFO batch: 2091 done.
+2024-06-01 18:20:08 binky-03 root[1956280] INFO loss: 0.047351
+2024-06-01 18:20:27 binky-03 root[1956280] INFO batch: 2101 done.
+2024-06-01 18:20:27 binky-03 root[1956280] INFO loss: 0.047321
+2024-06-01 18:20:32 binky-03 root[1956280] INFO batch: 2111 done.
+2024-06-01 18:20:32 binky-03 root[1956280] INFO loss: 0.041700
+2024-06-01 18:20:52 binky-03 root[1956280] INFO batch: 2121 done.
+2024-06-01 18:20:52 binky-03 root[1956280] INFO loss: 0.043394
+2024-06-01 18:21:17 binky-03 root[1956280] INFO batch: 2131 done.
+2024-06-01 18:21:17 binky-03 root[1956280] INFO loss: 0.045043
+2024-06-01 18:21:22 binky-03 root[1956280] INFO batch: 2141 done.
+2024-06-01 18:21:22 binky-03 root[1956280] INFO loss: 0.045562
+2024-06-01 18:21:42 binky-03 root[1956280] INFO batch: 2151 done.
+2024-06-01 18:21:42 binky-03 root[1956280] INFO loss: 0.041173
+2024-06-01 18:22:06 binky-03 root[1956280] INFO batch: 2161 done.
+2024-06-01 18:22:06 binky-03 root[1956280] INFO loss: 0.044618
+2024-06-01 18:22:12 binky-03 root[1956280] INFO batch: 2171 done.
+2024-06-01 18:22:12 binky-03 root[1956280] INFO loss: 0.048102
+2024-06-01 18:22:29 binky-03 root[1956280] INFO batch: 2181 done.
+2024-06-01 18:22:29 binky-03 root[1956280] INFO loss: 0.045283
+2024-06-01 18:22:38 binky-03 root[1956280] INFO batch: 2191 done.
+2024-06-01 18:22:38 binky-03 root[1956280] INFO loss: 0.044964
+2024-06-01 18:22:54 binky-03 root[1956280] INFO batch: 2201 done.
+2024-06-01 18:22:54 binky-03 root[1956280] INFO loss: 0.043555
+2024-06-01 18:23:17 binky-03 root[1956280] INFO batch: 2211 done.
+2024-06-01 18:23:17 binky-03 root[1956280] INFO loss: 0.048330
+2024-06-01 18:23:29 binky-03 root[1956280] INFO batch: 2221 done.
+2024-06-01 18:23:29 binky-03 root[1956280] INFO loss: 0.048725
+2024-06-01 18:23:41 binky-03 root[1956280] INFO batch: 2231 done.
+2024-06-01 18:23:41 binky-03 root[1956280] INFO loss: 0.042586
+2024-06-01 18:24:05 binky-03 root[1956280] INFO batch: 2241 done.
+2024-06-01 18:24:05 binky-03 root[1956280] INFO loss: 0.047606
+2024-06-01 18:24:18 binky-03 root[1956280] INFO batch: 2251 done.
+2024-06-01 18:24:18 binky-03 root[1956280] INFO loss: 0.046700
+2024-06-01 18:24:30 binky-03 root[1956280] INFO batch: 2261 done.
+2024-06-01 18:24:30 binky-03 root[1956280] INFO loss: 0.048733
+2024-06-01 18:24:43 binky-03 root[1956280] INFO batch: 2271 done.
+2024-06-01 18:24:43 binky-03 root[1956280] INFO loss: 0.045684
+2024-06-01 18:24:54 binky-03 root[1956280] INFO batch: 2281 done.
+2024-06-01 18:24:54 binky-03 root[1956280] INFO loss: 0.051755
+2024-06-01 18:25:18 binky-03 root[1956280] INFO batch: 2291 done.
+2024-06-01 18:25:18 binky-03 root[1956280] INFO loss: 0.044811
+2024-06-01 18:25:34 binky-03 root[1956280] INFO batch: 2301 done.
+2024-06-01 18:25:34 binky-03 root[1956280] INFO loss: 0.047979
+2024-06-01 18:25:42 binky-03 root[1956280] INFO batch: 2311 done.
+2024-06-01 18:25:42 binky-03 root[1956280] INFO loss: 0.042864
+2024-06-01 18:26:06 binky-03 root[1956280] INFO batch: 2321 done.
+2024-06-01 18:26:06 binky-03 root[1956280] INFO loss: 0.047324
+2024-06-01 18:26:22 binky-03 root[1956280] INFO batch: 2331 done.
+2024-06-01 18:26:22 binky-03 root[1956280] INFO loss: 0.048510
+2024-06-01 18:26:31 binky-03 root[1956280] INFO batch: 2341 done.
+2024-06-01 18:26:31 binky-03 root[1956280] INFO loss: 0.049202
+2024-06-01 18:26:47 binky-03 root[1956280] INFO batch: 2351 done.
+2024-06-01 18:26:47 binky-03 root[1956280] INFO loss: 0.045048
+2024-06-01 18:26:54 binky-03 root[1956280] INFO batch: 2361 done.
+2024-06-01 18:26:54 binky-03 root[1956280] INFO loss: 0.046725
+2024-06-01 18:27:17 binky-03 root[1956280] INFO batch: 2371 done.
+2024-06-01 18:27:17 binky-03 root[1956280] INFO loss: 0.044888
+2024-06-01 18:27:37 binky-03 root[1956280] INFO batch: 2381 done.
+2024-06-01 18:27:37 binky-03 root[1956280] INFO loss: 0.046716
+2024-06-01 18:27:41 binky-03 root[1956280] INFO batch: 2391 done.
+2024-06-01 18:27:41 binky-03 root[1956280] INFO loss: 0.044787
+2024-06-01 18:28:05 binky-03 root[1956280] INFO batch: 2401 done.
+2024-06-01 18:28:05 binky-03 root[1956280] INFO loss: 0.043811
+2024-06-01 18:28:27 binky-03 root[1956280] INFO batch: 2411 done.
+2024-06-01 18:28:27 binky-03 root[1956280] INFO loss: 0.047164
+2024-06-01 18:28:30 binky-03 root[1956280] INFO batch: 2421 done.
+2024-06-01 18:28:30 binky-03 root[1956280] INFO loss: 0.049030
+2024-06-01 18:28:53 binky-03 root[1956280] INFO batch: 2431 done.
+2024-06-01 18:28:53 binky-03 root[1956280] INFO loss: 0.043409
+2024-06-01 18:28:54 binky-03 root[1956280] INFO batch: 2441 done.
+2024-06-01 18:28:54 binky-03 root[1956280] INFO loss: 0.046223
+2024-06-01 18:29:18 binky-03 root[1956280] INFO batch: 2451 done.
+2024-06-01 18:29:18 binky-03 root[1956280] INFO loss: 0.041340
+2024-06-01 18:29:43 binky-03 root[1956280] INFO batch: 2461 done.
+2024-06-01 18:29:43 binky-03 root[1956280] INFO loss: 0.050645
+2024-06-01 18:29:43 binky-03 root[1956280] INFO batch: 2471 done.
+2024-06-01 18:29:43 binky-03 root[1956280] INFO loss: 0.046256
+2024-06-01 18:30:07 binky-03 root[1956280] INFO batch: 2481 done.
+2024-06-01 18:30:07 binky-03 root[1956280] INFO loss: 0.046324
+2024-06-01 18:30:32 binky-03 root[1956280] INFO batch: 2491 done.
+2024-06-01 18:30:32 binky-03 root[1956280] INFO loss: 0.044088
+2024-06-01 18:30:32 binky-03 root[1956280] INFO batch: 2501 done.
+2024-06-01 18:30:32 binky-03 root[1956280] INFO loss: 0.050463
+2024-06-01 18:30:57 binky-03 root[1956280] INFO batch: 2511 done.
+2024-06-01 18:30:57 binky-03 root[1956280] INFO loss: 0.045147
+2024-06-01 18:30:57 binky-03 root[1956280] INFO batch: 2521 done.
+2024-06-01 18:30:57 binky-03 root[1956280] INFO loss: 0.042506
+2024-06-01 18:31:22 binky-03 root[1956280] INFO batch: 2531 done.
+2024-06-01 18:31:22 binky-03 root[1956280] INFO loss: 0.045266
+2024-06-01 18:31:47 binky-03 root[1956280] INFO batch: 2541 done.
+2024-06-01 18:31:47 binky-03 root[1956280] INFO loss: 0.046939
+2024-06-01 18:31:47 binky-03 root[1956280] INFO batch: 2551 done.
+2024-06-01 18:31:47 binky-03 root[1956280] INFO loss: 0.050585
+2024-06-01 18:32:12 binky-03 root[1956280] INFO batch: 2561 done.
+2024-06-01 18:32:12 binky-03 root[1956280] INFO loss: 0.043282
+2024-06-01 18:32:37 binky-03 root[1956280] INFO batch: 2571 done.
+2024-06-01 18:32:37 binky-03 root[1956280] INFO loss: 0.044452
+2024-06-01 18:32:37 binky-03 root[1956280] INFO batch: 2581 done.
+2024-06-01 18:32:37 binky-03 root[1956280] INFO loss: 0.046205
+2024-06-01 18:33:02 binky-03 root[1956280] INFO batch: 2591 done.
+2024-06-01 18:33:02 binky-03 root[1956280] INFO loss: 0.042074
+2024-06-01 18:33:02 binky-03 root[1956280] INFO batch: 2601 done.
+2024-06-01 18:33:02 binky-03 root[1956280] INFO loss: 0.042283
+2024-06-01 18:33:27 binky-03 root[1956280] INFO batch: 2611 done.
+2024-06-01 18:33:27 binky-03 root[1956280] INFO loss: 0.039969
+2024-06-01 18:33:52 binky-03 root[1956280] INFO batch: 2621 done.
+2024-06-01 18:33:52 binky-03 root[1956280] INFO loss: 0.045698
+2024-06-01 18:33:52 binky-03 root[1956280] INFO batch: 2631 done.
+2024-06-01 18:33:52 binky-03 root[1956280] INFO loss: 0.047111
+2024-06-01 18:34:18 binky-03 root[1956280] INFO batch: 2641 done.
+2024-06-01 18:34:18 binky-03 root[1956280] INFO loss: 0.045197
+2024-06-01 18:34:43 binky-03 root[1956280] INFO batch: 2651 done.
+2024-06-01 18:34:43 binky-03 root[1956280] INFO loss: 0.046423
+2024-06-01 18:34:43 binky-03 root[1956280] INFO batch: 2661 done.
+2024-06-01 18:34:43 binky-03 root[1956280] INFO loss: 0.041953
+2024-06-01 18:35:09 binky-03 root[1956280] INFO batch: 2671 done.
+2024-06-01 18:35:09 binky-03 root[1956280] INFO loss: 0.048657
+2024-06-01 18:35:09 binky-03 root[1956280] INFO batch: 2681 done.
+2024-06-01 18:35:09 binky-03 root[1956280] INFO loss: 0.045427
+2024-06-01 18:35:34 binky-03 root[1956280] INFO batch: 2691 done.
+2024-06-01 18:35:34 binky-03 root[1956280] INFO loss: 0.045138
+2024-06-01 18:35:58 binky-03 root[1956280] INFO batch: 2701 done.
+2024-06-01 18:35:58 binky-03 root[1956280] INFO loss: 0.044491
+2024-06-01 18:35:58 binky-03 root[1956280] INFO batch: 2711 done.
+2024-06-01 18:35:58 binky-03 root[1956280] INFO loss: 0.044198
+2024-06-01 18:36:23 binky-03 root[1956280] INFO batch: 2721 done.
+2024-06-01 18:36:23 binky-03 root[1956280] INFO loss: 0.053406
+2024-06-01 18:36:48 binky-03 root[1956280] INFO batch: 2731 done.
+2024-06-01 18:36:48 binky-03 root[1956280] INFO loss: 0.050101
+2024-06-01 18:36:48 binky-03 root[1956280] INFO batch: 2741 done.
+2024-06-01 18:36:48 binky-03 root[1956280] INFO loss: 0.047625
+2024-06-01 18:37:12 binky-03 root[1956280] INFO batch: 2751 done.
+2024-06-01 18:37:12 binky-03 root[1956280] INFO loss: 0.050207
+2024-06-01 18:37:12 binky-03 root[1956280] INFO batch: 2761 done.
+2024-06-01 18:37:12 binky-03 root[1956280] INFO loss: 0.046971
+2024-06-01 18:37:37 binky-03 root[1956280] INFO batch: 2771 done.
+2024-06-01 18:37:37 binky-03 root[1956280] INFO loss: 0.046033
+2024-06-01 18:38:03 binky-03 root[1956280] INFO batch: 2781 done.
+2024-06-01 18:38:03 binky-03 root[1956280] INFO loss: 0.047520
+2024-06-01 18:38:03 binky-03 root[1956280] INFO batch: 2791 done.
+2024-06-01 18:38:03 binky-03 root[1956280] INFO loss: 0.043754
+2024-06-01 18:38:28 binky-03 root[1956280] INFO batch: 2801 done.
+2024-06-01 18:38:28 binky-03 root[1956280] INFO loss: 0.044515
+2024-06-01 18:38:53 binky-03 root[1956280] INFO batch: 2811 done.
+2024-06-01 18:38:53 binky-03 root[1956280] INFO loss: 0.045346
+2024-06-01 18:38:53 binky-03 root[1956280] INFO batch: 2821 done.
+2024-06-01 18:38:53 binky-03 root[1956280] INFO loss: 0.047580
+2024-06-01 18:39:19 binky-03 root[1956280] INFO batch: 2831 done.
+2024-06-01 18:39:19 binky-03 root[1956280] INFO loss: 0.045042
+2024-06-01 18:39:19 binky-03 root[1956280] INFO batch: 2841 done.
+2024-06-01 18:39:19 binky-03 root[1956280] INFO loss: 0.042287
+2024-06-01 18:39:44 binky-03 root[1956280] INFO batch: 2851 done.
+2024-06-01 18:39:44 binky-03 root[1956280] INFO loss: 0.047555
+2024-06-01 18:40:09 binky-03 root[1956280] INFO batch: 2861 done.
+2024-06-01 18:40:09 binky-03 root[1956280] INFO loss: 0.045737
+2024-06-01 18:40:09 binky-03 root[1956280] INFO batch: 2871 done.
+2024-06-01 18:40:09 binky-03 root[1956280] INFO loss: 0.044613
+2024-06-01 18:40:34 binky-03 root[1956280] INFO batch: 2881 done.
+2024-06-01 18:40:34 binky-03 root[1956280] INFO loss: 0.048817
+2024-06-01 18:40:59 binky-03 root[1956280] INFO batch: 2891 done.
+2024-06-01 18:40:59 binky-03 root[1956280] INFO loss: 0.046336
+2024-06-01 18:40:59 binky-03 root[1956280] INFO batch: 2901 done.
+2024-06-01 18:40:59 binky-03 root[1956280] INFO loss: 0.048250
+2024-06-01 18:41:24 binky-03 root[1956280] INFO batch: 2911 done.
+2024-06-01 18:41:24 binky-03 root[1956280] INFO loss: 0.043430
+2024-06-01 18:41:24 binky-03 root[1956280] INFO batch: 2921 done.
+2024-06-01 18:41:24 binky-03 root[1956280] INFO loss: 0.042416
+2024-06-01 18:41:49 binky-03 root[1956280] INFO batch: 2931 done.
+2024-06-01 18:41:49 binky-03 root[1956280] INFO loss: 0.049665
+2024-06-01 18:42:15 binky-03 root[1956280] INFO batch: 2941 done.
+2024-06-01 18:42:15 binky-03 root[1956280] INFO loss: 0.043657
+2024-06-01 18:42:15 binky-03 root[1956280] INFO batch: 2951 done.
+2024-06-01 18:42:15 binky-03 root[1956280] INFO loss: 0.048872
+2024-06-01 18:42:40 binky-03 root[1956280] INFO batch: 2961 done.
+2024-06-01 18:42:40 binky-03 root[1956280] INFO loss: 0.041911
+2024-06-01 18:43:05 binky-03 root[1956280] INFO batch: 2971 done.
+2024-06-01 18:43:05 binky-03 root[1956280] INFO loss: 0.048545
+2024-06-01 18:43:05 binky-03 root[1956280] INFO batch: 2981 done.
+2024-06-01 18:43:05 binky-03 root[1956280] INFO loss: 0.046557
+2024-06-01 18:43:30 binky-03 root[1956280] INFO batch: 2991 done.
+2024-06-01 18:43:30 binky-03 root[1956280] INFO loss: 0.043330
+2024-06-01 18:43:30 binky-03 root[1956280] INFO batch: 3001 done.
+2024-06-01 18:43:30 binky-03 root[1956280] INFO loss: 0.045092
+2024-06-01 18:43:56 binky-03 root[1956280] INFO batch: 3011 done.
+2024-06-01 18:43:56 binky-03 root[1956280] INFO loss: 0.044309
+2024-06-01 18:44:20 binky-03 root[1956280] INFO batch: 3021 done.
+2024-06-01 18:44:20 binky-03 root[1956280] INFO loss: 0.047380
+2024-06-01 18:44:21 binky-03 root[1956280] INFO batch: 3031 done.
+2024-06-01 18:44:21 binky-03 root[1956280] INFO loss: 0.044972
+2024-06-01 18:44:45 binky-03 root[1956280] INFO batch: 3041 done.
+2024-06-01 18:44:46 binky-03 root[1956280] INFO loss: 0.046514
+2024-06-01 18:45:10 binky-03 root[1956280] INFO batch: 3051 done.
+2024-06-01 18:45:10 binky-03 root[1956280] INFO loss: 0.044000
+2024-06-01 18:45:10 binky-03 root[1956280] INFO batch: 3061 done.
+2024-06-01 18:45:10 binky-03 root[1956280] INFO loss: 0.048670
+2024-06-01 18:45:36 binky-03 root[1956280] INFO batch: 3071 done.
+2024-06-01 18:45:36 binky-03 root[1956280] INFO loss: 0.050731
+2024-06-01 18:45:36 binky-03 root[1956280] INFO batch: 3081 done.
+2024-06-01 18:45:36 binky-03 root[1956280] INFO loss: 0.047871
+2024-06-01 18:46:01 binky-03 root[1956280] INFO batch: 3091 done.
+2024-06-01 18:46:01 binky-03 root[1956280] INFO loss: 0.044754
+/var/spool/slurmd/job21460659/slurm_script: line 10: 1956280 Bus error               /cs/ep/120/playground/Voice-Image-Classifier/.env/bin/python3 /cs/ep/120/playground/Voice-Image-Classifier/models/training.py --limit_size=100000 --validation_size=10000 --batch_size=32 --run_name=dino_31_05_zur_2 --epochs=20
