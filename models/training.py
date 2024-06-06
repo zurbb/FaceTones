@@ -64,21 +64,20 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                 # Forward pass
                 outputs = model(images)
                 loss = model.loss(outputs, voices)
-
                 # Backward and optimize
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                if Batch_number%1==0:
+                if Batch_number%100==0:
                     WRITER.add_scalar('Loss/train', loss.item(), epoch * size + Batch_number)
                     logger.info(f"batch: {Batch_number+1} done.")
                     logger.info(f"loss: {loss:>7f}")
             except Exception as e:
                 logger.error(f"Error in batch {Batch_number+1}: {e}")
 
-        logger.info(f"Epoch: {epoch+1} done.")    
-        loss, current = torch.mean(loss), (Batch_number + 1) * len(images)
-        logger.info(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+        current = (Batch_number + 1) * len(images)
+        logger.info(f"Epoch: {epoch+1} done. [{current:>5d}/{size:>5d}]")    
+
 
         # Validate the model on the validation set
         with torch.no_grad():
@@ -92,6 +91,7 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                     logger.error(f"Error in validation batch {num_batches+1}: {e}")
                 num_batches += 1
             logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
+            WRITER.add_scalar('Loss/train', val_loss.item(), epoch * size + Batch_number)
         save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
 
 
@@ -111,9 +111,9 @@ def main():
     test_images_dir = os.path.join(ROOT_DIR, "data/test/images")
     test_voices_dir = os.path.join(ROOT_DIR, "data/test/audio")
     logger.info("Creating train data loader")
-    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE, limit_size=LIMIT_SIZE, dino=True)
+    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE, limit_size=LIMIT_SIZE, num_workers=2)
     logger.info("Creating test data loader")
-    validation_dataloader = get_train_loader(test_images_dir, test_voices_dir, batch_size=BATCH_SIZE, limit_size=VALIDATION_SIZE, dino=True)
+    validation_dataloader = get_train_loader(test_images_dir, test_voices_dir, batch_size=BATCH_SIZE, limit_size=VALIDATION_SIZE, num_workers=2)
     logger.info("Starting training")
     train(train_dataloader, validation_dataloader, model, optimizer, num_epochs=EPOCHS)
 

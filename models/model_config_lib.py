@@ -32,10 +32,11 @@ class ImageToVoice(nn.Module):
         )
         self.multihead = nn.MultiheadAttention(embed_dim=816, num_heads=8) 
         self.final_layer = nn.Linear(816, 512)  # output 1,768
-        self.loss_func = CosineTripletLoss(margin=0.8)
+        # self.loss_func = CosineTripletLoss(margin=0.8)
+        self.loss_func = nn.CosineEmbeddingLoss()
         
     def forward(self, x):
-        logits = self.convolutional_layers(x.to(device))
+        logits = self.convolution_layers(x.to(device))
         attn_output, _ = self.multihead(logits.to(device), logits.to(device), logits.to(device), need_weights=False)
         attn_output = self.dropout(attn_output.to(device))  # Apply dropout
         logits = self.final_layer(attn_output.to(device))
@@ -44,15 +45,9 @@ class ImageToVoice(nn.Module):
     def loss(self,outputs, voices):
         
         voices = voices.to(outputs.device)
-        anchor = outputs
-        positive = voices
-    
-        shift = torch.randint(1, voices.size(0), (1,)).item()
-        indices = torch.arange(voices.size(0)).to(outputs.device)
-        indices = (indices + shift) % voices.size(0)
-        negative = voices[indices]
-
-        loss = self.loss_func(anchor, positive, negative)
+        # anchor = outputs
+        # positive = voices
+        loss = self.loss_func(outputs, voices, torch.ones(outputs.size(0)).to(outputs.device))
     
         return loss
         
