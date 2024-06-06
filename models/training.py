@@ -91,7 +91,7 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                     logger.error(f"Error in validation batch {num_batches+1}: {e}")
                 num_batches += 1
             logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
-            WRITER.add_scalar('Loss/train', val_loss.item(), epoch * size + Batch_number)
+            WRITER.add_scalar('Loss/validation', val_loss.item()/num_batches, epoch * size + Batch_number)
         save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
 
 
