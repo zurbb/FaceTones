@@ -76,6 +76,6 @@ class ContrastiveCosineLoss(nn.Module):
             sum_negatives += torch.exp(F.cosine_similarity(outputs, shifted_voices))
 
         denominator = numerator + sum_negatives
-        # log_sim = torch.log(numerator / denominator)
-        loss = 1 - numerator / denominator
-        return torch.mean(loss)
+        log_sim_loss = -torch.log(numerator / denominator)
+        # loss = 1 - numerator / denominator
+        return torch.mean(log_sim_loss)
