@@ -24,7 +24,7 @@ class ImageToVoice(nn.Module):
         )
         self.multihead = nn.MultiheadAttention(embed_dim=816, num_heads=8) 
         self.final_layer = nn.Linear(816, 512)  # output 1,768
-        self.loss = CosineTripletLoss(margin=0.8)
+        self.loss_func = CosineTripletLoss(margin=0.8)
         
     def forward(self, x):
         logits = self.convolutional_layers(x.to(device))
@@ -33,7 +33,7 @@ class ImageToVoice(nn.Module):
         logits = self.final_layer(attn_output.to(device))
         return logits
     
-    def loss(outputs, voices):
+    def loss(self,outputs, voices):
         
         voices = voices.to(outputs.device)
         anchor = outputs
@@ -44,7 +44,7 @@ class ImageToVoice(nn.Module):
         indices = (indices + shift) % voices.size(0)
         negative = voices[indices]
 
-        loss = self.loss(anchor, positive, negative)
+        loss = self.loss_func(anchor, positive, negative)
     
         return loss
         
