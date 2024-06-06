@@ -9,6 +9,8 @@ from data_loader import get_train_loader
 import coloredlogs, logging
 import argparse
 from model_config_lib import ImageToVoice
+from torch.utils.tensorboard import SummaryWriter
+
 
 
 def parse_args():
@@ -67,7 +69,8 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                if Batch_number%100==0:
+                if Batch_number%1==0:
+                    WRITER.add_scalar('Loss/train', loss.item(), epoch * size + Batch_number)
                     logger.info(f"batch: {Batch_number+1} done.")
                     logger.info(f"loss: {loss:>7f}")
             except Exception as e:
@@ -84,7 +87,7 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
             for images, voices, _ in validation_loader:
                 try:
                     outputs = model(images)
-                    val_loss += loss_fn(outputs, voices)
+                    val_loss += model.loss(outputs, voices)
                 except Exception as e:
                     logger.error(f"Error in validation batch {num_batches+1}: {e}")
                 num_batches += 1
@@ -122,7 +125,8 @@ if __name__ == '__main__':
     BATCH_SIZE = args.batch_size
     RUN_NAME = args.run_name
     EPOCHS = args.epochs
-    
+    WRITER = SummaryWriter(F'runs/{RUN_NAME}')
+
     torch.multiprocessing.set_start_method('spawn', force=True)
     main()
 
