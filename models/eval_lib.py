@@ -23,5 +23,5 @@ def load_validation_data(limit_size:int, batch_size:int, use_dino:bool)->torch.u
     validation_data = get_train_loader(images_dir=test_images_dir, voices_dir=test_voices_dir, batch_size=batch_size, limit_size=limit_size, dino=use_dino)
     return validation_data
 
-def cosine_similarity_loss(predicted, true):
+def cosine_similarity(predicted, true):
     return torch.nn.functional.cosine_similarity(predicted, true)
