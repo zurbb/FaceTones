@@ -97,8 +97,8 @@ class CosineTripletLoss(nn.Module):
         self.margin = margin
 
     def forward(self, anchor, positive, negative):
-        pos_distance = nn.CosineEmbeddingLoss(anchor, positive) # close ==> 0
-        neg_distance = nn.CosineEmbeddingLoss(anchor, negative) # far ==> 1
+        pos_distance = nn.CosineEmbeddingLoss(anchor, positive, torch.ones(anchor.size(0)).to(device)) # close ==> 0
+        neg_distance = nn.CosineEmbeddingLoss(anchor, negative, torch.ones(anchor.size(0)).to(device)) # far ==> 1
         losses = F.relu(pos_distance - neg_distance + self.margin)
         return losses.mean()
 # LOSS = nn.CosineEmbeddingLoss()

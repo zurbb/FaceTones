@@ -1,4 +1,3 @@
-from data_loader import get_train_loader
 import argparse
 import numpy as np
 import eval_lib as lib
@@ -14,7 +13,8 @@ parser.add_argument("--use_dino",type=bool, default=True, help="Flag to indicate
 
 args = parser.parse_args()
 
-
+IMAGE_DIR = "data/test/images/"
+AUDIO_DIR = "data/test/audio/"
 RESULT_FILE_PATH = args.result_file_path
 
 def write_results(results: dict):
@@ -24,15 +24,32 @@ def write_results(results: dict):
     #     "epochs": args.epochs,
     #     "model_checkpoint": args.model_checkpoint
     # }
+    
+    root_dir = "/cs/ep/120/Voice-Image-Classifier/"
+    image_dir = root_dir + IMAGE_DIR
+    voice_dir = root_dir + AUDIO_DIR
+    scores = [value[0] for value in results.values()]
+    true_names = [value[1] for value in results.values()]
+    false_names = [value[2] for value in results.values()]
+    score_diffs = [value[3] for value in results.values()]
     with open(RESULT_FILE_PATH, "w") as f:
         # f.write("Experiment arguments:\n")
         # f.write("\n".join([f"{key}: {value}" for key, value in experiment_args.items()]))
         f.write("\n\nResults:\n")
-        mean_score = np.mean(list(results.values()))
+        mean_score = np.mean(scores)
+        median_score = np.median(scores)
+        variance = np.var(scores)
         f.write(f"Mean score: {mean_score}\n")
+        f.write(f"Median score: {median_score}\n")
+        f.write(f"Variance: {variance}\n")
         f.write("\n\nIndividual scores:\n")
-        for key, value in results.items():
-            f.write(f"{key}: {value}\n")
+        for i, score in enumerate(scores):
+            f.write(f"{i}: {score}\n")
+            f.write(f"# [True Image file]({image_dir+true_names[i]})\n")
+            f.write(f"# [False Image file]({image_dir+false_names[i]})\n")
+            f.write(f"# [Voice file]({voice_dir+true_names[i].replace('_0.jpg','.mp3')})\n")
+            f.write(f"Score difference: {score_diffs[i]}\n")
+            f.write("\n")
 
 
 
@@ -57,6 +74,7 @@ def main():
                 predict_voice = model(image)
                 success = 0
                 true_score = lib.cosine_similarity_loss(predict_voice, true_voice)
+                best_false_score, best_false_id = 0, 0
                 for z in range(N):
                     # TODO: need some way to get the id of the voice/image
                     if i != z:
@@ -64,13 +82,16 @@ def main():
                         false_score = lib.cosine_similarity_loss(predict_voice, false_voice)
                         if true_score > false_score:
                             success += 1
+                        if false_score > best_false_score:
+                            best_false_score = false_score
+                            best_false_id = z
                         
-                results[i] = success/(N-1) 
+                results[i] = success/(N-1), images_and_voices[2][i], images_and_voices[2][best_false_id], true_score-best_false_score # score, true image name, best false image name, diff between true and best false scores
                 pbar.update(1)
                 print(f"ID: {i} Score: {success/(N-1)}, image name: {images_and_voices[2][i]}")
-            print(f"average score: {np.mean(list(results.values()))}")
-            print(f"median score: {np.median(list(results.values()))}")
-            print(f"variability: {np.var(list(results.values()))}")
+            print(f"average score: {np.mean([value[0] for value in results.values()])}")
+            print(f"median score: {np.median([value[0] for value in results.values()])}")
+            print(f"variability: {np.var([value[0] for value in results.values()])}")
     write_results(results)
 
 

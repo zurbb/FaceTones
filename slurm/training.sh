@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --gres=gpu:a5000:3,vmem:16g
+#SBATCH --gres=gpu:3,vmem:10g
 #SBATCH --mem=32gb
 #SBATCH -c32
 #SBATCH --time=4-12:00:00
