@@ -53,7 +53,7 @@ def save_checkpoint(model, optimizer, epoch, loss, path):
     }, path)
 
 
-def train(train_data_loader, validation_loader, model, loss_fn, optimizer, num_epochs):
+def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
     size = len(train_data_loader.dataset)
     # Training loop
     for epoch in range(num_epochs):
@@ -103,7 +103,6 @@ def main():
     total_params = sum(p.numel() for p in model.parameters())
     logger.info(f'{total_params:,} total parameters.')
     logger.info(f"Model created:\n{model}")
-    logger.indo(f"\nOptimizet:\n{optimizer}")
     images_dir = os.path.join(ROOT_DIR, "data/train/images")
     voices_dir = os.path.join(ROOT_DIR, "data/train/audio")
     test_images_dir = os.path.join(ROOT_DIR, "data/test/images")
@@ -113,7 +112,7 @@ def main():
     logger.info("Creating test data loader")
     validation_dataloader = get_train_loader(test_images_dir, test_voices_dir, batch_size=BATCH_SIZE, limit_size=VALIDATION_SIZE, dino=True)
     logger.info("Starting training")
-    train(train_dataloader, validation_dataloader, model, cosine_similarity_loss, optimizer, num_epochs=EPOCHS)
+    train(train_dataloader, validation_dataloader, model, optimizer, num_epochs=EPOCHS)
 
 
 if __name__ == '__main__':
