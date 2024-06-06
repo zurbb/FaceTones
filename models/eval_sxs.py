@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--validation_size", type=int, default=128, help="Validation size of the dataset")
 parser.add_argument("--model_checkpoint", type=str, required=True, help="Checkpoint file name")
 parser.add_argument("--result_file_path", type=str, required=True, help="Path to the result file (txt)")
-parser.add_argument("--use_dino",type=bool, default=True, help="Flag to indicate whether to use DINO")
+parser.add_argument("--use_dino",action="store_true", help="Flag to indicate whether to use DINO")
 
 
 args = parser.parse_args()
@@ -63,7 +63,7 @@ def main():
                         if true_score < false_score:
                             success += 1
                         
-                results[i] = success/N 
+                results[i] = success/(N-1) 
                 pbar.update(1)
             
     write_results(results)

@@ -46,7 +46,7 @@ device = (
 class ImageVoiceClassifier(nn.Module):
     def __init__(self, dino=False):
         super().__init__()
-        self.dropout = nn.Dropout(0.2)  # Dropout layer
+        self.dropout = nn.Dropout(0.1)  # Dropout layer
         self.convolutional_layers = nn.Sequential(
             # input 3,128,128
             nn.Conv2d(3, 12, kernel_size=3, stride=2, padding=1),  # output 12,64,64
@@ -65,11 +65,11 @@ class ImageVoiceClassifier(nn.Module):
             #input 1,257,768
             nn.Conv2d(1, 8, kernel_size=3, stride=2, padding=1),  # output 8,129,384
             nn.ReLU(),
-            self.dropout,
+            #self.dropout,
             nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # output 12,65,192
             nn.Conv2d(8, 2, kernel_size=3, stride=2, padding=1),  # output 2,33,96
             nn.ReLU(), 
-            self.dropout,
+            #self.dropout,
             nn.Conv2d(2, 1, kernel_size=3, stride=2, padding=1),  # output 1,17,48
             nn.ReLU(), 
             self.dropout,

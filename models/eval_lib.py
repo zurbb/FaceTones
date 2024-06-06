@@ -3,11 +3,17 @@ import torch
 from training import ROOT_DIR
 import os
 from data_loader import get_train_loader
+import coloredlogs, logging
+
+logger = logging.getLogger()
+coloredlogs.install()
 
 
 def load_model_by_checkpoint(checkpoint_name:str)->ImageVoiceClassifier:
+    logger.info(f"geting model {checkpoint_name}")
     model = ImageVoiceClassifier()
     model.load_state_dict(torch.load(os.path.join(ROOT_DIR,checkpoint_name)))
+    logger.info(f"loaded model")
     return model
 
 def load_validation_data(limit_size:int, batch_size:int, use_dino:bool)->torch.utils.data.DataLoader:
