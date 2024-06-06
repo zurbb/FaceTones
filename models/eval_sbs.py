@@ -8,11 +8,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--validation_size", type=int, default=128, help="Validation size of the dataset")
 parser.add_argument("--model_checkpoint", type=str, required=True, help="Checkpoint file name")
 parser.add_argument("--result_file_path", type=str, required=True, help="Path to the result file (txt)")
-parser.add_argument("--use_dino",action="store_true", help="Flag to indicate whether to use DINO")
+parser.add_argument("--use_dino",action="store_true", default=True, help="Flag to indicate whether to use DINO")
 
-
+print("Parsing arguments")
 args = parser.parse_args()
-
+print("Arguments parsed")
 IMAGE_DIR = "data/test/images/"
 AUDIO_DIR = "data/test/audio/"
 RESULT_FILE_PATH = args.result_file_path
@@ -60,35 +60,34 @@ def main():
     model.eval()
     with torch.inference_mode():
         print("Loading validation data")
-        validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=args.validation_size, use_dino=args.use_dino)
-        images_and_voices = next(iter(validation_data))
-        
-        N= len(images_and_voices[0])
-        results = {} # dictionart with id and scores for each id
-
-        with tqdm.tqdm(total=N, desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
-            for i in range(N):
-                print("Processing ID: ", i)
-                image = images_and_voices[0][i].unsqueeze(0)
-                true_voice = images_and_voices[1][i].unsqueeze(0)
-                predict_voice = model(image)
-                success = 0
-                true_score = lib.cosine_similarity_loss(predict_voice, true_voice)
-                best_false_score, best_false_id = 0, 0
-                for z in range(N):
-                    # TODO: need some way to get the id of the voice/image
-                    if i != z:
-                        false_voice = images_and_voices[1][z].unsqueeze(0)
-                        false_score = lib.cosine_similarity_loss(predict_voice, false_voice)
-                        if true_score > false_score:
-                            success += 1
-                        if false_score > best_false_score:
-                            best_false_score = false_score
-                            best_false_id = z
-                        
-                results[i] = success/(N-1), images_and_voices[2][i], images_and_voices[2][best_false_id], true_score-best_false_score # score, true image name, best false image name, diff between true and best false scores
+        validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=32, use_dino=args.use_dino)
+        with tqdm.tqdm(total=np.ciel(args.validation_size/args.batch_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
+            idx = 0
+            results = {}
+            for images_and_voices in validation_data:
+                pbar.set_description(f"Processing ID: {idx}")
+                idx += 1
+                N = len(images_and_voices[0])
+                for i in range(N):
+                    image = images_and_voices[0][i].unsqueeze(0)
+                    true_voice = images_and_voices[1][i].unsqueeze(0)
+                    predict_voice = model(image)
+                    success = 0
+                    true_score = lib.cosine_similarity_loss(predict_voice, true_voice)
+                    best_false_score, best_false_id = 0, 0
+                    for z in range(N):
+                        if i != z:
+                            false_voice = images_and_voices[1][z].unsqueeze(0)
+                            false_score = lib.cosine_similarity_loss(predict_voice, false_voice)
+                            if true_score > false_score:
+                                success += 1
+                            if false_score > best_false_score:
+                                best_false_score = false_score
+                                best_false_id = z
+                            
+                    results[idx*args.batch_size + i] = success/(N-1), images_and_voices[2][i], images_and_voices[2][best_false_id], true_score-best_false_score # score, true image name, best false image name, diff between true and best false scores
                 pbar.update(1)
-                print(f"ID: {i} Score: {success/(N-1)}, image name: {images_and_voices[2][i]}")
+                pbar.set_postfix({"Score": success/(N-1), "Image Name": images_and_voices[2][i]})
             print(f"average score: {np.mean([value[0] for value in results.values()])}")
             print(f"median score: {np.median([value[0] for value in results.values()])}")
             print(f"variability: {np.var([value[0] for value in results.values()])}")
