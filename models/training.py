@@ -125,7 +125,7 @@ if __name__ == '__main__':
     BATCH_SIZE = args.batch_size
     RUN_NAME = args.run_name
     EPOCHS = args.epochs
-    WRITER = SummaryWriter(F'runs/{RUN_NAME}')
+    WRITER = SummaryWriter(f'runs/{RUN_NAME}')
 
     torch.multiprocessing.set_start_method('spawn', force=True)
     main()

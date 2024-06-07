@@ -21,14 +21,14 @@ class ImageToVoice(nn.Module):
             #input 1,257,768
             nn.Conv2d(1, 8, kernel_size=3, stride=2, padding=1),  # output 8,129,384
             nn.ReLU(),
-            self.dropout,
+            # self.dropout,
             nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # output 12,65,192
             nn.Conv2d(8, 2, kernel_size=3, stride=2, padding=1),  # output 2,33,96
             nn.ReLU(), 
-            self.dropout,
+            # self.dropout,
             nn.Conv2d(2, 1, kernel_size=3, stride=2, padding=1),  # output 1,17,48
             nn.ReLU(), 
-            self.dropout,
+            # self.dropout,
             nn.Flatten(),  # output 1,816
         )
         self.multihead = nn.MultiheadAttention(embed_dim=816, num_heads=8) 

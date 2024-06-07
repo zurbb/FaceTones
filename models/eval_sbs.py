@@ -69,7 +69,7 @@ def main():
         print("Loading validation data")
         batch_size = args.batch_size
         validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=batch_size, use_dino=True)
-        with tqdm.tqdm(total=np.ceil(args.validation_size/batch_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
+        with tqdm.tqdm(total=np.ceil(args.validation_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
             idx = 0
             results = {}
             for images_and_voices in validation_data:
@@ -81,13 +81,13 @@ def main():
                     true_voice = images_and_voices[1][i].unsqueeze(0)
                     predict_voice = model(image)
                     success = 0
-                    true_score = lib.cosine_similarity(predict_voice, true_voice)
+                    true_score = np.abs(lib.cosine_similarity(predict_voice, true_voice))
                     best_false_score, best_false_id = 0, 0
                     worst_false_score, worst_false_id = 1, 0
                     for z in range(N):
                         if i != z:
                             false_voice = images_and_voices[1][z].unsqueeze(0)
-                            false_score = lib.cosine_similarity(predict_voice, false_voice)
+                            false_score = np.abs(lib.cosine_similarity(predict_voice, false_voice))
                             if true_score > false_score:
                                 success += 1
                             if false_score > best_false_score:

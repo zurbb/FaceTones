@@ -4,7 +4,7 @@ import torch
 import tqdm
 from torch import nn
 
-def compare_embed_audio_files(model, audio_path, N=10):
+def compare_embed_audio_files(model, audio_path, N=100):
     # Load the VoiceToVec model
     audio_files = list(os.listdir(audio_path))[:N]
     signals = []
@@ -16,8 +16,10 @@ def compare_embed_audio_files(model, audio_path, N=10):
     for audio_file in audio_files:
         audio_file_path = os.path.join(audio_path, audio_file)
         signals = model.get_signals(audio_file_path)
+        print(signals.size())
         reg_embedding = model.get_embedding(signals)
         print(reg_embedding.size())
+        continue
         print(f"regular embedding: max - {reg_embedding.max()}, min - {reg_embedding.min()}, mean - {reg_embedding.mean()}")
         padded_signal = torch.cat([signals, torch.zeros(1, signals.size(1))], dim=0)
         padded_embedding = model.get_embedding(padded_signal).mean()
