@@ -51,10 +51,10 @@ def write_results(results: dict):
             f.write(f"{i}: {score}\n")
             f.write(f"# [True Image - Similarity: {true_scores[i]}]({image_dir+true_names[i]})\n")
             f.write(f"# [True Voice]({voice_dir+true_names[i].replace('_0.jpg','.mp3')})\n")
-            if best_false_scores[i] > true_scores[i]:
+            if best_false_scores[i] >= true_scores[i]:
                 f.write(f"# [Fail Image - Similarity: {best_false_scores[i]}]({image_dir+best_false_names[i]})\n")
                 f.write(f"# [Fail Voice]({voice_dir+best_false_names[i].replace('_0.jpg','.mp3')})\n")
-            if worst_false_scores[i] < true_scores[i]:
+            if worst_false_scores[i] <= true_scores[i]:
                 f.write(f"# [Success Image - Similarity: {worst_false_scores[i]}]({image_dir+worst_false_names[i]})\n")
                 f.write(f"# [Success Voice]({voice_dir+worst_false_names[i].replace('_0.jpg','.mp3')})\n")
 
@@ -81,13 +81,14 @@ def main():
                     true_voice = images_and_voices[1][i].unsqueeze(0)
                     predict_voice = model(image)
                     success = 0
-                    true_score = lib.cosine_similarity(predict_voice, true_voice)
+                    true_score = lib.cosine_similarity(predict_voice, true_voice).item()
                     best_false_score, best_false_id = 0, 0
                     worst_false_score, worst_false_id = 1, 0
                     for z in range(N):
                         if i != z:
-                            false_voice = images_and_voices[1][z].unsqueeze(0)
-                            false_score = lib.cosine_similarity(predict_voice, false_voice)
+                            false_image = images_and_voices[0][z].unsqueeze(0)
+                            false_predict_voice = model(false_image)
+                            false_score = lib.cosine_similarity(false_predict_voice, true_voice).item()
                             if true_score > false_score:
                                 success += 1
                             if false_score > best_false_score:
@@ -99,10 +100,10 @@ def main():
                             
                     results[idx*batch_size + i] = (success/(N-1), images_and_voices[2][i], 
                     images_and_voices[2][best_false_id], images_and_voices[2][worst_false_id], 
-                    true_score.item(), best_false_score.item(), worst_false_score.item())
+                    true_score, best_false_score, worst_false_score)
                       # success rate, true image name, best false image name, worst false image name, true score, best false score, worst false score
                 pbar.update(1)
-                pbar.set_postfix({"Score": success/(N-1), "Image Name": images_and_voices[2][i]})
+                pbar.set_postfix({"Score": success/(N-1)})
         print(f"average score: {np.mean([value[0] for value in results.values()])}")
         print(f"median score: {np.median([value[0] for value in results.values()])}")
         print(f"variability: {np.var([value[0] for value in results.values()])}")
