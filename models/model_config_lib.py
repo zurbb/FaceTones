@@ -26,7 +26,11 @@ class ImageToVoice(nn.Module):
             nn.Conv2d(16, 4, kernel_size=3, stride=2, padding=1),  # output 2,33,96
             nn.ReLU(), 
             # self.dropout,
+<<<<<<< HEAD
             nn.Conv2d(4, 1, kernel_size=3, stride=2, padding=1),  # output 1,17,48
+=======
+            nn.Conv2d(2, 1, kernel_size=3, stride=2, padding=1),  # output 1,17,48
+>>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
             nn.ReLU(), 
             # self.dropout,
             nn.Flatten(),  # output 1,816
@@ -34,16 +38,26 @@ class ImageToVoice(nn.Module):
         self.lin =  nn.Linear(816, 2048)
         self.multihead = nn.MultiheadAttention(embed_dim=2048, num_heads=8) 
         # self.loss_func = CosineTripletLoss(margin=0.8)
+<<<<<<< HEAD
         self.loss_func = ContrastiveCosineLoss()
         self.final_layer = nn.Linear(2048, 512)  # output 1,768
 
+=======
+        # self.loss_func = ContrastiveCosineLoss()
+        self.loss_func = CrossEntropyCosineLoss()
+>>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
         
     def forward(self, x):
         logits = self.convolution_layers(x.to(device))
         logits = self.lin(logits.to(device))
         attn_output, _ = self.multihead(logits.to(device), logits.to(device), logits.to(device), need_weights=False)
+<<<<<<< HEAD
         logits = self.dropout(attn_output.to(device))  # Apply dropout
         logits = self.final_layer(logits.to(device))
+=======
+        # attn_output = self.dropout(attn_output.to(device))  # Apply dropout
+        logits = self.final_layer(attn_output.to(device))
+>>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
         return logits
     
     def loss(self,outputs, voices):
@@ -68,7 +82,11 @@ class CosineTripletLoss(nn.Module):
 class ContrastiveCosineLoss(nn.Module):
     def __init__(self):
         super(ContrastiveCosineLoss, self).__init__()
+<<<<<<< HEAD
         self.k = 12
+=======
+        self.k = 20
+>>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
 
     def forward(self, outputs, voices):
         sim_vector = F.cosine_similarity(outputs, voices)
@@ -82,3 +100,24 @@ class ContrastiveCosineLoss(nn.Module):
         log_sim_loss = -torch.log(numerator / denominator)
         # loss = 1 - numerator / denominator
         return torch.mean(log_sim_loss)
+
+class CrossEntropyCosineLoss(nn.Module):
+    def __init__(self):
+        super(CrossEntropyCosineLoss, self).__init__()
+        self.loss = nn.CrossEntropyLoss()
+    
+    def forward(self, outputs, voices):
+        # like in clip
+        outputs = F.normalize(outputs, p=2, dim=1)
+        voices = F.normalize(voices, p=2, dim=1)
+        logits = torch.tensordot(outputs, voices.T, dims=1) # simialrities, [n,n]
+        diagonal_mask = torch.eye(outputs.size(0)).to(outputs.device)
+        off_diagonal_mask = torch.clamp(logits - 0.8, min=0)
+        masked_logits = logits * diagonal_mask + off_diagonal_mask * (1-diagonal_mask)
+        labels = torch.arange(outputs.size(0)).to(outputs.device)
+        axis_1 = self.loss(masked_logits, labels)
+        axis_2 = self.loss(masked_logits.T, labels)
+        return (axis_1 + axis_2) / 2 
+
+
+
