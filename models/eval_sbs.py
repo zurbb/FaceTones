@@ -5,10 +5,10 @@ import torch
 import tqdm
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--validation_size", type=int, default=256, help="Validation size of the dataset")
+parser.add_argument("--validation_size", type=int, default=1000, help="Validation size of the dataset")
 parser.add_argument("--model_checkpoint", type=str, required=True, help="Checkpoint file name")
 parser.add_argument("--result_file_path", type=str, required=True, help="Path to the result file (txt)")
-parser.add_argument("--batch_size", type=int, default=32, help="Batch size of the dataset")
+parser.add_argument("--batch_size", type=int, default=100, help="Batch size of the dataset")
 
 print("Parsing arguments")
 args = parser.parse_args()
@@ -39,8 +39,6 @@ def write_results(results: dict):
     with open(RESULT_FILE_PATH, "w") as f:
         # f.write("Experiment arguments:\n")
         # f.write("\n".join([f"{key}: {value}" for key, value in experiment_args.items()]))
-        f.write(f"\ncheckpoint: {args.model_checkpoint}\n")
-        f.write(f'batch size {args.batch_size}, val size: {args.validation_size}')
         f.write("\n\nResults:\n")
         mean_score = np.mean(scores)
         median_score = np.median(scores)
@@ -71,7 +69,7 @@ def main():
         print("Loading validation data")
         batch_size = args.batch_size
         validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=batch_size, use_dino=True)
-        with tqdm.tqdm(total=np.ceil(args.validation_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", colour='green') as pbar:
+        with tqdm.tqdm(total=np.ceil(args.validation_size/batch_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
             idx = 0
             results = {}
             for images_and_voices in validation_data:
@@ -83,23 +81,14 @@ def main():
                     true_voice = images_and_voices[1][i].unsqueeze(0)
                     predict_voice = model(image)
                     success = 0
-<<<<<<< HEAD
-                    true_score = np.abs(lib.cosine_similarity(predict_voice, true_voice))
-=======
                     true_score = lib.cosine_similarity(predict_voice, true_voice).item()
->>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
                     best_false_score, best_false_id = 0, 0
                     worst_false_score, worst_false_id = 1, 0
                     for z in range(N):
                         if i != z:
-<<<<<<< HEAD
-                            false_voice = images_and_voices[1][z].unsqueeze(0)
-                            false_score = np.abs(lib.cosine_similarity(predict_voice, false_voice))
-=======
                             false_image = images_and_voices[0][z].unsqueeze(0)
                             false_predict_voice = model(false_image)
                             false_score = lib.cosine_similarity(false_predict_voice, true_voice).item()
->>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
                             if true_score > false_score:
                                 success += 1
                             if false_score > best_false_score:
@@ -113,13 +102,8 @@ def main():
                     images_and_voices[2][best_false_id], images_and_voices[2][worst_false_id], 
                     true_score, best_false_score, worst_false_score)
                       # success rate, true image name, best false image name, worst false image name, true score, best false score, worst false score
-<<<<<<< HEAD
-                # pbar.update(1)
-                # pbar.set_postfix({"Score": success/(N-1), "Image Name": images_and_voices[2][i]})
-=======
                 pbar.update(1)
                 pbar.set_postfix({"Score": success/(N-1)})
->>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
         print(f"average score: {np.mean([value[0] for value in results.values()])}")
         print(f"median score: {np.median([value[0] for value in results.values()])}")
         print(f"variability: {np.var([value[0] for value in results.values()])}")

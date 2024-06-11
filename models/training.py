@@ -69,20 +69,16 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-<<<<<<< HEAD
-                WRITER.add_scalar('Loss/train', loss.item(), epoch * size + Batch_number)
 
-                if Batch_number%500==0:
+                if Batch_number%100==0:
                     logger.info(f"batch: {Batch_number+1} done.")
                     logger.info(f"loss: {loss:>7f}")
-=======
                 if Batch_number%50==0:
                     WRITER.add_scalar('Loss/train', loss.item(), epoch * size + Batch_number)
                 if Batch_number%500==0:
                     logger.info(f"batch: {Batch_number+1} done.")
                     logger.info(f"loss: {loss:>7f}")
                     # Validate the model on the validation set
->>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
                     with torch.no_grad():
                         val_loss = 0
                         num_batches = 0
@@ -99,15 +95,11 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                 logger.error(f"Error in batch {Batch_number+1}: {e}")
 
 
-        #TODO: not each eopch 
-        # Validate the model on the validation set
+    
           
         current = (Batch_number + 1) * len(images)
         logger.info(f"Epoch: {epoch+1} done. [{current:>5d}/{size:>5d}]")    
-<<<<<<< HEAD
 
-=======
->>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
         save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
 
 
@@ -142,12 +134,9 @@ if __name__ == '__main__':
     BATCH_SIZE = args.batch_size
     RUN_NAME = args.run_name
     EPOCHS = args.epochs
-<<<<<<< HEAD
     WRITER = SummaryWriter(f'runs/{RUN_NAME}')
-=======
-    WRITER = SummaryWriter(F'runs/{RUN_NAME}')
     NUM_WORKERS = args.num_workers
->>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
+
 
     torch.multiprocessing.set_start_method('spawn', force=True)
     main()
