@@ -15,11 +15,12 @@ from torch.utils.tensorboard import SummaryWriter
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--limit_size", type=int, default=5000, help="Limit size of the dataset")
-    parser.add_argument("--validation_size", type=int, default=128, help="Validation size of the dataset")
+    parser.add_argument("--limit_size", type=int, default=2048, help="Limit size of the dataset")
+    parser.add_argument("--validation_size", type=int, default=16, help="Validation size of the dataset")
     parser.add_argument("--batch_size", type=int, default=16, help="Batch size of the dataset")
     parser.add_argument("--run_name", type=str, required=True, help="Name of the run")
-    parser.add_argument("--epochs", type=int, default=1, help="Number of epochs to train the model")
+    parser.add_argument("--epochs", type=int, default=10, help="Number of epochs to train the model")
+    parser.add_argument("--num_workers", type=int, default=11, help="Number of workers for the data loader")
     args = parser.parse_args()
     return args
 
@@ -68,30 +69,29 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                if Batch_number%100==0:
+                if Batch_number%50==0:
                     WRITER.add_scalar('Loss/train', loss.item(), epoch * size + Batch_number)
+                if Batch_number%500==0:
                     logger.info(f"batch: {Batch_number+1} done.")
                     logger.info(f"loss: {loss:>7f}")
+                    # Validate the model on the validation set
+                    with torch.no_grad():
+                        val_loss = 0
+                        num_batches = 0
+                        for images, voices, _ in validation_loader:
+                            try:
+                                outputs = model(images)
+                                val_loss += model.loss(outputs, voices)
+                            except Exception as e:
+                                logger.error(f"Error in validation batch {num_batches+1}: {e}")
+                            num_batches += 1
+                        logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
+                        WRITER.add_scalar('Loss/validation', val_loss.item()/num_batches, epoch * size + Batch_number)
             except Exception as e:
                 logger.error(f"Error in batch {Batch_number+1}: {e}")
 
         current = (Batch_number + 1) * len(images)
         logger.info(f"Epoch: {epoch+1} done. [{current:>5d}/{size:>5d}]")    
-
-
-        # Validate the model on the validation set
-        with torch.no_grad():
-            val_loss = 0
-            num_batches = 0
-            for images, voices, _ in validation_loader:
-                try:
-                    outputs = model(images)
-                    val_loss += model.loss(outputs, voices)
-                except Exception as e:
-                    logger.error(f"Error in validation batch {num_batches+1}: {e}")
-                num_batches += 1
-            logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
-            WRITER.add_scalar('Loss/validation', val_loss.item()/num_batches, epoch * size + Batch_number)
         save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
 
 
@@ -111,11 +111,12 @@ def main():
     test_images_dir = os.path.join(ROOT_DIR, "data/test/images")
     test_voices_dir = os.path.join(ROOT_DIR, "data/test/audio")
     logger.info("Creating train data loader")
-    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE, limit_size=LIMIT_SIZE)
+    train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE, limit_size=LIMIT_SIZE, num_workers=NUM_WORKERS)
     logger.info("Creating test data loader")
-    validation_dataloader = get_train_loader(test_images_dir, test_voices_dir, batch_size=BATCH_SIZE, limit_size=VALIDATION_SIZE)
+    validation_dataloader = get_train_loader(test_images_dir, test_voices_dir, batch_size=BATCH_SIZE, limit_size=VALIDATION_SIZE, num_workers=NUM_WORKERS)
     logger.info("Starting training")
     train(train_dataloader, validation_dataloader, model, optimizer, num_epochs=EPOCHS)
+    logger.info("Finished training")
 
 
 if __name__ == '__main__':
@@ -126,6 +127,7 @@ if __name__ == '__main__':
     RUN_NAME = args.run_name
     EPOCHS = args.epochs
     WRITER = SummaryWriter(F'runs/{RUN_NAME}')
+    NUM_WORKERS = args.num_workers
 
     torch.multiprocessing.set_start_method('spawn', force=True)
     main()
