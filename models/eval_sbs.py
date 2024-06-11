@@ -39,6 +39,8 @@ def write_results(results: dict):
     with open(RESULT_FILE_PATH, "w") as f:
         # f.write("Experiment arguments:\n")
         # f.write("\n".join([f"{key}: {value}" for key, value in experiment_args.items()]))
+        f.write(f"\ncheckpoint: {args.model_checkpoint}\n")
+        f.write(f'batch size {args.batch_size}, val size: {args.validation_size}')
         f.write("\n\nResults:\n")
         mean_score = np.mean(scores)
         median_score = np.median(scores)
@@ -69,7 +71,7 @@ def main():
         print("Loading validation data")
         batch_size = args.batch_size
         validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=batch_size, use_dino=True)
-        with tqdm.tqdm(total=np.ceil(args.validation_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
+        with tqdm.tqdm(total=np.ceil(args.validation_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", colour='green') as pbar:
             idx = 0
             results = {}
             for images_and_voices in validation_data:
@@ -101,8 +103,8 @@ def main():
                     images_and_voices[2][best_false_id], images_and_voices[2][worst_false_id], 
                     true_score.item(), best_false_score.item(), worst_false_score.item())
                       # success rate, true image name, best false image name, worst false image name, true score, best false score, worst false score
-                pbar.update(1)
-                pbar.set_postfix({"Score": success/(N-1), "Image Name": images_and_voices[2][i]})
+                # pbar.update(1)
+                # pbar.set_postfix({"Score": success/(N-1), "Image Name": images_and_voices[2][i]})
         print(f"average score: {np.mean([value[0] for value in results.values()])}")
         print(f"median score: {np.median([value[0] for value in results.values()])}")
         print(f"variability: {np.var([value[0] for value in results.values()])}")

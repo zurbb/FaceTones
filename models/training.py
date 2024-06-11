@@ -68,30 +68,33 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                if Batch_number%100==0:
-                    WRITER.add_scalar('Loss/train', loss.item(), epoch * size + Batch_number)
+                WRITER.add_scalar('Loss/train', loss.item(), epoch * size + Batch_number)
+
+                if Batch_number%500==0:
                     logger.info(f"batch: {Batch_number+1} done.")
                     logger.info(f"loss: {loss:>7f}")
+                    with torch.no_grad():
+                        val_loss = 0
+                        num_batches = 0
+                        for images, voices, _ in validation_loader:
+                            try:
+                                outputs = model(images)
+                                val_loss += model.loss(outputs, voices)
+                            except Exception as e:
+                                logger.error(f"Error in validation batch {num_batches+1}: {e}")
+                            num_batches += 1
+                        logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
+                        WRITER.add_scalar('Loss/validation', val_loss.item()/num_batches, epoch * size + Batch_number)
             except Exception as e:
                 logger.error(f"Error in batch {Batch_number+1}: {e}")
 
+
+        #TODO: not each eopch 
+        # Validate the model on the validation set
+          
         current = (Batch_number + 1) * len(images)
         logger.info(f"Epoch: {epoch+1} done. [{current:>5d}/{size:>5d}]")    
 
-
-        # Validate the model on the validation set
-        with torch.no_grad():
-            val_loss = 0
-            num_batches = 0
-            for images, voices, _ in validation_loader:
-                try:
-                    outputs = model(images)
-                    val_loss += model.loss(outputs, voices)
-                except Exception as e:
-                    logger.error(f"Error in validation batch {num_batches+1}: {e}")
-                num_batches += 1
-            logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
-            WRITER.add_scalar('Loss/validation', val_loss.item()/num_batches, epoch * size + Batch_number)
         save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
 
 
