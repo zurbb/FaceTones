@@ -22,6 +22,8 @@ def parse_args():
     parser.add_argument("--run_name", type=str, required=True, help="Name of the run")
     parser.add_argument("--epochs", type=int, default=10, help="Number of epochs to train the model")
     parser.add_argument("--num_workers", type=int, default=11, help="Number of workers for the data loader")
+    parser.add_argument("--description", type=str, required=True, help="description of exp")
+
     args = parser.parse_args()
     return args
 
@@ -148,6 +150,7 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
 
 
 def main():
+    logger.info(args.description)
     if not os.path.exists(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME)):
         os.mkdir(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME))
     # Create an instance of your network

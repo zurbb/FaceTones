@@ -101,6 +101,8 @@ class CrossEntropyCosineLoss(nn.Module):
         labels = torch.arange(outputs.size(0)).to(outputs.device)
         axis_1 = self.loss(masked_logits, labels)
         axis_2 = self.loss(masked_logits.T, labels)
-        return (axis_1 + axis_2) / 2 
+        entropy_loss =(axis_1 + axis_2) / 2
+        postive_mean_loss =1 - torch.diagonal(logits, offset=0).to(outputs.device).float().mean()
+        return  entropy_loss + postive_mean_loss
 
 
