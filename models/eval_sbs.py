@@ -5,7 +5,7 @@ import torch
 import tqdm
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--validation_size", type=int, default=1000, help="Validation size of the dataset")
+parser.add_argument("--validation_size", type=int, default=100, help="Validation size of the dataset")
 parser.add_argument("--model_checkpoint", type=str, required=True, help="Checkpoint file name")
 parser.add_argument("--result_file_path", type=str, required=True, help="Path to the result file (txt)")
 parser.add_argument("--batch_size", type=int, default=100, help="Batch size of the dataset")

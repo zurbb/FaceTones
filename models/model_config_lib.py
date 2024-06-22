@@ -21,26 +21,28 @@ class ImageToVoice(nn.Module):
             #input 1,257,768
             nn.Conv2d(1, 8, kernel_size=3, stride=2, padding=1),  # output 8,129,384
             nn.ReLU(),
-            # self.dropout,
-            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # output 12,65,192
-            nn.Conv2d(8, 2, kernel_size=3, stride=2, padding=1),  # output 2,33,96
+            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),# 8,65,192 
+            nn.Conv2d(8, 16, kernel_size=3), # output   16,63,190 
+            nn.Conv2d(16, 16, kernel_size=3,padding=1),# output   16,63,190 
+            nn.Conv2d(16, 16, kernel_size=3,padding=1),# output   16,63,190 
+            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True) ,# 16,32,95 
             nn.ReLU(), 
-            # self.dropout,
-            nn.Conv2d(2, 1, kernel_size=3, stride=2, padding=1),  # output 1,17,48
+            nn.Conv2d(16, 16, kernel_size=3, stride=2, padding=1), # 16,16,48 
             nn.ReLU(), 
-            # self.dropout,
-            nn.Flatten(),  # output 1,816
+            nn.Conv2d(16, 8, kernel_size=3, padding=1), # 8,16,48
+            nn.Conv2d(8, 4, kernel_size=3, padding=1), # 4,16,48
+            nn.Conv2d(4, 4, kernel_size=3, padding=1,stride=2), # 4,8,24
+            nn.Flatten(), 
+            nn.Linear(4* 8 * 24, 2048), # output 1,2048
         )
-        self.multihead = nn.MultiheadAttention(embed_dim=816, num_heads=8) 
-        self.final_layer = nn.Linear(816, 512)  # output 1,768
-        # self.loss_func = CosineTripletLoss(margin=0.8)
-        # self.loss_func = ContrastiveCosineLoss()
+        self.multihead = nn.MultiheadAttention(embed_dim=2048, num_heads=8) 
+        self.final_layer = nn.Linear(2048, 512)  # output 1,768
         self.loss_func = CrossEntropyCosineLoss()
         
     def forward(self, x):
         logits = self.convolution_layers(x.to(device))
         attn_output, _ = self.multihead(logits.to(device), logits.to(device), logits.to(device), need_weights=False)
-        # attn_output = self.dropout(attn_output.to(device))  # Apply dropout
+        attn_output = self.dropout(attn_output.to(device))  # Apply dropout
         logits = self.final_layer(attn_output.to(device))
         return logits
     
@@ -85,7 +87,7 @@ class CrossEntropyCosineLoss(nn.Module):
     def __init__(self):
         super(CrossEntropyCosineLoss, self).__init__()
         self.loss = nn.CrossEntropyLoss()
-        self.learnable_param = nn.Parameter(torch.tensor(0.9))
+        self.learnable_param = nn.Parameter(torch.tensor(0.8))
     
     def forward(self, outputs, voices):
         # like in clip
@@ -93,7 +95,8 @@ class CrossEntropyCosineLoss(nn.Module):
         voices = F.normalize(voices, p=2, dim=1)
         logits = torch.tensordot(outputs, voices.T, dims=1) # simialrities, [n,n]
         diagonal_mask = torch.eye(outputs.size(0)).to(outputs.device)
-        off_diagonal_mask = torch.clamp(logits - self.learnable_param, min=0)
+        margin = torch.clamp(learnable_param,max=0.95,min=0.8)
+        off_diagonal_mask = torch.clamp(logits - margin, min=0)
         masked_logits = logits * diagonal_mask + off_diagonal_mask * (1-diagonal_mask)
         labels = torch.arange(outputs.size(0)).to(outputs.device)
         axis_1 = self.loss(masked_logits, labels)

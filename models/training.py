@@ -70,14 +70,13 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                 loss.backward()
                 optimizer.step()
 
+                if Batch_number%25==0: 
+                    WRITER.add_scalar('Loss/train',loss, epoch * size + Batch_number)
+
                 if Batch_number%100==0:
                     logger.info(f"batch: {Batch_number+1} done.")
                     logger.info(f"loss: {loss:>7f}")
-                if Batch_number%50==0:
-                    WRITER.add_scalar('Loss/train', loss.item(), epoch * size + Batch_number)
                 if Batch_number%500==0:
-                    logger.info(f"batch: {Batch_number+1} done.")
-                    logger.info(f"loss: {loss:>7f}")
                     # Validate the model on the validation set
                     with torch.no_grad():
                         val_loss = 0
@@ -90,6 +89,7 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                                 logger.error(f"Error in validation batch {num_batches+1}: {e}")
                             num_batches += 1
                         logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
+                        logger.info(f"margin {model.loss_func.learnable_param}")
                         WRITER.add_scalar('Loss/validation', val_loss.item()/num_batches, epoch * size + Batch_number)
             except Exception as e:
                 logger.error(f"Error in batch {Batch_number+1}: {e}")
