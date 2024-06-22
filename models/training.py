@@ -10,7 +10,8 @@ import coloredlogs, logging
 import argparse
 from model_config_lib import ImageToVoice
 from torch.utils.tensorboard import SummaryWriter
-
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 def parse_args():
@@ -55,7 +56,58 @@ def save_checkpoint(model, optimizer, epoch, loss, path):
         'loss': loss,
     }, path)
 
+def similarity_average(predicted, voices) -> tuple[np.float64, np.float64]:
+    """
+    Calculate the average similarity between predicted and voices.
 
+    Args:
+        predicted (array-like): The predicted values.
+        voices (array-like): The voices values.
+
+    Returns:
+        tuple: A tuple containing the average positive similarity and average negative similarity.
+    """
+
+    sim_matrix = cosine_similarity(predicted, voices)
+    n = sim_matrix.shape[0]
+    positive = []
+    negative = []
+    for i in range(n):
+        row = sim_matrix[i]
+        positive.append(row[i])
+        non_diag_elements = np.delete(row, i)
+        negative.append(np.mean(non_diag_elements))
+    return np.mean(positive), np.mean(negative)
+
+def eval_epoch(model, validation_loader,epoch, size, Batch_number):
+    with torch.no_grad():
+        val_loss = 0
+        num_batches = 0
+        postive = []
+        negative = []
+        for images, voices, _ in validation_loader:
+            try:
+                outputs = model(images)
+                p,n = similarity_average(outputs, voices)
+                postive.append(p)
+                negative.append(n)
+                val_loss += model.loss(outputs, voices)
+            except Exception as e:
+                logger.error(f"Error in validation batch {num_batches+1}: {e}")
+            num_batches += 1
+        average_p = np.mean(postive)
+        average_n = np.mean(negative)
+
+        logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
+        logger.info(f"margin {model.loss_func.learnable_param}")
+        logger.info(f"Average positive similarity: {average_p}")
+        logger.info(f"Average negative similarity: {average_n}")
+        WRITER.add_scalar('postive_similarity', average_p, epoch * size + Batch_number)
+        WRITER.add_scalar('negative_similarity', average_n, epoch * size + Batch_number)
+        WRITER.add_scalar('Loss/validation', val_loss.item()/num_batches, epoch * size + Batch_number)
+
+
+    
 def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
     size = len(train_data_loader.dataset)
     # Training loop
@@ -78,19 +130,8 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                     logger.info(f"loss: {loss:>7f}")
                 if Batch_number%500==0:
                     # Validate the model on the validation set
-                    with torch.no_grad():
-                        val_loss = 0
-                        num_batches = 0
-                        for images, voices, _ in validation_loader:
-                            try:
-                                outputs = model(images)
-                                val_loss += model.loss(outputs, voices)
-                            except Exception as e:
-                                logger.error(f"Error in validation batch {num_batches+1}: {e}")
-                            num_batches += 1
-                        logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
-                        logger.info(f"margin {model.loss_func.learnable_param}")
-                        WRITER.add_scalar('Loss/validation', val_loss.item()/num_batches, epoch * size + Batch_number)
+                    eval_epoch(model, validation_loader, epoch, size, Batch_number)
+        
             except Exception as e:
                 logger.error(f"Error in batch {Batch_number+1}: {e}")
 
@@ -108,7 +149,7 @@ def main():
         os.mkdir(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME))
     # Create an instance of your network
     model = ImageToVoice().to(device)
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
     for param in model.parameters():
         logger.info(param.size())
     total_params = sum(p.numel() for p in model.parameters())
