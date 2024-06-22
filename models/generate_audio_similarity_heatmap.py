@@ -5,6 +5,8 @@ import eval_lib as lib
 import torch.nn.functional as F
 import numpy as np
 import torch
+import tqdm
+
 # parser = argparse.ArgumentParser()
 # parser.add_argument("--validation_size", type=int, default=128, help="Validation size of the dataset")
 # parser.add_argument("--model_checkpoint", type=str, required=True, help="Checkpoint file name")
@@ -14,9 +16,9 @@ import torch
 # args = parser.parse_args()
 
 if __name__ == "__main__":
-    val_loader = lib.load_validation_data(limit_size=128, batch_size=32, use_dino=True)
+    val_loader = lib.load_validation_data(limit_size=512, batch_size=16, use_dino=True)
     averages = []
-    for images, voices,_ in val_loader:
+    for images, voices,_ in tqdm.tqdm(val_loader):
         # Calculate cosine similarity matrix
         sim = cosine_similarity(voices)
         # voices = F.normalize(voices, p=2, dim=1)
@@ -30,7 +32,6 @@ if __name__ == "__main__":
             # Compute the average of the non-diagonal elements
             avg = np.mean(non_diag_elements)
             averages.append(avg)
-    print(averages)
     print(np.mean(averages))
         # similarity_matrix = 1 - cosine_similarity(all_voices)
 

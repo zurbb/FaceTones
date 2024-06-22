@@ -67,7 +67,10 @@ def similarity_average(predicted, voices) -> tuple[np.float64, np.float64]:
     Returns:
         tuple: A tuple containing the average positive similarity and average negative similarity.
     """
-
+    if isinstance(predicted, torch.Tensor):
+        predicted = predicted.cpu().numpy()
+    if isinstance(voices, torch.Tensor):
+        voices = voices.cpu().numpy()
     sim_matrix = cosine_similarity(predicted, voices)
     n = sim_matrix.shape[0]
     positive = []
@@ -149,7 +152,7 @@ def main():
         os.mkdir(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME))
     # Create an instance of your network
     model = ImageToVoice().to(device)
-    optimizer = optim.Adam(model.parameters(), lr=0.0001)
+    optimizer = optim.Adam(model.parameters(), lr=0.00001)
     for param in model.parameters():
         logger.info(param.size())
     total_params = sum(p.numel() for p in model.parameters())

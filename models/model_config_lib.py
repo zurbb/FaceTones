@@ -87,7 +87,7 @@ class CrossEntropyCosineLoss(nn.Module):
     def __init__(self):
         super(CrossEntropyCosineLoss, self).__init__()
         self.loss = nn.CrossEntropyLoss()
-        self.learnable_param = nn.Parameter(torch.tensor(0.8))
+        self.learnable_param = nn.Parameter(torch.tensor(0.7))
     
     def forward(self, outputs, voices):
         # like in clip
@@ -95,7 +95,7 @@ class CrossEntropyCosineLoss(nn.Module):
         voices = F.normalize(voices, p=2, dim=1)
         logits = torch.tensordot(outputs, voices.T, dims=1) # simialrities, [n,n]
         diagonal_mask = torch.eye(outputs.size(0)).to(outputs.device)
-        margin = torch.clamp(learnable_param,max=0.95,min=0.8)
+        margin = torch.clamp(self.learnable_param,max=0.9,min=0.7)
         off_diagonal_mask = torch.clamp(logits - margin, min=0)
         masked_logits = logits * diagonal_mask + off_diagonal_mask * (1-diagonal_mask)
         labels = torch.arange(outputs.size(0)).to(outputs.device)

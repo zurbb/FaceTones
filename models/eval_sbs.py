@@ -69,14 +69,12 @@ def main():
         print("Loading validation data")
         batch_size = args.batch_size
         validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=batch_size, use_dino=True)
-        with tqdm.tqdm(total=np.ceil(args.validation_size/batch_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
-            idx = 0
+        with tqdm.tqdm(total=np.ceil(args.validation_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
             results = {}
-            for images_and_voices in validation_data:
-                pbar.set_description(f"Processing ID: {idx}")
-                idx += 1
+            for batch_num, images_and_voices in enumerate(validation_data):
                 N = len(images_and_voices[0])
                 for i in range(N):
+                    pbar.set_description(f"Processing ID: {batch_num}")
                     image = images_and_voices[0][i].unsqueeze(0)
                     true_voice = images_and_voices[1][i].unsqueeze(0)
                     predict_voice = model(image)
@@ -97,13 +95,12 @@ def main():
                             if false_score < worst_false_score:
                                 worst_false_score = false_score
                                 worst_false_id = z
-                            
-                    results[idx*batch_size + i] = (success/(N-1), images_and_voices[2][i], 
+                    pbar.update(1)
+                    results[batch_num*batch_size + i] = (success/(N-1), images_and_voices[2][i], 
                     images_and_voices[2][best_false_id], images_and_voices[2][worst_false_id], 
                     true_score, best_false_score, worst_false_score)
                       # success rate, true image name, best false image name, worst false image name, true score, best false score, worst false score
-                pbar.update(1)
-                pbar.set_postfix({"Score": success/(N-1)})
+                    pbar.set_postfix({"Score": success/(N-1)})
         print(f"average score: {np.mean([value[0] for value in results.values()])}")
         print(f"median score: {np.median([value[0] for value in results.values()])}")
         print(f"variability: {np.var([value[0] for value in results.values()])}")
