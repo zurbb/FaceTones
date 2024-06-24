@@ -1,22 +1,27 @@
 import argparse
+import os
+from time import sleep
 import numpy as np
 import eval_lib as lib
 import torch
 import tqdm
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--validation_size", type=int, default=256, help="Validation size of the dataset")
-parser.add_argument("--model_checkpoint", type=str, required=True, help="Checkpoint file name")
-parser.add_argument("--result_file_path", type=str, required=True, help="Path to the result file (txt)")
-parser.add_argument("--batch_size", type=int, default=32, help="Batch size of the dataset")
 
-print("Parsing arguments")
-args = parser.parse_args()
-print("Arguments parsed")
 IMAGE_DIR = "data/test/images/"
 AUDIO_DIR = "data/test/audio/"
-RESULT_FILE_PATH = args.result_file_path
+# IMAGE_DIR = "data/yedidya_tal/images/"
+# AUDIO_DIR = "data/yedidya_tal/audio/"
+
 ROOT_DIR = "/cs/ep/120/Voice-Image-Classifier/"
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--validation_size", type=int, default=256, help="Validation size of the dataset")
+    parser.add_argument("--model_checkpoint", type=str, required=True, help="Checkpoint file name")
+    parser.add_argument("--result_file_path", type=str, required=True, help="Path to the result file (txt)")
+    parser.add_argument("--batch_size", type=int, default=32, help="Batch size of the dataset")
+    args = parser.parse_args()
+    return args
 
 def write_results(results: dict):
     # experiment_args = {
@@ -62,7 +67,7 @@ def write_results(results: dict):
             f.write("\n")
 
 
-def main():
+def main(args, write_results=True):
     model =  lib.load_model_by_checkpoint(f"{args.model_checkpoint}")
     model.eval()
     with torch.inference_mode():
@@ -107,9 +112,12 @@ def main():
         print(f"average score: {np.mean([value[0] for value in results.values()])}")
         print(f"median score: {np.median([value[0] for value in results.values()])}")
         print(f"variability: {np.var([value[0] for value in results.values()])}")
-    write_results(results)
+    if write_results:
+        write_results(results)
+    return np.mean([value[0] for value in results.values()])
 
     
 if __name__ == "__main__":
-
-    main()
+    args = parse_args()
+    RESULT_FILE_PATH = args.result_file_path
+    main(args=args)

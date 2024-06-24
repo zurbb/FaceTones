@@ -85,16 +85,17 @@ class CrossEntropyCosineLoss(nn.Module):
     def __init__(self):
         super(CrossEntropyCosineLoss, self).__init__()
         self.loss = nn.CrossEntropyLoss()
+        self.learnable_param = nn.Parameter(torch.tensor(0.8))
     
     def forward(self, outputs, voices):
         # like in clip
         outputs = F.normalize(outputs, p=2, dim=1)
         voices = F.normalize(voices, p=2, dim=1)
-        logits = torch.tensordot(outputs, voices.T, dims=1) # simialrities, [n,n]
+        logits = torch.tensordot(outputs, voices.T, dims=1) # simialrities matrix, [n,n]
         diagonal_mask = torch.eye(outputs.size(0)).to(outputs.device)
-        off_diagonal_mask = torch.clamp(logits - 0.8, min=0)
-        masked_logits = logits * diagonal_mask + off_diagonal_mask * (1-diagonal_mask)
-        labels = torch.arange(outputs.size(0)).to(outputs.device)
+        off_diagonal_mask = torch.clamp(logits - self.learnable_param, min=0) # margin for negative samples
+        masked_logits = logits * diagonal_mask + off_diagonal_mask * (1-diagonal_mask) 
+        labels = torch.arange(outputs.size(0)).to(outputs.device) # CLIP uses cross entropy in 2 directions to get symmetric loss
         axis_1 = self.loss(masked_logits, labels)
         axis_2 = self.loss(masked_logits.T, labels)
         return (axis_1 + axis_2) / 2 
