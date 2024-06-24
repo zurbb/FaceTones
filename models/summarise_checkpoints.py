@@ -1,6 +1,13 @@
 from eval_sbs import main
 import argparse
 import os
+import re
+
+
+def extract_number(s):
+    # Extract number from the string
+    match = re.search(r'\d+', s)
+    return int(match.group()) if match else float('inf')
 
 
 def parse_args():
@@ -16,12 +23,12 @@ def run():
     args = parse_args()
     model_name = args.model_name
     args.result_file_path = None
-    checkpoints = list(sorted(os.listdir(f"trained_models/{model_name}/")))
+    checkpoints = list(sorted(os.listdir(f"trained_models/{model_name}/"), key=extract_number))
     print(f"number of checkpoints: {len(checkpoints)}")
     for checkpoint in checkpoints:
         args.model_checkpoint = f"{model_name}/{checkpoint}"
         print(f"checkpoint: {checkpoint}")
-        print(f"average score: {main(args=args, write_results=False)}")
+        main(args=args, write_results=False)
         print("\n\n")
 
 

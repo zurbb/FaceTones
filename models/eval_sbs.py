@@ -70,12 +70,15 @@ def write_results(results: dict):
 def main(args, write_results=True):
     model =  lib.load_model_by_checkpoint(f"{args.model_checkpoint}")
     model.eval()
+    print(f"loss margin: {model.loss_func.learnable_param.item()}")
     with torch.inference_mode():
         print("Loading validation data")
         batch_size = args.batch_size
         validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=batch_size, use_dino=True)
         with tqdm.tqdm(total=np.ceil(args.validation_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
             results = {}
+            true_scores = []
+            false_scores = []
             for batch_num, images_and_voices in enumerate(validation_data):
                 N = len(images_and_voices[0])
                 for i in range(N):
@@ -85,6 +88,7 @@ def main(args, write_results=True):
                     predict_voice = model(image)
                     success = 0
                     true_score = lib.cosine_similarity(predict_voice, true_voice).item()
+                    true_scores.append(true_score)
                     best_false_score, best_false_id = 0, 0
                     worst_false_score, worst_false_id = 1, 0
                     for z in range(N):
@@ -92,6 +96,7 @@ def main(args, write_results=True):
                             false_image = images_and_voices[0][z].unsqueeze(0)
                             false_predict_voice = model(false_image)
                             false_score = lib.cosine_similarity(false_predict_voice, true_voice).item()
+                            false_scores.append(false_score)
                             if true_score > false_score:
                                 success += 1
                             if false_score > best_false_score:
@@ -106,6 +111,8 @@ def main(args, write_results=True):
                     true_score, best_false_score, worst_false_score)
                       # success rate, true image name, best false image name, worst false image name, true score, best false score, worst false score
                     pbar.set_postfix({"Score": success/(N-1)})
+        print(f"average true similarity: {np.mean(true_scores)}")
+        print(f"average false similarity: {np.mean(false_scores)}")
         print(f"average score: {np.mean([value[0] for value in results.values()])}")
         print(f"median score: {np.median([value[0] for value in results.values()])}")
         print(f"variability: {np.var([value[0] for value in results.values()])}")
