@@ -22,7 +22,7 @@ def load_validation_data(limit_size:int, batch_size:int, use_dino:bool)->torch.u
     test_voices_dir = os.path.join(ROOT_DIR, "data/test/audio")
     # test_images_dir = os.path.join(ROOT_DIR, "data/yedidya_tal/images")
     # test_voices_dir = os.path.join(ROOT_DIR, "data/yedidya_tal/audio")
-    validation_data = get_train_loader(images_dir=test_images_dir, voices_dir=test_voices_dir, batch_size=batch_size, limit_size=limit_size, dino=use_dino)
+    validation_data = get_train_loader(num_workers=2,images_dir=test_images_dir, voices_dir=test_voices_dir, batch_size=batch_size, limit_size=limit_size, dino=use_dino)
     return validation_data
 
 def cosine_similarity(predicted, true):

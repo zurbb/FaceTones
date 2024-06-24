@@ -5,7 +5,7 @@ import tqdm
 from torch import nn
 import eval_lib as lib
 
-def compare_embed_audio_files(model, audio_path, N=10):
+def compare_embed_audio_files(model, audio_path, N=100):
     # Load the VoiceToVec model
     audio_files = list(os.listdir(audio_path))[:N]
     signals = []
@@ -20,6 +20,18 @@ def compare_embed_audio_files(model, audio_path, N=10):
         
         audio_file_path = os.path.join(audio_path, audio_file)
         signals = model.get_signals(audio_file_path)
+<<<<<<< HEAD
+        print(signals.size())
+        reg_embedding = model.get_embedding(signals)
+        print(reg_embedding.size())
+        continue
+        print(f"regular embedding: max - {reg_embedding.max()}, min - {reg_embedding.min()}, mean - {reg_embedding.mean()}")
+        padded_signal = torch.cat([signals, torch.zeros(1, signals.size(1))], dim=0)
+        padded_embedding = model.get_embedding(padded_signal).mean()
+        print(padded_embedding.size())
+        print(f"padded embedding: max - {padded_embedding.max()}, min - {padded_embedding.min()}, mean - {padded_embedding.mean()}")
+        print(cosine_sim(reg_embedding, padded_embedding))
+=======
         first_half_embedding = model.get_embedding(signals[:, :signals.size(1)//2]).unsqueeze(0)
         print(first_half_embedding.size())
         second_half_embedding = model.get_embedding(signals[:, signals.size(1)//2:]).unsqueeze(0)
@@ -42,6 +54,7 @@ def compare_embed_audio_files(model, audio_path, N=10):
         # print(padded_embedding.size())
         # print(f"padded embedding: max - {padded_embedding.max()}, min - {padded_embedding.min()}, mean - {padded_embedding.mean()}")
         # print(cosine_sim(reg_embedding, padded_embedding))
+>>>>>>> 693fad10fe5fba5fdb539b2ceb0332bf61b12ef0
         # if torch.allclose(reg_embedding, padded_embedding, atol=1e-2):
         #     print("True")
         # else:
