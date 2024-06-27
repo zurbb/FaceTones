@@ -30,7 +30,6 @@ class GuiBackend:
                 false_image_prediction = self.model(false_image)
                 true_smilarity = torch.nn.functional.cosine_similarity(true_image_prediction, true_voice)
                 false_similarity = torch.nn.functional.cosine_similarity(false_image_prediction, true_voice)
-                print("called getImagesAndVoice")
                 yield true_image_file_path, false_image_file_path, true_voice_file_path, true_smilarity, false_similarity
 
 

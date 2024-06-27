@@ -1,3 +1,4 @@
+import base64
 import time
 import streamlit as st
 from PIL import Image
@@ -20,21 +21,30 @@ if 'score' not in st.session_state:
 def reset_game():
     st.session_state['score'] = {'player': 0, 'model': 0, 'turn': 0}
     st.session_state['gui_backend'] = load_model_and_data()
-    del st.session_state['game_data']
+    if 'game_data' in st.session_state:
+        del st.session_state['game_data']
 
 def play_audio(file_path):
     # Check if audio file exists and then play it
     try:
-        audio_file = st.session_state.game_data['true_voice_path']
-        print(f"audio file: {audio_file}")
-        with open(audio_file, 'rb') as file:
-            st.audio(file.read(), format='audio/mp3')
+        audio_file = open(file_path, 'rb')
+        audio_bytes = audio_file.read()
+        audio_file.close()
     except FileNotFoundError:
-        st.error("Audio file not found.")
+        st.error("Audio file not found.") 
     except Exception as e:
-        st.error(f"Error playing audio: {e}")
-    # audio = AudioSegment.from_mp3(file_path)
-    # play(audio)
+        st.error(f"An error occurred while trying to read the audio file:\n {e}")
+
+    # Create a base64 audio player and embed it in HTML
+    audio_base64 = base64.b64encode(audio_bytes).decode()
+    audio_html = f"""
+    <audio controls autoplay>
+        <source src="data:audio/mp3;base64,{audio_base64}" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    """
+    st.markdown(audio_html, unsafe_allow_html=True)
+    
 
 # GUI Components
 st.title("FaceTones Game")
@@ -42,20 +52,17 @@ st.title("FaceTones Game")
 # Caching the model instance
 @st.cache_resource
 def load_model_and_data():
+    print("Loading the model and data...")
     x = GuiBackend()
-    return x.getImagesAndVoice()
+    data_generator = x.getImagesAndVoice()
+    if 'gui_backend' not in st.session_state:
+        st.session_state['gui_backend'] = data_generator
+    if 'game_data' in st.session_state:
+        del st.session_state['game_data']
+load_model_and_data()
 
-# Load the model only once
-if 'gui_backend' not in st.session_state:
-    st.session_state['gui_backend'] = load_model_and_data()
 
 # Initialize game-related states
-if 'turn' not in st.session_state:
-    st.session_state.turn = 0
-if 'score_user' not in st.session_state:
-    st.session_state.score_user = 0
-if 'score_model' not in st.session_state:
-    st.session_state.score_model = 0
 if 'true_image_path' not in st.session_state:
     st.session_state.true_image_path = ""
 if 'false_image_path' not in st.session_state:
@@ -68,34 +75,38 @@ if 'true_first' not in st.session_state:
     st.session_state.true_first = False
 
 def next_turn():
-    gui_backend = st.session_state['gui_backend']
-    true_image, false_image, true_voice, true_similarity, false_similarity = next(gui_backend)
-    st.session_state['game_data'] = {
-        'true_image_path': true_image,
-        'false_image_path': false_image,
-        'true_voice_path': true_voice,
-        'true_similarity': true_similarity,
-        'false_similarity': false_similarity,
-        'model_choice': true_image if true_similarity > false_similarity else false_image
-    }
-    if 'player_choice' in st.session_state:
-        del st.session_state['player_choice']
-    st.session_state['turn'] += 1
-    st.session_state['true_first'] = random.choice([True, False])
-    st.session_state.reveal = False
+    if 'gui_backend' in st.session_state:
+        gui_backend = st.session_state['gui_backend']
+        try:
+            true_image, false_image, true_voice, true_similarity, false_similarity = next(gui_backend)
+        except StopIteration:
+            load_model_and_data()
+        st.session_state['game_data'] = {
+            'true_image_path': true_image,
+            'false_image_path': false_image,
+            'true_voice_path': true_voice,
+            'true_similarity': true_similarity,
+            'false_similarity': false_similarity,
+            'model_choice': true_image if true_similarity > false_similarity else false_image
+        }
+        if 'player_choice' in st.session_state:
+            del st.session_state['player_choice']
+        st.session_state['score']['turn'] += 1
+        st.session_state['true_first'] = random.choice([True, False])
+        st.session_state.reveal = False
 
 if st.button("Start Game"):
+    load_model_and_data()
     next_turn()
 
 if 'game_data' in st.session_state:
-    st.write(f"Turn: {st.session_state['turn']}")
+    st.write(f"Turn: {st.session_state['score']['turn']}")
     true_image = st.session_state['game_data']['true_image_path']
     false_image = st.session_state['game_data']['false_image_path']
     true_voice = st.session_state['game_data']['true_voice_path']
     true_similarity = st.session_state['game_data']['true_similarity']
     false_similarity = st.session_state['game_data']['false_similarity']
     model_choice = st.session_state['game_data']['model_choice']
-    print(st.session_state['true_first'])
     col1, col2 = st.columns(2)
     with col1:
         if st.session_state['true_first']:
@@ -125,21 +136,42 @@ if 'game_data' in st.session_state:
     if 'player_choice' in st.session_state:
         player_choice = st.session_state['player_choice']
         player_button_press = st.session_state['player_button_press']
-        st.write(f"Your choice: {'Image 1' if player_button_press == 1 else 'Image 2'}")
+        st.markdown(  # player's choice
+        f"""
+        <div style="text-align: center;">
+            <strong>Your choice:</strong> {'Image 1' if player_button_press == 1 else 'Image 2'}
+        </div>
+        """,
+        unsafe_allow_html=True
+        )
         models_choice_text = 'Image 1' if (model_choice == true_image and \
                                                    st.session_state.true_first) or \
                                                      (model_choice != other_image and \
                                                        not st.session_state.true_first) else 'Image 2'
-        st.write(f"Model's choice: {models_choice_text}")
-        if st.button("Reveal Answer"):
-            st.write(f"Correct Image: {'Image 1' if st.session_state['true_first'] else 'Image 2'}")
+        st.markdown(  # model's choice
+        f"""
+        <div style="text-align: center;">
+            <strong>Model's choice:</strong> {models_choice_text}
+        </div>
+        """,
+        unsafe_allow_html=True
+        )
+        if st.button("Reveal Answer", use_container_width=True):
+            st.markdown(  # Answer
+            f"""
+            <div style="text-align: center;">
+                <strong>Correct Image:</strong> {'Image 1' if st.session_state['true_first'] else 'Image 2'}
+            </div>
+            """,
+            unsafe_allow_html=True
+            )
             if player_choice == true_image:
                 st.session_state['score']['player'] += 1
             if model_choice == true_image:
                 st.session_state['score']['model'] += 1
             st.write(f"Scores - Player: {st.session_state['score']['player']}, FaceTones: {st.session_state['score']['model']}")
             # Automatically proceed to the next turn after 2 seconds
-            time.sleep(4)
+            time.sleep(3)
             next_turn()
             st.rerun()
     
@@ -147,4 +179,3 @@ if 'game_data' in st.session_state:
         reset_game()
 
 st.write(f"Current Scores - Player: {st.session_state['score']['player']}, FaceTones: {st.session_state['score']['model']}")
-
