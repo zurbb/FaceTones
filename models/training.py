@@ -71,9 +71,9 @@ def similarity_average(predicted, voices) -> tuple[np.float64, np.float64]:
         tuple: A tuple containing the average positive similarity and average negative similarity.
     """
     if isinstance(predicted, torch.Tensor):
-        predicted = predicted.cpu().numpy()
+        predicted = predicted.detach().cpu().numpy()
     if isinstance(voices, torch.Tensor):
-        voices = voices.cpu().numpy()
+        voices = voices.detach().cpu().numpy()
     sim_matrix = cosine_similarity(predicted, voices)
     n = sim_matrix.shape[0]
     positive = []
@@ -103,16 +103,26 @@ def eval_epoch(model, validation_loader,epoch, size, Batch_number):
             num_batches += 1
         average_p = np.mean(postive)
         average_n = np.mean(negative)
+        logger.info(f"margin:{model.loss_func.learnable_param}")
+        log_and_add_scalar('validation', val_loss.item/num_batches, model, epoch, size, Batch_number, average_p, average_n)
 
-        logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
-        logger.info(f"margin {model.loss_func.learnable_param}")
-        logger.info(f"Average positive similarity: {average_p}")
-        logger.info(f"Average negative similarity: {average_n}")
-        WRITER.add_scalar('postive_similarity', average_p, epoch * size + Batch_number)
-        WRITER.add_scalar('negative_similarity', average_n, epoch * size + Batch_number)
-        WRITER.add_scalar('Loss/validation', val_loss.item()/num_batches, epoch * size + Batch_number)
+        
 
-
+def log_and_add_scalar(tag,loss,model,epoch,size,Batch_number,average_p, average_n):
+    if tag not in ['train', 'validation']:
+        raise ValueError("tag should be either 'train' or 'validation'")
+    if tag=='validation' or Batch_number%25==0:
+        logger.info(f"{tag} loss: {loss}")
+        logger.info(f"{tag} positive similarity: {average_p}")
+        logger.info(f"{tag} negative similarity: {average_n}")
+        logger.info(f"{tag} postive_mean_loss : {model.loss_func.positive_mean_loss}")
+        logger.info(f"{tag} entropy loss: {model.loss_func.entropy_loss}")
+    step =  epoch * size + Batch_number
+    WRITER.add_scalar('postive_mean_loss/{tag}', model.loss_func.positive_mean_loss, step)
+    WRITER.add_scalar('entropy_loss/{tag}', model.loss_func.entropy_loss, step)
+    WRITER.add_scalar('postive_similarity/{tag}',average_p,step )
+    WRITER.add_scalar('negative_similarity/{tag}',average_n, step)
+    WRITER.add_scalar('Loss/{tag}', step)
     
 def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
     size = len(train_data_loader.dataset)
@@ -128,18 +138,17 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                 loss.backward()
                 optimizer.step()
 
-                if Batch_number%25==0: 
-                    WRITER.add_scalar('Loss/train',loss, epoch * size + Batch_number)
+               
 
-                if Batch_number%100==0:
-                    logger.info(f"batch: {Batch_number+1} done.")
-                    logger.info(f"loss: {loss:>7f}")
+                if Batch_number%25==0:
+                    p,n = similarity_average(outputs, voices)
+                    log_and_add_scalar('train', loss, model, epoch, size, Batch_number, p, n)
                 if Batch_number%500==0:
                     # Validate the model on the validation set
                     eval_epoch(model, validation_loader, epoch, size, Batch_number)
         
             except Exception as e:
-                logger.error(f"Error in batch {Batch_number+1}: {e}")
+                logger.error(f"Error in batch {Batch_number+1}: {e}", exc_info=True)
 
 
     

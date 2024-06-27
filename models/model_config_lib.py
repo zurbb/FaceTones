@@ -88,9 +88,10 @@ class CrossEntropyCosineLoss(nn.Module):
         super(CrossEntropyCosineLoss, self).__init__()
         self.loss = nn.CrossEntropyLoss()
         self.learnable_param = nn.Parameter(torch.tensor(0.7))
+        self.positive_mean_loss = 0
+        self.entropy_loss = 0
     
     def forward(self, outputs, voices):
-        # like in clip
         outputs = F.normalize(outputs, p=2, dim=1)
         voices = F.normalize(voices, p=2, dim=1)
         logits = torch.tensordot(outputs, voices.T, dims=1) # simialrities matrix, [n,n]
@@ -101,8 +102,8 @@ class CrossEntropyCosineLoss(nn.Module):
         labels = torch.arange(outputs.size(0)).to(outputs.device)
         axis_1 = self.loss(masked_logits, labels)
         axis_2 = self.loss(masked_logits.T, labels)
-        entropy_loss =(axis_1 + axis_2) / 2
-        postive_mean_loss =1 - torch.diagonal(logits, offset=0).to(outputs.device).float().mean()
-        return  entropy_loss + postive_mean_loss
+        self.entropy_loss =(axis_1 + axis_2) / 2
+        self.positive_mean_loss = 1 - torch.diagonal(logits, offset=0).to(outputs.device).float().mean()
+        return  self.entropy_loss + self.positive_mean_loss
 
 

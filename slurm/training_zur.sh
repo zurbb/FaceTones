@@ -3,15 +3,15 @@
 #SBATCH --mem=48gb
 #SBATCH -c48
 #SBATCH --time=4-12:00:00
-#SBATCH --error=logs/error_entropy_learned_2206_upper_bond_09_lr_00001.txt
-#SBATCH --output=logs/entropy_learned_2206_upper_bond_09_lr_00001.txt
+#SBATCH --error=logs/error_yossi_debug.txt
+#SBATCH --output=logs/entropy_yossi_debug.txt
 #SBATCH --job-name=training_01
 umask 022
 /cs/ep/120/playground/Voice-Image-Classifier/.venv/bin/python3 /cs/ep/120/playground/Voice-Image-Classifier/models/training.py \
     --limit_size=100000 \
     --validation_size=1024 \
     --batch_size=16 \
-    --run_name=2206_postive_punish \
+    --run_name=2706_yossi_debug \
     --epochs=20 \
-    --num_workers=16 \
-    --description="added mean of the sim matrix diagonal to the loss (-1) to ensure punishment of distance from the positive vs negative. margin can be "
+    --num_workers=11 \
+    --description="with positive pusishment and entropy learned, upper bond 0.9, lr 0.00001"
