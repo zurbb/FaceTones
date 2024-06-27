@@ -119,11 +119,11 @@ def log_and_add_scalar(tag,loss,model,epoch,size,Batch_number,average_p, average
         logger.info(f"{tag} postive_mean_loss : {model.loss_func.positive_mean_loss}")
         logger.info(f"{tag} entropy loss: {model.loss_func.entropy_loss}")
     step =  epoch * size + Batch_number
-    WRITER.add_scalar('postive_mean_loss/{tag}', model.loss_func.positive_mean_loss, step)
-    WRITER.add_scalar('entropy_loss/{tag}', model.loss_func.entropy_loss, step)
-    WRITER.add_scalar('postive_similarity/{tag}',average_p,step )
-    WRITER.add_scalar('negative_similarity/{tag}',average_n, step)
-    WRITER.add_scalar('Loss/{tag}', step)
+    WRITER.add_scalar(f'postive_mean_loss/{tag}', model.loss_func.positive_mean_loss, step)
+    WRITER.add_scalar(f'entropy_loss/{tag}', model.loss_func.entropy_loss, step)
+    WRITER.add_scalar(f'postive_similarity/{tag}',average_p,step )
+    WRITER.add_scalar(f'negative_similarity/{tag}',average_n, step)
+    WRITER.add_scalar(f'Loss/{tag}',loss, step)
     
 def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
     size = len(train_data_loader.dataset)
@@ -159,8 +159,8 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
 
         save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
         logger.info("Running SBS evaluation")
-        eval_args = argparse.Namespace(model_checkpoint=os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'), validation_size=300, batch_size=50)
-        eval_sbs.main(eval_args, write_results=False)
+        # eval_args = argparse.Namespace(model_checkpoint=os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'), validation_size=300, batch_size=50)
+        # eval_sbs.main(eval_args, write_results=False)
 
 
 
