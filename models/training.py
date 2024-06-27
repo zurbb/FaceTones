@@ -112,7 +112,7 @@ def eval_epoch(model, validation_loader,epoch, size, Batch_number):
 def log_and_add_scalar(tag,loss,model,epoch,size,Batch_number,average_p, average_n):
     if tag not in ['train', 'validation']:
         raise ValueError("tag should be either 'train' or 'validation'")
-    if tag=='validation' or Batch_number%25==0:
+    if tag=='validation' or Batch_number%100==0:
         logger.info(f"{tag} loss: {loss}")
         logger.info(f"{tag} positive similarity: {average_p}")
         logger.info(f"{tag} negative similarity: {average_n}")
@@ -159,6 +159,7 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
 
         save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
         logger.info("Running SBS evaluation")
+        # TODO: fix that 
         # eval_args = argparse.Namespace(model_checkpoint=os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'), validation_size=300, batch_size=50)
         # eval_sbs.main(eval_args, write_results=False)
 
