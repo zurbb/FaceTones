@@ -126,7 +126,8 @@ def log_and_add_scalar(tag,loss,model,epoch,size,Batch_number,average_p, average
     WRITER.add_scalar(f'Loss/{tag}',loss, step)
     
 def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
-    size = len(train_data_loader.dataset)
+    size = len(train_data_loader)
+    logger.info(f"Training on {size} batches")
     # Training loop
     for epoch in range(num_epochs):
         for Batch_number, (images, voices, _) in enumerate(train_data_loader):
@@ -141,9 +142,10 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
 
                
 
-                if Batch_number%25==0:
+                if Batch_number%100==0:
                     p,n = similarity_average(outputs, voices)
                     log_and_add_scalar('train', loss, model, epoch, size, Batch_number, p, n)
+                    logger.info(f"done with batch {Batch_number}")
                 if Batch_number%500==0:
                     # Validate the model on the validation set
                     eval_epoch(model, validation_loader, epoch, size, Batch_number)

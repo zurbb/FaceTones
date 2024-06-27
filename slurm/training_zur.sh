@@ -13,5 +13,5 @@ umask 022
     --batch_size=16 \
     --run_name=2706_yossi_debug \
     --epochs=20 \
-    --num_workers=11 \
+    --num_workers=16\
     --description="with positive pusishment and entropy learned, upper bond 0.9, lr 0.00001"
