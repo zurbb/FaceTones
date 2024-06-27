@@ -1,15 +1,18 @@
 import os
 os.environ['HF_HOME'] = os.path.join(os.getcwd(), '.cache')
 # os.environ['TRANSFORMERS_CACHE'] = os.path.join(os.getcwd(), '.cache')
+import sys
+ROOT_DIR = os.getcwd()
+sys.path.append(os.path.abspath(ROOT_DIR))
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-from data_loader import get_train_loader
-import eval_sbs
+from models.data_loader import get_train_loader
+from models import eval_sbs
 import coloredlogs, logging
 import argparse
-from model_config_lib import ImageToVoice
+from models.model_config_lib import ImageToVoice
 from torch.utils.tensorboard import SummaryWriter
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity

@@ -15,3 +15,5 @@ sklearn
 matplotlib
 absl-py
 tensorboard
+streamlit
+streamlit_player

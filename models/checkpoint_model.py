@@ -11,7 +11,7 @@ device = (
     if torch.backends.mps.is_available()
     else "cpu"
 )
-class ImageToVoice(nn.Module):
+class CheckPointImageToVoice(nn.Module):
     
     def __init__(self):
         super().__init__()
