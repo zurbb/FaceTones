@@ -104,7 +104,8 @@ def eval_epoch(model, validation_loader,epoch, size, Batch_number):
         average_p = np.mean(postive)
         average_n = np.mean(negative)
         logger.info(f"margin:{model.loss_func.learnable_param}")
-        log_and_add_scalar('validation', val_loss.item/num_batches, model, epoch, size, Batch_number, average_p, average_n)
+        loss = val_loss.item()/num_batches
+        log_and_add_scalar('validation', loss, model, epoch, size, Batch_number, average_p, average_n)
 
         
 
