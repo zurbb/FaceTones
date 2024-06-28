@@ -44,10 +44,9 @@ def play_audio(file_path):
     </audio>
     """
     st.markdown(audio_html, unsafe_allow_html=True)
-    
 
 # GUI Components
-st.title("FaceTones Game")
+st.markdown("<h1 class='title'>FaceTones Game</h1>", unsafe_allow_html=True)
 
 # Caching the model instance
 @st.cache_resource
@@ -60,7 +59,6 @@ def load_model_and_data():
     if 'game_data' in st.session_state:
         del st.session_state['game_data']
 load_model_and_data()
-
 
 # Initialize game-related states
 if 'true_image_path' not in st.session_state:
@@ -169,6 +167,18 @@ if 'game_data' in st.session_state:
                 st.session_state['score']['player'] += 1
             if model_choice == true_image:
                 st.session_state['score']['model'] += 1
+               
+            if player_choice == true_image and model_choice == true_image:
+                result_message = "<div class='result' style='color: green;'><strong>🎉🎉 Both Won!</strong></div>"
+            elif player_choice == true_image and model_choice != true_image:
+                result_message = "<div class='result' style='color: blue;'><strong>🎉 You Won!</strong></div>"
+            elif player_choice != true_image and model_choice == true_image:
+                result_message = "<div class='result' style='color: red;'><strong>😢 Model Won!</strong></div>"
+            else:
+                result_message = "<div class='result' style='color: gray;'><strong>😢 Both Wrong!</strong></div>"
+            
+            st.markdown(result_message, unsafe_allow_html=True)
+          
             st.write(f"Scores - Player: {st.session_state['score']['player']}, FaceTones: {st.session_state['score']['model']}")
             # Automatically proceed to the next turn after 2 seconds
             time.sleep(3)
@@ -179,3 +189,13 @@ if 'game_data' in st.session_state:
         reset_game()
 
 st.write(f"Current Scores - Player: {st.session_state['score']['player']}, FaceTones: {st.session_state['score']['model']}")
+
+# Adding moving elements for visual effect
+st.markdown(
+    """
+    <div class='moving-element'></div>
+    <div class='moving-element' style='animation-delay: 1s;'></div>
+    <div class='moving-element' style='animation-delay: 2s;'></div>
+    """,
+    unsafe_allow_html=True
+)
