@@ -1,4 +1,4 @@
-from image_embedding import DinoEmbedding
+from models.image_embedding import DinoEmbedding
 import torch
 from torch.utils.data import Dataset
 import os
@@ -6,7 +6,7 @@ from torchvision.io import read_image
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from PIL import Image
-from voice_to_vec import VoiceToVec, WavLM
+from models.voice_to_vec import VoiceToVec, WavLM
 from torchvision.transforms.functional import pil_to_tensor
 
 

@@ -2,7 +2,7 @@ import argparse
 import os
 from time import sleep
 import numpy as np
-import eval_lib as lib
+import models.eval_lib as lib
 import torch
 import tqdm
 
