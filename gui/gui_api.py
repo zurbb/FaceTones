@@ -11,7 +11,7 @@ import random
 from torchvision import transforms
 from PIL import Image
 from models.voice_to_vec import VoiceToVec
-
+from models.image_embedding import DinoEmbedding
 
 CHECKPOINT = "2206_postive_punish/checkpoint_4.pth"
 
@@ -31,20 +31,23 @@ class GuiBackend:
     data_loader = None
 
     def __init__(self):
-        self.male_items =os.path.join(ROOT_DIR, 'gui/females.txt')
-        self.female_items = os.path.join(ROOT_DIR, 'gui/females.txt')
+        # TODO: add the siutable paths
+        # explaination: i added a file females.txt wich is only the youtube id, needed to add there files that are also at the test set. and add males.txt with the same logic
+        self.male_path =os.path.join(ROOT_DIR, 'gui/females.txt')
+        self.female_path = os.path.join(ROOT_DIR, 'gui/females.txt')
         self.model =  load_model_by_checkpoint(CHECKPOINT, hard_checkpoint=True)
-        self.male_items = self.make_data_items_list(self.female_items,Gender.MALE)
-        self.female_items = self.make_data_items_list(self.male_items,Gender.FEMALE)
+        self.male_items = self.make_data_items_list(self.female_path,Gender.MALE)
+        self.female_items = self.make_data_items_list(self.male_path,Gender.FEMALE)
         self.voice_embedder = VoiceToVec()
+        self.dino = DinoEmbedding()
 
     def make_data_items_list(self,data_source_path:str, gender:Gender) -> list[DataItem]:
         data_items = []
         with open(data_source_path, 'r') as f:
-            data_sources = f.readlines()
-        for item in data_sources:
-            image_path = os.path.join(root, 'data/evaluation/images',item[1] + "_0.jpg")
-            voice_path = os.path.join(root,'data/evaluation/audio', item[2] + ".mp3")
+            data_sources = [line.strip() for line in f.readlines()]
+        for youtube_id in data_sources:
+            image_path = os.path.join(root, 'data/evaluation/images', youtube_id+ "_0.jpg")
+            voice_path = os.path.join(root,'data/evaluation/audio', youtube_id +".mp3")
             data_item = DataItem(gender=gender, image_path=image_path, voice_path=voice_path)
             data_items.append(data_item)
         return data_items
@@ -62,7 +65,10 @@ class GuiBackend:
             transforms.ToTensor()
         ])
         image = Image.open(image_path)
-        return transform(image)
+        image = transform(image)
+        image = self.dino.get_embedding(image).unsqueeze(0)
+        print(image.shape)
+        return image
     
     
     def get_voice(self, voice_path):
@@ -74,15 +80,15 @@ class GuiBackend:
         self.model.eval()
         with torch.inference_mode():
             while True:
-                data_source_1 = random.choice([self.female_items,self.male_items])
-                data_source_2 = random.choice([self.female_items,self.male_items])
-                item1, item2 = self.get_two_random_items(data_source_1,data_source_2)
+                item_list_1 = random.choice([self.female_items,self.male_items])
+                item_list_2 = random.choice([self.female_items,self.male_items])
+                item1, item2 = self.get_two_random_items(item_list_1,item_list_2)
                 true_image_file_path = item1.image_path
                 false_image_file_path = item2.image_path
                 true_voice_file_path = item1.voice_path
                 true_image = self.get_image(true_image_file_path).clone()
                 false_image = self.get_image(false_image_file_path).clone()
-                true_voice = self.get_voice(true_voice_file_path)
+                true_voice = self.get_voice(true_voice_file_path).clone()
                 true_image_prediction = self.model(true_image)
                 false_image_prediction = self.model(false_image)
                 true_smilarity = torch.nn.functional.cosine_similarity(true_image_prediction, true_voice)

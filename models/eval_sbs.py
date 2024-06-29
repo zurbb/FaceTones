@@ -2,10 +2,15 @@ import argparse
 import os
 from time import sleep
 import numpy as np
-import models.eval_lib as lib
 import torch
 import tqdm
+import logging
+import coloredlogs
 
+import models.eval_lib as lib
+
+logger = logging.getLogger()
+coloredlogs.install()
 
 IMAGE_DIR = "data/test/images/"
 AUDIO_DIR = "data/test/audio/"
@@ -20,16 +25,16 @@ def parse_args():
     parser.add_argument("--model_checkpoint", type=str, required=True, help="Checkpoint file name")
     parser.add_argument("--result_file_path", type=str, required=True, help="Path to the result file (txt)")
     parser.add_argument("--batch_size", type=int, default=32, help="Batch size of the dataset")
+    parser.add_argument("--num_workers", type=int, default=2, help="Number of workers for data loading")
     args = parser.parse_args()
     return args
 
-def write_results(results: dict):
-    # experiment_args = {
-    #     "validation_size": args.validation_size,
-    #     "run_name": args.run_name,
-    #     "epochs": args.epochs,
-    #     "model_checkpoint": args.model_checkpoint
-    # }
+def write_results(results: dict,args):
+    experiment_args = {
+        "validation_size": args.validation_size,
+        "model_checkpoint": args.model_checkpoint,
+        "batch_Size": args.batch_size
+    }
     
     image_dir = ROOT_DIR + IMAGE_DIR
     voice_dir = ROOT_DIR + AUDIO_DIR
@@ -40,10 +45,10 @@ def write_results(results: dict):
     true_scores = [value[4] for value in results.values()]
     best_false_scores = [value[5] for value in results.values()]
     worst_false_scores = [value[6] for value in results.values()]
-
-    with open(RESULT_FILE_PATH, "w") as f:
-        # f.write("Experiment arguments:\n")
-        # f.write("\n".join([f"{key}: {value}" for key, value in experiment_args.items()]))
+    
+    with open(args.result_file_path, "w") as f:
+        f.write("Experiment arguments:\n")
+        f.write("\n".join([f"{key}: {value}" for key, value in experiment_args.items()]))
         f.write("\n\nResults:\n")
         mean_score = np.mean(scores)
         median_score = np.median(scores)
@@ -67,14 +72,16 @@ def write_results(results: dict):
             f.write("\n")
 
 
-def main(args, write_results=True):
-    model =  lib.load_model_by_checkpoint(f"{args.model_checkpoint}")
+def main(args):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = lib.load_model_by_checkpoint(f"{args.model_checkpoint}").to(device)
     model.eval()
-    print(f"loss margin: {model.loss_func.learnable_param.item()}")
-    with torch.inference_mode():
-        print("Loading validation data")
+    logger.info(f"eval checkpoint: {args.model_checkpoint}")
+    logger.info(f"loss margin: {model.loss_func.learnable_param.item()}")
+    with torch.no_grad():
+        logger.info("Loading validation data")
         batch_size = args.batch_size
-        validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=batch_size, use_dino=True)
+        validation_data = lib.load_validation_data(limit_size=args.validation_size, batch_size=batch_size, use_dino=True,num_workers=args.num_workers)
         with tqdm.tqdm(total=np.ceil(args.validation_size), desc="Processing", bar_format="{l_bar}{bar}{r_bar}", ncols=80, colour='green') as pbar:
             results = {}
             true_scores = []
@@ -83,8 +90,8 @@ def main(args, write_results=True):
                 N = len(images_and_voices[0])
                 for i in range(N):
                     pbar.set_description(f"Processing ID: {batch_num}")
-                    image = images_and_voices[0][i].unsqueeze(0)
-                    true_voice = images_and_voices[1][i].unsqueeze(0)
+                    image = images_and_voices[0][i].unsqueeze(0).to(device)
+                    true_voice = images_and_voices[1][i].unsqueeze(0).to(device)
                     predict_voice = model(image)
                     success = 0
                     true_score = lib.cosine_similarity(predict_voice, true_voice).item()
@@ -93,7 +100,7 @@ def main(args, write_results=True):
                     worst_false_score, worst_false_id = 1, 0
                     for z in range(N):
                         if i != z:
-                            false_image = images_and_voices[0][z].unsqueeze(0)
+                            false_image = images_and_voices[0][z].unsqueeze(0).to(device)
                             false_predict_voice = model(false_image)
                             false_score = lib.cosine_similarity(false_predict_voice, true_voice).item()
                             false_scores.append(false_score)
@@ -111,17 +118,14 @@ def main(args, write_results=True):
                     true_score, best_false_score, worst_false_score)
                       # success rate, true image name, best false image name, worst false image name, true score, best false score, worst false score
                     pbar.set_postfix({"Score": success/(N-1)})
-        print(f"average true similarity: {np.mean(true_scores)}")
-        print(f"average false similarity: {np.mean(false_scores)}")
-        print(f"average score: {np.mean([value[0] for value in results.values()])}")
-        print(f"median score: {np.median([value[0] for value in results.values()])}")
-        print(f"variability: {np.var([value[0] for value in results.values()])}")
-    if write_results:
-        write_results(results)
-    return np.mean([value[0] for value in results.values()])
+        logger.info(f"average true similarity: {np.mean(true_scores)}")
+        logger.info(f"average false similarity: {np.mean(false_scores)}")
+        logger.info(f"average score: {np.mean([value[0] for value in results.values()])}")
+        logger.info(f"median score: {np.median([value[0] for value in results.values()])}")
+        logger.info(f"variability: {np.var([value[0] for value in results.values()])}")
+    write_results(results,args)
 
     
 if __name__ == "__main__":
     args = parse_args()
-    RESULT_FILE_PATH = args.result_file_path
     main(args=args)
