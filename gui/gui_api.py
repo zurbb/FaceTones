@@ -33,7 +33,7 @@ class GuiBackend:
     def __init__(self):
         # TODO: add the siutable paths
         # explaination: i added a file females.txt wich is only the youtube id, needed to add there files that are also at the test set. and add males.txt with the same logic
-        self.male_path =os.path.join(ROOT_DIR, 'gui/females.txt')
+        self.male_path =os.path.join(ROOT_DIR, 'gui/male.txt')
         self.female_path = os.path.join(ROOT_DIR, 'gui/females.txt')
         self.model =  load_model_by_checkpoint(CHECKPOINT, hard_checkpoint=True)
         self.male_items = self.make_data_items_list(self.female_path,Gender.MALE)
@@ -52,12 +52,7 @@ class GuiBackend:
             data_items.append(data_item)
         return data_items
     
-    def get_two_random_items(self, item_list_1: list[DataItem], item_list_2: list[DataItem]):
-        item1 = random.choice(item_list_1)
-        item2 = random.choice(item_list_2)
-        while item1 == item2:
-            item2 = random.choice(item_list_2)
-        return item1, item2
+
     
     def get_image(self, image_path):
         transform = transforms.Compose([
@@ -67,7 +62,6 @@ class GuiBackend:
         image = Image.open(image_path)
         image = transform(image)
         image = self.dino.get_embedding(image).unsqueeze(0)
-        print(image.shape)
         return image
     
     
@@ -75,14 +69,22 @@ class GuiBackend:
         signal =self.voice_embedder.get_signals(voice_path)
         return self.voice_embedder.get_embedding(signal)
         
+    def get_two_random_items(self, same_gender: bool):
+        if same_gender:
+            item_list = random.choice([self.female_items, self.male_items])
+            item1, item2 = random.sample(item_list, 2)
+        else:
+            item_list_1 = random.choice([self.female_items, self.male_items])
+            item_list_2 = self.female_items if item_list_1 == self.male_items else self.male_items
+            item1 = random.choice(item_list_1)
+            item2 = random.choice(item_list_2)
+        return item1, item2
         
-    def getImagesAndVoice(self):
+    def getImagesAndVoice(self, same_gender=True):
         self.model.eval()
         with torch.inference_mode():
             while True:
-                item_list_1 = random.choice([self.female_items,self.male_items])
-                item_list_2 = random.choice([self.female_items,self.male_items])
-                item1, item2 = self.get_two_random_items(item_list_1,item_list_2)
+                item1, item2 = self.get_two_random_items(same_gender)
                 true_image_file_path = item1.image_path
                 false_image_file_path = item2.image_path
                 true_voice_file_path = item1.voice_path
