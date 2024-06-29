@@ -19,9 +19,6 @@ if 'score' not in st.session_state:
 
 def reset_game():
     st.session_state['score'] = {'player': 0, 'model': 0, 'turn': 0}
-    st.session_state['gui_backend'] = load_model_and_data(st.session_state['difficulty_level'])
-    if 'game_data' in st.session_state:
-        del st.session_state['game_data']
 
 def play_audio(file_path):
     # Check if audio file exists and then play it
@@ -49,10 +46,10 @@ st.markdown("<h1 class='title'>FaceTones Game</h1>", unsafe_allow_html=True)
 
 # Caching the model instance
 @st.cache_resource
-def load_model_and_data(difficulty_level):
+def load_model_and_data(same_gender):
     print("Loading the model and data...")
     x = GuiBackend()
-    data_generator = x.getImagesAndVoice(difficulty_level)
+    data_generator = x.getImagesAndVoice(same_gender=same_gender)
     return data_generator
 
 # Initialize game-related states
@@ -73,7 +70,11 @@ def next_turn():
         try:
             true_image, false_image, true_voice, true_similarity, false_similarity = next(gui_backend)
         except StopIteration:
-            st.session_state['gui_backend'] = load_model_and_data(st.session_state['difficulty_level'])
+            if st.session_state['difficulty_level'] == "Easy":
+                same_gender = False
+            else:
+                same_gender= True
+            st.session_state['gui_backend'] = load_model_and_data(same_gender)
             true_image, false_image, true_voice, true_similarity, false_similarity = next(gui_backend)
         st.session_state['game_data'] = {
             'true_image_path': true_image,
@@ -89,24 +90,27 @@ def next_turn():
         st.session_state['true_first'] = random.choice([True, False])
         st.session_state.reveal = False
 
-# Difficulty level selection
 if 'game_started' not in st.session_state:
     st.session_state['game_started'] = False
 
 if not st.session_state['game_started']:
     st.session_state['difficulty_level'] = st.radio("Select Difficulty Level:", ("Easy", "Hard"))
-    if st.button("Start Game"):
+    # BUG: The start button disappears after only after the first turn
+    if st.button("Start Game", key='start_button'):
         st.session_state['game_started'] = True
         if st.session_state['difficulty_level'] == "Easy":
             same_gender = False
         else:
             same_gender= True
-        st.session_state['gui_backend'] = load_model_and_data(same_gender)
+        st.session_state['gui_backend'] = load_model_and_data(same_gender=same_gender)
         next_turn()
 
-if st.session_state['game_started']:
+else: # st.session_state['game_started']:
+    with st.sidebar:
+        st.write(f"Turn: {st.session_state['score']['turn']} 🔄")
+        st.write(f"Player Score: {st.session_state['score']['player']} 🎯")
+        st.write(f"Model Score: {st.session_state['score']['model']} 🤖") 
     if 'game_data' in st.session_state:
-        st.write(f"Turn: {st.session_state['score']['turn']}")
         true_image = st.session_state['game_data']['true_image_path']
         false_image = st.session_state['game_data']['false_image_path']
         true_voice = st.session_state['game_data']['true_voice_path']
@@ -162,7 +166,7 @@ if st.session_state['game_started']:
                 """,
                 unsafe_allow_html=True
             )
-            if st.button("Reveal Answer", use_container_width=True):
+            if st.button("Reveal Answer", use_container_width=True, key='reveal_button'):
                 st.markdown(  # Answer
                     f"""
                     <div style="text-align: center;">
@@ -177,33 +181,24 @@ if st.session_state['game_started']:
                     st.session_state['score']['model'] += 1
 
                 if player_choice == true_image and model_choice == true_image:
-                    result_message = "<div class='result' style='color: green;'><strong>🎉🎉 Both Won!</strong></div>"
+                    result_message = "<div class='result' style='color: green; font-size: 20px;'><strong>🎉🎉 Both Won!</strong></div>"
                 elif player_choice == true_image and model_choice != true_image:
-                    result_message = "<div class='result' style='color: blue;'><strong>🎉 You Won!</strong></div>"
+                    result_message = "<div class='result' style='color: blue; font-size: 20px;'><strong>🎉 You Won!</strong></div>"
                 elif player_choice != true_image and model_choice == true_image:
-                    result_message = "<div class='result' style='color: red;'><strong>😢 Model Won!</strong></div>"
+                    result_message = "<div class='result' style='color: red; font-size: 20px;'><strong>😢 Model Won!</strong></div>"
                 else:
-                    result_message = "<div class='result' style='color: gray;'><strong>😢 Both Wrong!</strong></div>"
+                    result_message = "<div class='result' style='color: gray; font-size: 20px;'><strong>😢 Both Wrong!</strong></div>"
 
                 st.markdown(result_message, unsafe_allow_html=True)
 
-                st.write(f"Scores - Player: {st.session_state['score']['player']}, FaceTones: {st.session_state['score']['model']}")
                 # Automatically proceed to the next turn after 2 seconds
-                time.sleep(3)
+                time.sleep(2)
                 next_turn()
-                st.experimental_rerun()
+                st.rerun()    
+
+    if st.button("End Game"):
+        reset_game()
+        st.session_state['game_started'] = False
 
     if st.button("Reset Game"):
         reset_game()
-
-st.write(f"Current Scores - Player: {st.session_state['score']['player']}, FaceTones: {st.session_state['score']['model']}")
-
-# Adding moving elements for visual effect
-st.markdown(
-    """
-    <div class='moving-element'></div>
-    <div class='moving-element' style='animation-delay: 1s;'></div>
-    <div class='moving-element' style='animation-delay: 2s;'></div>
-    """,
-    unsafe_allow_html=True
-)
