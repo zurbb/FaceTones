@@ -59,6 +59,7 @@ def load_model_and_data():
         st.session_state['gui_backend'] = data_generator
     if 'game_data' in st.session_state:
         del st.session_state['game_data']
+    print("Model and data loaded.")
 load_model_and_data()
 
 
@@ -100,6 +101,7 @@ if st.button("Start Game"):
     next_turn()
 
 if 'game_data' in st.session_state:
+    print("started game")
     st.write(f"Turn: {st.session_state['score']['turn']}")
     true_image = st.session_state['game_data']['true_image_path']
     false_image = st.session_state['game_data']['false_image_path']
