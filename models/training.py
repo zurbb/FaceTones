@@ -145,7 +145,7 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
 
                
 
-                if Batch_number%100==0:
+                if Batch_number%250==0:
                     p,n = similarity_average(outputs, voices)
                     log_and_add_scalar('train', loss, model, epoch, size, Batch_number, p, n)
                     logger.info(f"done with batch {Batch_number}")
