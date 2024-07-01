@@ -19,6 +19,7 @@ if 'score' not in st.session_state:
 
 def reset_game():
     st.session_state['score'] = {'player': 0, 'model': 0, 'turn': 0}
+    st.rerun()
 
 def play_audio(file_path):
     # Check if audio file exists and then play it
@@ -50,14 +51,8 @@ def load_model_and_data(same_gender):
     print("Loading the model and data...")
     x = GuiBackend()
     data_generator = x.getImagesAndVoice(same_gender=same_gender)
-    data_generator = x.getImagesAndVoice()
-    if 'gui_backend' not in st.session_state:
-        st.session_state['gui_backend'] = data_generator
-    if 'game_data' in st.session_state:
-        del st.session_state['game_data']
     print("Model and data loaded.")
     return data_generator
-load_model_and_data()
 
 
 # Initialize game-related states
@@ -97,23 +92,14 @@ def next_turn():
         st.session_state['score']['turn'] += 1
         st.session_state['true_first'] = random.choice([True, False])
         st.session_state.reveal = False
+        st.rerun()
 
 if 'game_started' not in st.session_state:
     st.session_state['game_started'] = False
 
-if not st.session_state['game_started']:
-    st.session_state['difficulty_level'] = st.radio("Select Difficulty Level:", ("Easy", "Hard"))
-    # BUG: The start button disappears after only after the first turn
-    if st.button("Start Game", key='start_button'):
-        st.session_state['game_started'] = True
-        if st.session_state['difficulty_level'] == "Easy":
-            same_gender = False
-        else:
-            same_gender= True
-        st.session_state['gui_backend'] = load_model_and_data(same_gender=same_gender)
-        next_turn()
 
-else: # st.session_state['game_started']:
+def play_turn():
+    print("Playing turn")
     with st.sidebar:
         st.write(f"Turn: {st.session_state['score']['turn']} 🔄")
         st.write(f"Player Score: {st.session_state['score']['player']} 🎯")
@@ -204,9 +190,25 @@ else: # st.session_state['game_started']:
                 next_turn()
                 st.rerun()    
 
-    if st.button("End Game"):
-        reset_game()
-        st.session_state['game_started'] = False
+    # if st.button("End Game"):
+    #     reset_game()
 
     if st.button("Reset Game"):
+        st.session_state['game_started'] = False
         reset_game()
+
+if not st.session_state['game_started']:
+    st.session_state['difficulty_level'] = st.radio("Select Difficulty Level:", ("Easy", "Hard"))
+    # BUG: The start button disappears after only after the first turn
+    if st.button("Start Game", key='start_button'):
+        if st.session_state['difficulty_level'] == "Easy":
+            same_gender = False
+        else:
+            same_gender= True
+        st.session_state['gui_backend'] = load_model_and_data(same_gender=same_gender)
+        st.session_state['game_started'] = True
+        print("starting game...")
+        next_turn()
+
+else: # st.session_state['game_started']:
+    play_turn()
