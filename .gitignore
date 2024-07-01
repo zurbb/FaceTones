@@ -13,9 +13,6 @@ sbatch.sh
 .nfs00000001b916a81e00000474
 models/heatmap.png
 logs
-<<<<<<< HEAD
 runs
 eval_results
-=======
-runs
->>>>>>> 0815e047e7775d27687603d9a662d80c35b0bedd
+gui/__pycache__/
