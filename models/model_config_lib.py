@@ -60,11 +60,10 @@ class ImageToVoice(nn.Module):
             
             # Flatten
             nn.Flatten(),
-            
+            nn.Dropout(0.1),            
             # Fully connected layers
             nn.Linear(256 * 8 * 24, 512),  # output: 512
             nn.ReLU(),
-            nn.Dropout(0.2),
      
         )
         self.loss_func = CrossEntropyCosineLoss()
