@@ -1,3 +1,4 @@
-1. maybe add gpu/cpu looger  ? 
-2. difftent optimizer 
-3. lr, maybe not adaptive 
+gui: 
+* add female & male text file 
+
+organaize the data (evaluation test train ... ) 

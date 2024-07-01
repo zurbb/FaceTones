@@ -74,9 +74,9 @@ def similarity_average(predicted, voices) -> tuple[np.float64, np.float64]:
         tuple: A tuple containing the average positive similarity and average negative similarity.
     """
     if isinstance(predicted, torch.Tensor):
-        predicted = predicted.cpu().numpy()
+        predicted = predicted.detach().cpu().numpy()
     if isinstance(voices, torch.Tensor):
-        voices = voices.cpu().numpy()
+        voices = voices.detach().cpu().numpy()
     sim_matrix = cosine_similarity(predicted, voices)
     n = sim_matrix.shape[0]
     positive = []
@@ -106,19 +106,31 @@ def eval_epoch(model, validation_loader,epoch, size, Batch_number):
             num_batches += 1
         average_p = np.mean(postive)
         average_n = np.mean(negative)
+        logger.info(f"margin:{model.loss_func.learnable_param}")
+        loss = val_loss.item()/num_batches
+        log_and_add_scalar('validation', loss, model, epoch, size, Batch_number, average_p, average_n)
 
-        logger.info(f"Validation Error: {val_loss.item()/num_batches:>7f}")
-        logger.info(f"margin {model.loss_func.learnable_param}")
-        logger.info(f"Average positive similarity: {average_p}")
-        logger.info(f"Average negative similarity: {average_n}")
-        WRITER.add_scalar('postive_similarity', average_p, epoch * size + Batch_number)
-        WRITER.add_scalar('negative_similarity', average_n, epoch * size + Batch_number)
-        WRITER.add_scalar('Loss/validation', val_loss.item()/num_batches, epoch * size + Batch_number)
+        
 
-
+def log_and_add_scalar(tag,loss,model,epoch,size,Batch_number,average_p, average_n):
+    if tag not in ['train', 'validation']:
+        raise ValueError("tag should be either 'train' or 'validation'")
+    if tag=='validation' or Batch_number%100==0:
+        logger.info(f"{tag} loss: {loss}")
+        logger.info(f"{tag} positive similarity: {average_p}")
+        logger.info(f"{tag} negative similarity: {average_n}")
+        logger.info(f"{tag} postive_mean_loss : {model.loss_func.positive_mean_loss}")
+        logger.info(f"{tag} entropy loss: {model.loss_func.entropy_loss}")
+    step =  epoch * size + Batch_number
+    WRITER.add_scalar(f'postive_mean_loss/{tag}', model.loss_func.positive_mean_loss, step)
+    WRITER.add_scalar(f'entropy_loss/{tag}', model.loss_func.entropy_loss, step)
+    WRITER.add_scalar(f'postive_similarity/{tag}',average_p,step )
+    WRITER.add_scalar(f'negative_similarity/{tag}',average_n, step)
+    WRITER.add_scalar(f'Loss/{tag}',loss, step)
     
 def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
-    size = len(train_data_loader.dataset)
+    size = len(train_data_loader)
+    logger.info(f"Training on {size} batches")
     # Training loop
     for epoch in range(num_epochs):
         for Batch_number, (images, voices, _) in enumerate(train_data_loader):
@@ -131,18 +143,18 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                 loss.backward()
                 optimizer.step()
 
-                if Batch_number%25==0: 
-                    WRITER.add_scalar('Loss/train',loss, epoch * size + Batch_number)
+               
 
                 if Batch_number%100==0:
-                    logger.info(f"batch: {Batch_number+1} done.")
-                    logger.info(f"loss: {loss:>7f}")
+                    p,n = similarity_average(outputs, voices)
+                    log_and_add_scalar('train', loss, model, epoch, size, Batch_number, p, n)
+                    logger.info(f"done with batch {Batch_number}")
                 if Batch_number%500==0:
                     # Validate the model on the validation set
                     eval_epoch(model, validation_loader, epoch, size, Batch_number)
         
             except Exception as e:
-                logger.error(f"Error in batch {Batch_number+1}: {e}")
+                logger.error(f"Error in batch {Batch_number+1}: {e}", exc_info=True)
 
 
     
@@ -152,8 +164,9 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
 
         save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
         logger.info("Running SBS evaluation")
-        eval_args = argparse.Namespace(model_checkpoint=os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'), validation_size=300, batch_size=50)
-        eval_sbs.main(eval_args, write_results=False)
+        # TODO: fix that 
+        # eval_args = argparse.Namespace(model_checkpoint=os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'), validation_size=300, batch_size=50)
+        # eval_sbs.main(eval_args, write_results=False)
 
 
 
