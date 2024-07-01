@@ -43,6 +43,16 @@ def play_audio(file_path):
     st.markdown(audio_html, unsafe_allow_html=True)
 
 # GUI Components
+st.markdown(
+    """
+    <style>
+    .block-container {
+        padding-top: 1rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 st.markdown("<h1 class='title'>FaceTones Game</h1>", unsafe_allow_html=True)
 
 # Caching the model instance
