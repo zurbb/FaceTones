@@ -116,7 +116,7 @@ class CrossEntropyCosineLoss(nn.Module):
     def __init__(self):
         super(CrossEntropyCosineLoss, self).__init__()
         self.loss = nn.CrossEntropyLoss()
-        self.learnable_param = nn.Parameter(torch.tensor(0.7))
+        self.learnable_param = nn.Parameter(torch.tensor(0.9))
         self.positive_mean_loss = 0
         self.entropy_loss = 0
     
