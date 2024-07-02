@@ -15,64 +15,42 @@ class ImageToVoice(nn.Module):
     
     def __init__(self):
         super().__init__()
-                # Vision network (VGG-inspired CNN)
-        self.vision_cnn = nn.Sequential(
-            # Conv Block 1
-            nn.Conv2d(1, 64, kernel_size=3, padding=1),  # output: 64, 257, 768
+        self.dropout = nn.Dropout(0.1)  # Dropout layer
+        self.convolution_layers = nn.Sequential(
+            #input 1,257,768
+            nn.Conv2d(1, 8, kernel_size=3, stride=2, padding=1),  # output 8,129,384
             nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, padding=1),  # output: 64, 257, 768
+            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),# 8,65,192 
+            nn.Conv2d(8, 16, kernel_size=3), # output   16,63,190 
+            nn.Conv2d(16, 16, kernel_size=3,padding=1),# output   16,63,190 
+            nn.Conv2d(16, 16, kernel_size=3,padding=1),# output   16,63,190 
+            nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True) ,# 16,32,95 
+            nn.ReLU(), 
+            nn.Conv2d(16, 16, kernel_size=3, stride=2, padding=1), # 16,16,48 
+            nn.ReLU(), 
+            nn.Conv2d(16, 16, kernel_size=3, padding=1), # 16,16,48
+            nn.Conv2d(16, 16, kernel_size=3, padding=1), # 16,16,48
+            nn.Conv2d(16, 16, kernel_size=3, padding=1,stride=2), # 16,8,24
+            nn.Flatten(), 
+            nn.Linear(16*8*24, 2048), # output 1,2048
+        )
+        self.multihead = nn.MultiheadAttention(embed_dim=2048, num_heads=8) 
+        self.final_layer = nn.Sequential(
+            nn.Linear(2048, 1024),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),  # output: 64, 128, 384
-            
-            # Conv Block 2
-            nn.Conv2d(64, 128, kernel_size=3, padding=1),  # output: 128, 128, 384
+            nn.Linear(1024, 1024),
+            nn.Dropout(0.1),
+            nn.Linear(1024, 512),
             nn.ReLU(),
-            nn.Conv2d(128, 128, kernel_size=3, padding=1),  # output: 128, 128, 384
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),  # output: 128, 64, 192
-            
-            # Conv Block 3
-            nn.Conv2d(128, 256, kernel_size=3, padding=1),  # output: 256, 64, 192
-            nn.ReLU(),
-            nn.Conv2d(256, 256, kernel_size=3, padding=1),  # output: 256, 64, 192
-            nn.ReLU(),
-            nn.Conv2d(256, 256, kernel_size=3, padding=1),  # output: 256, 64, 192
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),  # output: 256, 32, 96
-            
-            # Conv Block 4
-            nn.Conv2d(256, 512, kernel_size=3, padding=1),  # output: 512, 32, 96
-            nn.ReLU(),
-            nn.Conv2d(512, 512, kernel_size=3, padding=1),  # output: 512, 32, 96
-            nn.ReLU(),
-            nn.Conv2d(512, 512, kernel_size=3, padding=1),  # output: 512, 32, 96
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),  # output: 512, 16, 48
-            
-            # Conv Block 5
-            nn.Conv2d(512, 512, kernel_size=3, padding=1),  # output: 512, 16, 48
-            nn.ReLU(),
-            nn.Conv2d(512, 512, kernel_size=3, padding=1),  # output: 512, 16, 48
-            nn.ReLU(),
-            nn.Conv2d(512, 256, kernel_size=3, padding=1),  # output: 256, 16, 48
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),  # output: 256, 8, 24
-            
-            # Flatten
-            nn.Flatten(),
-            nn.Dropout(0.1),            
-            # Fully connected layers
-            nn.Linear(256 * 8 * 24, 512),  # output: 512
-            nn.ReLU(),
-     
+            nn.Linear(512, 512)
         )
         self.loss_func = CrossEntropyCosineLoss()
         
     def forward(self, x):
-        logits = self.vision_cnn(x.to(device))
-        # attn_output, _ = self.multihead(logits.to(device), logits.to(device), logits.to(device), need_weights=False)
-        # attn_output = self.dropout(attn_output.to(device))  # Apply dropout
-        # logits = self.final_layer(attn_output.to(device))
+        logits = self.convolution_layers(x.to(device))
+        attn_output, _ = self.multihead(logits.to(device), logits.to(device), logits.to(device), need_weights=False)
+        attn_output = self.dropout(attn_output.to(device))  # Apply dropout
+        logits = self.final_layer(attn_output.to(device))
         return logits
     
     def loss(self,outputs, voices):
@@ -116,7 +94,7 @@ class CrossEntropyCosineLoss(nn.Module):
     def __init__(self):
         super(CrossEntropyCosineLoss, self).__init__()
         self.loss = nn.CrossEntropyLoss()
-        self.learnable_param = nn.Parameter(torch.tensor(0.9))
+        self.learnable_param = nn.Parameter(torch.tensor(0.7))
         self.positive_mean_loss = 0
         self.entropy_loss = 0
     
@@ -134,5 +112,3 @@ class CrossEntropyCosineLoss(nn.Module):
         self.entropy_loss =(axis_1 + axis_2) / 2
         self.positive_mean_loss = 1 - torch.diagonal(logits, offset=0).to(outputs.device).float().mean()
         return  self.entropy_loss + self.positive_mean_loss
-
-
