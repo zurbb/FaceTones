@@ -14,4 +14,4 @@ umask 022
     --run_name=0207_back_to_best_bigger_lr \
     --epochs=30 \
     --num_workers=11 \
-    --description="Back to the best model, but with a bigger learning rate and param num" \ 
+    --description="Back to the best model, but with a bigger learning rate and param num"

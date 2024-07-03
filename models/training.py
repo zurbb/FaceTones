@@ -77,7 +77,11 @@ def similarity_average(predicted, voices) -> tuple[np.float64, np.float64]:
         predicted = predicted.detach().cpu().numpy()
     if isinstance(voices, torch.Tensor):
         voices = voices.detach().cpu().numpy()
-    sim_matrix = cosine_similarity(predicted, voices)
+    try: 
+        sim_matrix = cosine_similarity(predicted, voices)
+    except Exception as e:
+        logger.error(f"Error in similarity calculation: {e}")
+        return 0.0, 0.0
     n = sim_matrix.shape[0]
     positive = []
     negative = []
@@ -98,14 +102,15 @@ def eval_epoch(model, validation_loader,epoch, size, Batch_number):
             try:
                 outputs = model(images)
                 p,n = similarity_average(outputs, voices)
-                postive.append(p)
-                negative.append(n)
+                if p!=0.0 and n!=0.0:
+                    postive.append(p)
+                    negative.append(n)
                 val_loss += model.loss(outputs, voices)
             except Exception as e:
                 logger.error(f"Error in validation batch {num_batches+1}: {e}")
             num_batches += 1
-        average_p = np.mean(postive)
-        average_n = np.mean(negative)
+        average_p = np.mean(postive) if len(postive) > 0 else 0.0
+        average_n = np.mean(negative) if len(negative) > 0 else 0.0
         logger.info(f"margin:{model.loss_func.learnable_param}")
         loss = val_loss.item()/num_batches
         log_and_add_scalar('validation', loss, model, epoch, size, Batch_number, average_p, average_n)
@@ -124,8 +129,11 @@ def log_and_add_scalar(tag,loss,model,epoch,size,Batch_number,average_p, average
     step =  epoch * size + Batch_number
     WRITER.add_scalar(f'postive_mean_loss/{tag}', model.loss_func.positive_mean_loss, step)
     WRITER.add_scalar(f'entropy_loss/{tag}', model.loss_func.entropy_loss, step)
-    WRITER.add_scalar(f'postive_similarity/{tag}',average_p,step )
-    WRITER.add_scalar(f'negative_similarity/{tag}',average_n, step)
+    if average_p!=0.0 and average_n!=0.0:
+        WRITER.add_scalar(f'postive_similarity/{tag}',average_p,step )
+        WRITER.add_scalar(f'negative_similarity/{tag}',average_n, step)
+    else: 
+        logger.warning("Probably an error in similarity calculation.")
     WRITER.add_scalar(f'Loss/{tag}',loss, step)
     
 def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
