@@ -184,7 +184,7 @@ def main():
         os.mkdir(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME))
     # Create an instance of your network
     model = ImageToVoice().to(device)
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.00001)
     for param in model.parameters():
         logger.info(param.size())
     total_params = sum(p.numel() for p in model.parameters())
