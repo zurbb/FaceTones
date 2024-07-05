@@ -109,7 +109,6 @@ if 'game_started' not in st.session_state:
 
 
 def play_turn():
-    print("Playing turn")
     with st.sidebar:
         st.write(f"Turn: {st.session_state['score']['turn']} 🔄")
         st.write(f"Player Score: {st.session_state['score']['player']} 🎯")

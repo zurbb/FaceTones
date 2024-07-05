@@ -19,29 +19,38 @@ class CheckPointImageToVoice(nn.Module):
         self.convolution_layers = nn.Sequential(
             #input 1,257,768
             nn.Conv2d(1, 8, kernel_size=3, stride=2, padding=1),  # output 8,129,384
+            # nn.GELU(),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),# 8,65,192 
             nn.Conv2d(8, 16, kernel_size=3), # output   16,63,190 
+            # nn.GeLU(),
+            nn.ReLU(),
             nn.Conv2d(16, 16, kernel_size=3,padding=1),# output   16,63,190 
+            # nn.GeLU(),
+            nn.ReLU(),
             nn.Conv2d(16, 16, kernel_size=3,padding=1),# output   16,63,190 
             nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True) ,# 16,32,95 
+            # nn.GeLU(), 
             nn.ReLU(), 
             nn.Conv2d(16, 16, kernel_size=3, stride=2, padding=1), # 16,16,48 
+            # nn.GeLU(), 
             nn.ReLU(), 
             nn.Conv2d(16, 8, kernel_size=3, padding=1), # 8,16,48
             nn.Conv2d(8, 4, kernel_size=3, padding=1), # 4,16,48
             nn.Conv2d(4, 4, kernel_size=3, padding=1,stride=2), # 4,8,24
             nn.Flatten(), 
             nn.Linear(4* 8 * 24, 2048), # output 1,2048
+            # nn.GeLU()
+            nn.ReLU()
         )
-        self.multihead = nn.MultiheadAttention(embed_dim=2048, num_heads=8) 
+        # self.multihead = nn.MultiheadAttention(embed_dim=2048, num_heads=8) 
         self.final_layer = nn.Linear(2048, 512)  # output 1,768
         self.loss_func = CrossEntropyCosineLoss()
         
     def forward(self, x):
         logits = self.convolution_layers(x.to(device))
-        attn_output, _ = self.multihead(logits.to(device), logits.to(device), logits.to(device), need_weights=False)
-        attn_output = self.dropout(attn_output.to(device))  # Apply dropout
+        # attn_output, _ = self.multihead(logits.to(device), logits.to(device), logits.to(device), need_weights=False)
+        attn_output = self.dropout(logits)  # Apply dropout
         logits = self.final_layer(attn_output.to(device))
         return logits
     
