@@ -57,10 +57,10 @@ st.markdown("<h1 class='title'>FaceTones Game</h1>", unsafe_allow_html=True)
 
 # Caching the model instance
 @st.cache_resource
-def load_model_and_data(same_gender):
+def load_model_and_data(dificulty_level):
     print("Loading the model and data...")
     x = GuiBackend()
-    data_generator = x.getImagesAndVoice(same_gender=same_gender)
+    data_generator = x.getImagesAndVoice(dificulty_level)
     print("Model and data loaded.")
     return data_generator
 
@@ -117,8 +117,6 @@ def play_turn():
         true_image = st.session_state['game_data']['true_image_path']
         false_image = st.session_state['game_data']['false_image_path']
         true_voice = st.session_state['game_data']['true_voice_path']
-        true_similarity = st.session_state['game_data']['true_similarity']
-        false_similarity = st.session_state['game_data']['false_similarity']
         model_choice = st.session_state['game_data']['model_choice']
         col1, col2 = st.columns(2)
         with col1:
@@ -207,14 +205,10 @@ def play_turn():
         reset_game()
 
 if not st.session_state['game_started']:
-    st.session_state['difficulty_level'] = st.radio("Select Difficulty Level:", ("Easy", "Hard"))
+    st.session_state['difficulty_level'] = st.slider(label="Select Difficulty Level:", min_value=1, max_value=5, value=3)
     # BUG: The start button disappears after only after the first turn
     if st.button("Start Game", key='start_button'):
-        if st.session_state['difficulty_level'] == "Easy":
-            same_gender = False
-        else:
-            same_gender= True
-        st.session_state['gui_backend'] = load_model_and_data(same_gender=same_gender)
+        st.session_state['gui_backend'] = load_model_and_data(st.session_state['difficulty_level'])
         st.session_state['game_started'] = True
         print("starting game...")
         next_turn()
