@@ -3,7 +3,7 @@ import sys
 ROOT_DIR = os.getcwd()
 sys.path.append(os.path.abspath(ROOT_DIR))
 
-from models.eval_lib import load_model_by_checkpoint, load_validation_data
+from models.eval_lib import load_model_by_checkpoint
 import torch
 from enum import Enum
 from dataclasses import dataclass
@@ -13,7 +13,7 @@ from PIL import Image
 from models.voice_to_vec import VoiceToVec
 from models.image_embedding import DinoEmbedding
 
-CHECKPOINT = "2206_postive_punish/checkpoint_4.pth"
+CHECKPOINT = "only_linear/checkpoint_8.pth"
 
 root = '/cs/ep/120/Voice-Image-Classifier'
 
@@ -69,7 +69,11 @@ class GuiBackend:
         signal =self.voice_embedder.get_signals(voice_path)
         return self.voice_embedder.get_embedding(signal)
         
-    def get_two_random_items(self, same_gender: bool):
+    def get_two_random_items(self, dificulty_level):
+        choices = [False] * (5-dificulty_level) + [True] * (dificulty_level-1)
+        print(choices)
+        same_gender = random.choice(choices)
+        print(same_gender)
         if same_gender:
             item_list = random.choice([self.female_items, self.male_items])
             item1, item2 = random.sample(item_list, 2)
@@ -80,11 +84,11 @@ class GuiBackend:
             item2 = random.choice(item_list_2)
         return item1, item2
         
-    def getImagesAndVoice(self, same_gender=True):
+    def getImagesAndVoice(self, dificulty_level):
         self.model.eval()
         with torch.inference_mode():
             while True:
-                item1, item2 = self.get_two_random_items(same_gender)
+                item1, item2 = self.get_two_random_items(dificulty_level)
                 true_image_file_path = item1.image_path
                 false_image_file_path = item2.image_path
                 true_voice_file_path = item1.voice_path
