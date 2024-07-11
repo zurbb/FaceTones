@@ -1,4 +1,3 @@
-
 import argparse
 import os
 import coloredlogs, logging
@@ -25,7 +24,8 @@ args = parser.parse_args()
 
 def main():
     epoch = 0
-    run_dir = os.path.join('/cs/ep/120/playground/Voice-Image-Classifier/eval_results', args.run_name)
+    run_dir = os.path.join(os.getcwd(), 'eval_results', args.run_name)
+    print(f"number of checkpoints: {len(os.listdir(os.path.join(ROOT_DIR, 'trained_models', args.run_name)))}")
     if os.path.exists(run_dir):
         run_dir += '_' + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     os.makedirs(run_dir, exist_ok=True)

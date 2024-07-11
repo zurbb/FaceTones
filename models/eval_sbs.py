@@ -1,12 +1,13 @@
 import argparse
 import os
+import sys
 from time import sleep
 import numpy as np
 import torch
 import tqdm
 import logging
 import coloredlogs
-
+sys.path.append(os.path.abspath(os.getcwd()))
 import models.eval_lib as lib
 
 logger = logging.getLogger()

@@ -176,7 +176,7 @@ def main():
         os.mkdir(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME))
     # Create an instance of your network
     model = ImageToVoice().to(device)
-    optimizer = optim.Adam(model.parameters(), lr=0.00001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
     for param in model.parameters():
         logger.info(param.size())
     total_params = sum(p.numel() for p in model.parameters())
@@ -186,6 +186,10 @@ def main():
     voices_dir = os.path.join(ROOT_DIR, "data/train/audio")
     test_images_dir = os.path.join(ROOT_DIR, "data/test/images")
     test_voices_dir = os.path.join(ROOT_DIR, "data/test/audio")
+    # images_dir = os.path.join(ROOT_DIR, "data/evaluation/images")
+    # voices_dir = os.path.join(ROOT_DIR, "data/evaluation/audio")
+    # test_images_dir = os.path.join(ROOT_DIR, "data/evaluation/images")
+    # test_voices_dir = os.path.join(ROOT_DIR, "data/evaluation/audio")
     logger.info("Creating train data loader")
     train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE, limit_size=LIMIT_SIZE, num_workers=NUM_WORKERS)
     logger.info("Creating test data loader")
