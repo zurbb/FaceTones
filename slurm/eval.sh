@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --gres=gpu:a5000:3,vmem:24g
+#SBATCH --gres=gpu:a5000:1,vmem:24g
 #SBATCH --mem=48gb
 #SBATCH -c48
 #SBATCH --time=4-12:00:00
@@ -8,7 +8,7 @@
 #SBATCH --job-name=training_01
 umask 022
 /cs/ep/120/playground/Voice-Image-Classifier/.venv/bin/python3 /cs/ep/120/playground/Voice-Image-Classifier/eval/eval_sbs_all.py \
-    --run_name=2706_yossi_debug \
+    --run_name=only_linear \
     --validation_size=500 \
     --batch_size=50 \
-    --num_workers=10\
+    --num_workers=8
