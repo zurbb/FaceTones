@@ -13,7 +13,7 @@ from PIL import Image
 from models.voice_to_vec import VoiceToVec
 from models.image_embedding import DinoEmbedding
 
-CHECKPOINT = "layer_norm_lr_001/checkpoint_18.pth"
+CHECKPOINT = "only_linear/checkpoint_8.pth"
 
 root = '/cs/ep/120/Voice-Image-Classifier'
 
