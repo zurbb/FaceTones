@@ -10,8 +10,8 @@ umask 022
 /cs/ep/120/playground/Voice-Image-Classifier/.venv/bin/python3 /cs/ep/120/playground/Voice-Image-Classifier/models/training.py \
     --limit_size=100000 \
     --validation_size=1024 \
-    --batch_size=16 \
+    --batch_size=32 \
     --run_name=only_linear_bigger_with_dropout \
     --epochs=20 \
-    --num_workers=16 \
-    --description="only linear bigger model , lr=0.00001, with more drop-out"
+    --num_workers=12 \
+    --description="only linear bigger model , lr=0.00001, with more drop-out and batch size 32" 
