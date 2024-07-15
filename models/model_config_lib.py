@@ -18,7 +18,7 @@ class ImageToVoice(nn.Module):
         self.linear_seq = nn.Sequential(
             nn.Linear(768, 512), 
             nn.GELU(),
-            nn.Dropout(0.3),
+            nn.Dropout(0.5),
             nn.LayerNorm(512), 
             nn.Linear(512, 512),  
             nn.AvgPool2d(kernel_size=2, stride=4, ceil_mode=True),
@@ -27,10 +27,10 @@ class ImageToVoice(nn.Module):
             nn.Linear(65 * 128, 2048),
             nn.GELU(),
             nn.Linear(2048, 1024),
-            nn.Dropout(0.3),
+            nn.Dropout(0.5),
             nn.LayerNorm(1024), 
             nn.GELU(),
-            nn.Dropout(0.3),
+            nn.Dropout(0.5),
             nn.Linear(1024, 512)
         )
         self.loss_func = CrossEntropyCosineLoss()
