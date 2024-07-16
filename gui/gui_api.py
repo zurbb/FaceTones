@@ -54,8 +54,8 @@ class GuiBackend:
         with open(data_source_path, 'r') as f:
             data_sources = [line.strip() for line in f.readlines()]
         for youtube_id in data_sources:
-            image_path = os.path.join(root, 'data/evaluation/images', youtube_id+ "_0.jpg")
-            voice_path = os.path.join(root,'data/evaluation/audio', youtube_id +".mp3")
+            image_path = os.path.join(ROOT_DIR, 'data/evaluation/images', youtube_id+ "_0.jpg")
+            voice_path = os.path.join(ROOT_DIR,'data/evaluation/audio', youtube_id +".mp3")
             data_item = DataItem(gender=gender, image_path=image_path, voice_path=voice_path)
             data_items.append(data_item)
         return data_items
