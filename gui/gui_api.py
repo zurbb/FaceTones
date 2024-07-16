@@ -32,7 +32,8 @@ class GuiBackend:
 
     def __init__(self):
         # TODO: add the siutable paths
-        # explaination: i added a file females.txt wich is only the youtube id, needed to add there files that are also at the test set. and add males.txt with the same logic
+        # explaination: i added a file females.txt wich is only the youtube id, needed to add there files that are also at the test set.
+        # and add males.txt with the same logic
         self.male_path =os.path.join(ROOT_DIR, 'gui/male.txt')
         self.female_path = os.path.join(ROOT_DIR, 'gui/females.txt')
         self.model =  load_model_by_checkpoint(CHECKPOINT, hard_checkpoint=True)
@@ -71,9 +72,7 @@ class GuiBackend:
         
     def get_two_random_items(self, dificulty_level):
         choices = [False] * (5-dificulty_level) + [True] * (dificulty_level-1)
-        print(choices)
         same_gender = random.choice(choices)
-        print(same_gender)
         if same_gender:
             item_list = random.choice([self.female_items, self.male_items])
             item1, item2 = random.sample(item_list, 2)
