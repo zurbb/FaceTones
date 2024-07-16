@@ -26,6 +26,12 @@ class DataItem:
     gender: Gender
     image_path: str
     voice_path: str
+    def __hash__(self):
+        return hash((self.gender, self.image_path, self.voice_path))
+    def __lt__(self, other):
+        return self.gender.value < other.gender.value or \
+               self.image_path < other.image_path or \
+               self.voice_path < other.voice_path
 
 class GuiBackend:
     data_loader = None
@@ -41,6 +47,7 @@ class GuiBackend:
         self.female_items = self.make_data_items_list(self.male_path,Gender.FEMALE)
         self.voice_embedder = VoiceToVec()
         self.dino = DinoEmbedding()
+        self.seen = set()
 
     def make_data_items_list(self,data_source_path:str, gender:Gender) -> list[DataItem]:
         data_items = []
@@ -71,17 +78,28 @@ class GuiBackend:
         return self.voice_embedder.get_embedding(signal)
         
     def get_two_random_items(self, dificulty_level):
+        male_items, female_items = self.get_available_items()
         choices = [False] * (5-dificulty_level) + [True] * (dificulty_level-1)
         same_gender = random.choice(choices)
         if same_gender:
-            item_list = random.choice([self.female_items, self.male_items])
-            item1, item2 = random.sample(item_list, 2)
+            item_list = random.choice([female_items, male_items])
+            item1, item2 = random.sample(sorted(item_list), 2)
         else:
-            item_list_1 = random.choice([self.female_items, self.male_items])
-            item_list_2 = self.female_items if item_list_1 == self.male_items else self.male_items
-            item1 = random.choice(item_list_1)
-            item2 = random.choice(item_list_2)
+            item_list_1 = random.choice([female_items, male_items])
+            item_list_2 = female_items if item_list_1 == male_items else male_items
+            item1 = random.choice(sorted(item_list_1))
+            item2 = random.choice(sorted(item_list_2))
+        self.seen.add(item1)
+        self.seen.add(item2)
         return item1, item2
+
+    def get_available_items(self):
+        if len(set(self.female_items) - self.seen) <= 1 or \
+        len(set(self.male_items) - self.seen) <= 1:
+            self.seen = set()
+        female_items = set(self.female_items) - self.seen
+        male_items = set(self.male_items) - self.seen
+        return male_items, female_items
         
     def getImagesAndVoice(self, dificulty_level):
         self.model.eval()

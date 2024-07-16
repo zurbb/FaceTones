@@ -1,9 +1,6 @@
 import base64
 import time
 import streamlit as st
-from PIL import Image
-from pydub import AudioSegment
-from pydub.playback import play
 import random
 import os
 import sys
@@ -176,10 +173,12 @@ def play_turn():
                     """,
                     unsafe_allow_html=True
                 )
-                if player_choice == true_image:
-                    st.session_state['score']['player'] += 1
-                if model_choice == true_image:
-                    st.session_state['score']['model'] += 1
+                if not st.session_state['reveal']:
+                    if player_choice == true_image:
+                        st.session_state['score']['player'] += 1
+                    if model_choice == true_image:
+                        st.session_state['score']['model'] += 1
+                st.session_state['reveal'] = True
 
                 if player_choice == true_image and model_choice == true_image:
                     result_message = "<div class='result' style='color: green; font-size: 20px;'><strong>🎉🎉 Both Won!</strong></div>"
