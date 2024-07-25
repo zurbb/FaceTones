@@ -12,9 +12,14 @@ device = (
     else "cpu"
 )
 class ImageToVoice(nn.Module):
+    """
+    A class to represent the model that gets an image and returns an embedding
+    matching the voice of the person in the image.
+    """
     
     def __init__(self):
         super().__init__()
+        # network architecture
         self.linear_seq = nn.Sequential(
             nn.Linear(768, 512), 
             nn.GELU(),
@@ -36,7 +41,6 @@ class ImageToVoice(nn.Module):
         
     def forward(self, x):
         logits = self.linear_seq(x.to(device))
-      
         return logits
     
     def loss(self,outputs, voices):
@@ -47,6 +51,9 @@ class ImageToVoice(nn.Module):
 
 
 class CosineTripletLoss(nn.Module):
+    """
+    Our first attempt at a contrastive loss function.
+    """
     def __init__(self, margin):
         super(CosineTripletLoss, self).__init__()
         self.margin = margin
@@ -59,6 +66,9 @@ class CosineTripletLoss(nn.Module):
 
 
 class ContrastiveCosineLoss(nn.Module):
+    """
+    Our second attempt at a contrastive loss function.
+    """
     def __init__(self):
         super(ContrastiveCosineLoss, self).__init__()
         self.k = 20
@@ -77,6 +87,16 @@ class ContrastiveCosineLoss(nn.Module):
         return torch.mean(log_sim_loss)
 
 class CrossEntropyCosineLoss(nn.Module):
+    """
+    Our third attempt at a contrastive loss function.
+    This is the one we currently use.
+    Based somewhat on the implementation in CLIP.
+    We added a margin, to make the model not try to make the similarities of negative examples too low
+    (because in reality, different voices are not that different in our embedding space).
+    We made this margin learnable, to find the best value for it, but clamp it because otherwise it goes to 1.
+    we might get better results with different maximum clamping values (or even fixed values).
+    Should be tested further.
+    """
     def __init__(self):
         super(CrossEntropyCosineLoss, self).__init__()
         self.loss = nn.CrossEntropyLoss()

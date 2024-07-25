@@ -15,11 +15,16 @@ if 'score' not in st.session_state:
     st.session_state['score'] = {'player': 0, 'model': 0, 'turn': 0}
 
 def reset_game():
+    """
+    Resets the game score and turn count to zero and reruns the app.
+    """
     st.session_state['score'] = {'player': 0, 'model': 0, 'turn': 0}
     st.rerun()
 
 def play_audio(file_path):
-    # Check if audio file exists and then play it
+    """
+    Check if audio file exists and then play it.
+    """
     try:
         audio_file = open(file_path, 'rb')
         audio_bytes = audio_file.read()
@@ -75,6 +80,12 @@ if 'true_first' not in st.session_state:
     st.session_state.true_first = False
 
 def next_turn():
+    """
+    Prepares and advances the game to the next turn.
+
+    This function is responsible for incrementing the turn count in the session state and selecting the next set 
+    of items (images and voice clip) for the current turn. It also resets the player's choice and the reveal state.
+    """
     if 'gui_backend' in st.session_state:
         gui_backend = st.session_state['gui_backend']
         try:
@@ -106,6 +117,14 @@ if 'game_started' not in st.session_state:
 
 
 def play_turn():
+    """
+    Executes the logic for a single turn in the game.
+
+    During a turn, this function displays the current items (images and voice clip) to the user and collects their input (choice).
+    It then evaluates the user's choice against the correct answer, updates the score accordingly,
+    and provides feedback to the user about the correctness of their guess.
+    It does the same for the model's choice, and displays the model's choice to the user.
+    """
     with st.sidebar:
         st.write(f"Turn: {st.session_state['score']['turn']} 🔄")
         st.write(f"Player Score: {st.session_state['score']['player']} 🎯")
@@ -196,21 +215,17 @@ def play_turn():
                 next_turn()
                 st.rerun()    
 
-    # if st.button("End Game"):
-    #     reset_game()
-
     if st.button("Reset Game"):
         st.session_state['game_started'] = False
         reset_game()
 
 if not st.session_state['game_started']:
     st.session_state['difficulty_level'] = st.slider(label="Select Difficulty Level:", min_value=1, max_value=5, value=3)
-    # BUG: The start button disappears after only after the first turn
     if st.button("Start Game", key='start_button'):
         st.session_state['gui_backend'] = load_model_and_data(st.session_state['difficulty_level'])
         st.session_state['game_started'] = True
         print("starting game...")
         next_turn()
 
-else: # st.session_state['game_started']:
+else:
     play_turn()

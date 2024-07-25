@@ -15,6 +15,10 @@ coloredlogs.install()
 
 
 class AbstractAudioEmbedding:
+    """
+    Abstract class for audio embeddings, to be used with the ImagesVoicesDataset.
+    This way we can easily switch between different audio embedding models.
+    """
     def __init__(self, sample_rate=16000):
         self.sample_rate = sample_rate
 
@@ -22,6 +26,9 @@ class AbstractAudioEmbedding:
         raise NotImplementedError("get_embedding method must be implemented")
     
     def get_signals(self, mp3_path: str) -> torch.Tensor:
+        """
+        Load an mp3 file and convert it to a tensor.
+        """
         audio = AudioSegment.from_mp3(mp3_path)
         wav_io = io.BytesIO()
         audio.export(wav_io, format="wav")
@@ -31,6 +38,10 @@ class AbstractAudioEmbedding:
         return signal
 
 class VoiceToVec(AbstractAudioEmbedding):
+    """
+    Tool for extracting audio embeddings from voice clips.
+    Uses the speechbrain library, and the pretrained x-vector model.
+    """
     def __init__(self):
         super().__init__()
         self.encoder = EncoderClassifier.from_hparams(source="speechbrain/spkrec-xvect-voxceleb")
@@ -41,12 +52,16 @@ class VoiceToVec(AbstractAudioEmbedding):
         return embedding
 
 class WavLM(AbstractAudioEmbedding):
+    """
+    wavlm model for audio embeddings.
+    Was not used in the project.
+    """
     def __init__(self):
         super().__init__()
-        self.processor = AutoProcessor.from_pretrained("facebook/wav2vec2-base-960h")
-        self.model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
-        # self.processor = AutoProcessor.from_pretrained("patrickvonplaten/wavlm-libri-clean-100h-base-plus")
-        # self.model = Wav2Vec2Model.from_pretrained("patrickvonplaten/wavlm-libri-clean-100h-base-plus")
+        # self.processor = AutoProcessor.from_pretrained("facebook/wav2vec2-base-960h")
+        # self.model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
+        self.processor = AutoProcessor.from_pretrained("patrickvonplaten/wavlm-libri-clean-100h-base-plus")
+        self.model = Wav2Vec2Model.from_pretrained("patrickvonplaten/wavlm-libri-clean-100h-base-plus")
 
     def get_embedding(self,  signals: torch.Tensor) -> torch.Tensor:
         inputs = self.processor(signals.squeeze(), return_tensors="pt", sampling_rate=self.sample_rate)
@@ -54,17 +69,3 @@ class WavLM(AbstractAudioEmbedding):
             hidden_states = self.model(**inputs).last_hidden_state
         embedding = hidden_states.mean(dim=1).squeeze()
         return embedding
-    
-
-    
-    # Create instances of the classes
-if __name__ == "__main__":
-
-    wav_lm = WavLM()
-
-    # Get the embedding using WavLM
-    mp3_path = "data/test/audio/__2tSwMeUQY_5525.mp3"
-    embedding = wav_lm.get_embedding(mp3_path)
-
-    # Print the embedding
-    print(embedding.shape)

@@ -1,6 +1,5 @@
 import os
 os.environ['HF_HOME'] = os.path.join(os.getcwd(), '.cache')
-# os.environ['TRANSFORMERS_CACHE'] = os.path.join(os.getcwd(), '.cache')
 import sys
 ROOT_DIR = os.getcwd()
 sys.path.append(os.path.abspath(ROOT_DIR))
@@ -17,6 +16,10 @@ from torch.utils.tensorboard import SummaryWriter
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
+LOG_VALIDATION_STEP = 500
+LOG_TRAIN_STEP = 100
+TENSOR_BOARD_LOG_STEP = 250
+LEARNING_RATE = 0.0001
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -31,7 +34,8 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-ROOT_DIR = '/cs/ep/120/Voice-Image-Classifier/'
+# ROOT_DIR = '/cs/ep/120/Voice-Image-Classifier/' # for use by Zur and Yedidya, becuase data is in
+#  /cs/ep/120/Voice-Image-Classifier/data but repo is cloned elsewhere
 
 
 for logger_name in logging.Logger.manager.loggerDict:
@@ -92,7 +96,21 @@ def similarity_average(predicted, voices) -> tuple[np.float64, np.float64]:
         negative.append(np.mean(non_diag_elements))
     return np.mean(positive), np.mean(negative)
 
-def eval_epoch(model, validation_loader,epoch, size, Batch_number):
+def eval_epoch(model, validation_loader, epoch, size, Batch_number):
+    """
+    Evaluate the model on the validation dataset.
+
+    Args:
+        model (torch.nn.Module): The trained model to evaluate.
+        validation_loader (torch.utils.data.DataLoader): The data loader for the validation dataset.
+        epoch (int): The current epoch number.
+        size (int): The total number of samples in the validation dataset.
+        Batch_number (int): The total number of batches in the validation dataset.
+
+    Returns:
+        None
+
+    """
     with torch.no_grad():
         val_loss = 0
         num_batches = 0
@@ -118,9 +136,12 @@ def eval_epoch(model, validation_loader,epoch, size, Batch_number):
         
 
 def log_and_add_scalar(tag,loss,model,epoch,size,Batch_number,average_p, average_n):
+    """
+    Log the loss and similarity values and add them to the tensorboard.
+    """
     if tag not in ['train', 'validation']:
         raise ValueError("tag should be either 'train' or 'validation'")
-    if tag=='validation' or Batch_number%100==0:
+    if tag=='validation' or Batch_number%LOG_TRAIN_STEP==0:
         logger.info(f"{tag} loss: {loss}")
         logger.info(f"{tag} positive similarity: {average_p}")
         logger.info(f"{tag} negative similarity: {average_n}")
@@ -137,6 +158,21 @@ def log_and_add_scalar(tag,loss,model,epoch,size,Batch_number,average_p, average
     WRITER.add_scalar(f'Loss/{tag}',loss, step)
     
 def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
+    """
+    Train the model on the training dataset, and log the results as we go.
+    Check the model on the validation dataset every N batches and log the results.
+    Save the model checkpoint every epoch.
+    
+    Args:
+        train_data_loader (torch.utils.data.DataLoader): The data loader for the training dataset.
+        validation_loader (torch.utils.data.DataLoader): The data loader for the validation dataset.
+        model (torch.nn.Module): The model to train.
+        optimizer (torch.optim.Optimizer): The optimizer to use for training.
+        num_epochs (int): The number of epochs to train the model.
+        
+    Returns:
+        None
+    """
     size = len(train_data_loader)
     logger.info(f"Training on {size} batches")
     # Training loop
@@ -151,22 +187,17 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
                 loss.backward()
                 optimizer.step()
 
-               
-
-                if Batch_number%250==0:
+                if Batch_number%TENSOR_BOARD_LOG_STEP==0:
                     p,n = similarity_average(outputs, voices)
                     log_and_add_scalar('train', loss, model, epoch, size, Batch_number, p, n)
                     logger.info(f"done with batch {Batch_number}")
-                if Batch_number%500==0:
+                if Batch_number%LOG_VALIDATION_STEP==0:
                     # Validate the model on the validation set
                     eval_epoch(model, validation_loader, epoch, size, Batch_number)
         
             except Exception as e:
                 logger.error(f"Error in batch {Batch_number+1}: {e}", exc_info=True)
 
-
-    
-          
         current = (Batch_number + 1) * len(images)
         logger.info(f"Epoch: {epoch+1} done. [{current:>5d}/{len(images) * size:>5d}]")    
 
@@ -184,7 +215,7 @@ def main():
         os.mkdir(os.path.join(ROOT_DIR, 'trained_models', RUN_NAME))
     # Create an instance of your network
     model = ImageToVoice().to(device)
-    optimizer = optim.Adam(model.parameters(), lr=0.0001)
+    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     for param in model.parameters():
         logger.info(param.size())
     total_params = sum(p.numel() for p in model.parameters())
@@ -194,10 +225,6 @@ def main():
     voices_dir = os.path.join(ROOT_DIR, "data/train/audio")
     test_images_dir = os.path.join(ROOT_DIR, "data/test/images")
     test_voices_dir = os.path.join(ROOT_DIR, "data/test/audio")
-    # images_dir = os.path.join(ROOT_DIR, "data/evaluation/images")
-    # voices_dir = os.path.join(ROOT_DIR, "data/evaluation/audio")
-    # test_images_dir = os.path.join(ROOT_DIR, "data/evaluation/images")
-    # test_voices_dir = os.path.join(ROOT_DIR, "data/evaluation/audio")
     logger.info("Creating train data loader")
     train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE, limit_size=LIMIT_SIZE, num_workers=NUM_WORKERS)
     logger.info("Creating test data loader")

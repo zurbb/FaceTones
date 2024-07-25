@@ -1,0 +1,8 @@
+pytube
+moviepy
+numpy
+pandas
+coloredlogs
+pillow
+pydub
+torchaudio
