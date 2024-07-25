@@ -77,7 +77,7 @@ SpeechBrain:
 }
 
 DinoV2:
-misc{oquab2023dinov2,
+@misc{oquab2023dinov2,
       title={DINOv2: Learning Robust Visual Features without Supervision}, 
       author={Maxime Oquab and Timothée Darcet and Théo Moutakanni and Huy Vo and Marc Szafraniec and Vasil Khalidov and Pierre Fernandez and Daniel Haziza and Francisco Massa and Alaaeldin El-Nouby and Mahmoud Assran and Nicolas Ballas and Wojciech Galuba and Russell Howes and Po-Yao Huang and Shang-Wen Li and Ishan Misra and Michael Rabbat and Vasu Sharma and Gabriel Synnaeve and Hu Xu and Hervé Jegou and Julien Mairal and Patrick Labatut and Armand Joulin and Piotr Bojanowski},
       year={2023},
@@ -85,7 +85,9 @@ misc{oquab2023dinov2,
       archivePrefix={arXiv},
       primaryClass={cs.CV}
 }
+
 Seeing Voices and Hearing Faces: Cross-modal biometric matching. (Arsha Arsha Nagrani et al. ,2018)
+
 Learning Transferable Visual Models From Natural Language Supervision (CLIP, Alec Radford et al., 2021)
 
 
