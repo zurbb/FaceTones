@@ -1,6 +1,6 @@
-# FaceTones, a co-modal NN that matches images to voices 
+# FaceTones, a Multimodal NN that matches images to voices 
 
-This project aims to create a voice-image representation that matches voice embeddings with corresponding images.
+Voice-image representation that matches voice embeddings with corresponding images.
 Read more here:
 https://engproj.cs.huji.ac.il/page/9804
 
