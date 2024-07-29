@@ -1,8 +1,14 @@
 # FaceTones, a Multimodal NN that matches images to voices 
 
-Voice-image representation that matches voice embeddings with corresponding images.
-Read more here:
-https://engproj.cs.huji.ac.il/page/9804
+**Voice-image representation that matches voice embeddings with corresponding images.**
+
+[Uni Project Page](https://engproj.cs.huji.ac.il/page/9804) | [Video Presentation](https://youtu.be/my4OlTlVjPg).
+
+For more information, you can reach us at:
+- Zur Binyamini: [zur993@gmail.com](mailto:zur993@gmail.com) | [LinkedIn](https://www.linkedin.com/in/zur-binyamini/)
+- Yedidya Toberman: [yedidyat@gmail.com](mailto:yedidyat@gmail.com) | [LinkedIn](https://www.linkedin.com/in/yedidya-toberman-361b71225/)
+
+
 
 ## Quality Evaluation
 
