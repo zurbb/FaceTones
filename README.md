@@ -4,6 +4,27 @@ Voice-image representation that matches voice embeddings with corresponding imag
 Read more here:
 https://engproj.cs.huji.ac.il/page/9804
 
+## Quality Evaluation
+
+### Two-Image-One-Voice Classification Test
+
+We evaluate our model by taking two images and one voice sample, then determining which image has a higher similarity to the voice. The formula for this test is:
+
+$$
+\frac{1}{N} \sum_{i=1}^{N} \left( \frac{1}{N-1} \sum_{j \neq i} \mathbb{I} \{ \text{similarity}(p_i, v_i) > \text{similarity}(p_j, v_i) \} \right)
+$$
+
+Where:
+- \(p_i\) is the model's output for sample \(i\)
+- \(v_i\) is the embedding of voice \(i\)
+- \(N\) is the size of the validation set
+
+This metric helps us understand how well the model contrasts between the matching image and other images.
+
+We achieved **88% accuracy** on this test, running on 10 batches of \(N=50\), resulting in 50*49 pairs per batch. This totals to 24,500 pairs from the validation set, which were randomly picked and include noisy data.
+
+
+
 ## Dataset
 
 To utilize this project, you will need to download the AVSpeech dataset. The dataset and download instructions can be found on the [AVSpeech website](https://looking-to-listen.github.io/avspeech/download.html).
