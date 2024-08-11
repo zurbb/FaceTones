@@ -8,7 +8,7 @@
 #SBATCH --job-name=training_01
 umask 022
 /cs/ep/120/playground/Voice-Image-Classifier/.venv/bin/python3 /cs/ep/120/playground/Voice-Image-Classifier/eval/eval_sbs_all.py \
-    --run_name=only_linear_bigger_with_dropout \
-    --validation_size=500 \
+    --run_name=only_linear_bigger_with_dropout_32_BS \
+    --validation_size=50 \
     --batch_size=50 \
-    --num_workers=8
+    --num_workers=2
