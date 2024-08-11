@@ -29,7 +29,8 @@ class ImageToVoice(nn.Module):
             nn.AvgPool2d(kernel_size=2, stride=4, ceil_mode=True),
             nn.GELU(),
             nn.Flatten(),
-            )
+            nn.Linear(65 * 128, 512) 
+        )
            
         self.loss_func = CrossEntropyCosineLoss()
         
