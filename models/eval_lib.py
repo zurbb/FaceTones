@@ -11,6 +11,14 @@ coloredlogs.install()
 
 
 def load_model_by_checkpoint(checkpoint_name:str, hard_checkpoint=False)->ImageToVoice:
+    """
+    Load a model by a checkpoint name.
+
+    Args:
+        checkpoint_name (str): The name of the checkpoint file.
+        hard_checkpoint (bool, optional): Whether to load the hard checkpoint (for the game).
+        Defaults to False.
+    """
     logger.info(f"geting model {checkpoint_name}")
     if hard_checkpoint:
         model = CheckPointImageToVoice()
@@ -25,11 +33,20 @@ def load_model_by_checkpoint(checkpoint_name:str, hard_checkpoint=False)->ImageT
 
 
 def load_validation_data(limit_size:int, batch_size:int, use_dino:bool, num_workers:int =2)->torch.utils.data.DataLoader:
-    #TODO change to the correct path. talk with @yedidya
+    """
+    Load the validation data.
+
+    Args:
+        limit_size (int): The size of the validation data.
+        batch_size (int): The batch size of the validation data.
+        use_dino (bool): Whether to use the DINO model. (if not - work on raw image)
+        num_workers (int, optional): The number of workers for data loading. Defaults to 2.
+
+    Returns:
+        torch.utils.data.DataLoader: The validation data loader.
+    """
     test_images_dir = os.path.join(ROOT_DIR, "data/test/images")
     test_voices_dir = os.path.join(ROOT_DIR, "data/test/audio")
-    # test_images_dir = os.path.join(ROOT_DIR, "data/yedidya_tal/images")
-    # test_voices_dir = os.path.join(ROOT_DIR, "data/yedidya_tal/audio")
     validation_data = get_train_loader(num_workers=num_workers,images_dir=test_images_dir, shuffle=False, voices_dir=test_voices_dir, batch_size=batch_size, limit_size=limit_size, dino=use_dino)
     return validation_data
 

@@ -10,6 +10,9 @@ import warnings
 
 
 class DinoEmbedding:
+    """
+    A class to get the embeddings of images using the DINOV2-base model.    
+    """
     def __init__(self):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.processor = AutoImageProcessor.from_pretrained('facebook/dinov2-base')
@@ -17,14 +20,16 @@ class DinoEmbedding:
         self.model.config.return_dict = False
 
     def get_embedding(self, images):
+        """
+        Get the embeddings of the given images.
+        """
         inputs = self.processor(images=images, return_tensors="pt", do_rescale=False).to(self.device)
         with torch.no_grad():
-            # traced_model = torch.jit.trace(self.model, [inputs.pixel_values])
-            # outputs = traced_model(inputs.pixel_values)
             outputs = self.model(**inputs)
         return outputs[0]
 
 
+#######################
 def example(images):
     embedding = DinoEmbedding()
     return embedding.get_embedding(images)

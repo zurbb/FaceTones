@@ -16,6 +16,11 @@ import tqdm
 # args = parser.parse_args()
 
 if __name__ == "__main__":
+    """
+    Tool to generate a heatmap of the cosine similarity between the voices.
+    This was used to understand the similarity between the voices in the dataset,
+    and the embedding space in general.
+    """
     val_loader = lib.load_validation_data(limit_size=512, batch_size=16, use_dino=True)
     averages = []
     for images, voices,_ in tqdm.tqdm(val_loader):

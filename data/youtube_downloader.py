@@ -48,17 +48,31 @@ logger = logging.getLogger()
 coloredlogs.install()
 
 def _download_and_trim_youtube_video(url: str, full_video_dir: str, full_video_name: str, subclip_dir: str,
-                                            subclip_name: str, start_time: float, end_time: float):
+                                     subclip_name: str, start_time: float, end_time: float):
+    """
+    Downloads a YouTube video and trims it to create a subclip.
+
+    Args:
+        url (str): The URL of the YouTube video.
+        full_video_dir (str): The directory to save the full video.
+        full_video_name (str): The name of the full video file.
+        subclip_dir (str): The directory to save the subclip.
+        subclip_name (str): The name of the subclip file.
+        start_time (float): The start time of the subclip in seconds.
+        end_time (float): The end time of the subclip in seconds.
+
+    Raises:
+        Exception: If the full video path does not exist (download failed).
+
+    Returns:
+        None
+    """
     full_video_path = YouTube(url).streams.first().download(full_video_dir, filename=f"{full_video_name}.mp4")
     target_name = os.path.join(subclip_dir, subclip_name)
-    # for _ in range(10):
-    #     if os.path.exists(full_video_path):
-    #         break
-    #     time.sleep(1)
 
     if not os.path.exists(full_video_path):
-        raise Exception(f"path not exsit {full_video_path}")
-    
+        raise Exception(f"path not exist {full_video_path}")
+
     original_stdout = sys.stdout
     sys.stdout = open(os.devnull, 'w')
 
@@ -66,13 +80,11 @@ def _download_and_trim_youtube_video(url: str, full_video_dir: str, full_video_n
 
     # Restore stdout
     sys.stdout = original_stdout
-    # ffmpeg_extract_subclip(full_video_path, start_time, end_time, targetname=f"{target_name}.mp4")
 
 
 def _download_and_save_video_subclips(youtube_id: str, start_time: float, end_time: float, name_to_save:str)->bool:
     """
-    
-    Downloads and saves  YouTube video.
+    Downloads and saves YouTube video and subclips.
 
     Args:
         youtube_id (str): The YouTube video ID.
@@ -100,7 +112,7 @@ def _download_and_save_video_subclips(youtube_id: str, start_time: float, end_ti
 
 def _extract_audio(video_name: str)->bool:
     """
-    Extracts the audio from a given mp4 file and saves it in the target directory.
+    Extracts the audio from a given mp4 file and saves it in the target directory as an mp3 file.
 
     Args:
         file_path (str): The path of the mp4 file.
@@ -127,7 +139,7 @@ def _extract_audio(video_name: str)->bool:
 
 def _extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5)->bool:
     """
-    Extracts images from a subclip and saves them in the target directory.
+    Extracts images from a subclip and saves them in the target directory as jpg files.
 
     Args:
         clip_id (str): The id of the subclip.
@@ -155,6 +167,9 @@ def _extract_images_from_subclip(video_id, x_coord, y_coord, number_of_images=5)
 
 
 def _crop_image(image: np.ndarray, x_coord: float, y_coord: float):
+    """
+    Crops an image around a given point (center of the face).
+    """
     width, height = image.shape[1], image.shape[0]
     x_coord = int(x_coord * width)
     y_coord = int(y_coord * height)
@@ -164,24 +179,21 @@ def _crop_image(image: np.ndarray, x_coord: float, y_coord: float):
     return cropped_image
     
 
-# def _clean_directories():
-#     for file in os.listdir(VIDEO_DIR):
-#         if file.endswith(".mp4"):
-#             os.remove(os.path.join(VIDEO_DIR, file))
-#     logger.info("Clear video directory")
-
-#     for file in os.listdir(SUBCLIP_DIR):
-#         if file.endswith(".mp4"):
-#             os.remove(os.path.join(SUBCLIP_DIR, file))
-#     logger.info("Clear subclip directory")
-
 def clean_file_from_dirs(file_name):
+    """
+    Removes a file from all video directories.
+    """
     dirs = [VIDEO_DIR, SUBCLIP_DIR]
     for dir in dirs:
         if os.path.exists(os.path.join(dir, f"{file_name}.mp4")):
             os.remove(os.path.join(dir, f"{file_name}.mp4"))
-        
+
+
 def preprocess_video_chunks(thread_dataset_info_chunks, thread_id):
+    """
+    Preprocesses video chunks in parallel. Meaning, it downloads the videos, extracts the audio,
+    and extracts the first images from the subclips.
+    """
     for info_chunk in thread_dataset_info_chunks:
         
         success_ids = set()
@@ -191,11 +203,7 @@ def preprocess_video_chunks(thread_dataset_info_chunks, thread_id):
          
             global PROCCESSED_COUNTER
             with COUNTER_LOCK:
-                PROCCESSED_COUNTER += 1
-            
-                # if PROCCESSED_COUNTER % 20==0:
-                #     _clean_directories()
-            
+                PROCCESSED_COUNTER += 1            
             
             youtube_id, start_time, end_time   = row[YOUTUBE_ID], row[START_SEGMENT], row[END_SEGMENT]
             x_coord, y_coord = row[X_COORDINATE], row[Y_COORDINATE]
@@ -218,8 +226,6 @@ def preprocess_video_chunks(thread_dataset_info_chunks, thread_id):
             
             with COUNTER_LOCK:
                 if PROCCESSED_COUNTER % LOG_EVARY_N == 0:
-                    # global TIME_START_CHUNK
-                    # logger.info(f"proccessed {LOG_EVARY_N} videos at {round(time.time() - TIME_START_CHUNK,2)}")
                     logger.info(f"Total proccessed {PROCCESSED_COUNTER} videos at {round(time.time() - TIME_ZERO,2)}")
         
         SEMAPHORE.acquire()    
@@ -235,6 +241,9 @@ def preprocess_video_chunks(thread_dataset_info_chunks, thread_id):
             
         
 def open_dirs_and_files_if_not_exists():
+    """
+    Creates the directories and files if they don't exist.
+    """
     dirs = [VIDEO_DIR, SUBCLIP_DIR, AUDIO_DIR, IMAGE_DIR]
     for dir in dirs:
         if not os.path.exists(dir):
@@ -270,7 +279,7 @@ if __name__ == "__main__":
     logger.info(f"Removed {len(unique_videos) - len(dataset_info)} already processed videos")
     logger.info(f"Remaining videos: {len(dataset_info)}")
     
-    # dataset_info = dataset_info[:DATA_LIMIT_FOR_TEST] # TODO: remove for actual run
+    # dataset_info = dataset_info[:DATA_LIMIT_FOR_TEST] # used for testing on a small dataset
     num_of_chunks = np.ceil(len(dataset_info) / DOWNLOAD_CHUNK_SIZE)
     dataset_info_chunks = np.array_split(dataset_info, num_of_chunks)
     

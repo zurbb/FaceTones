@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
-# from sklearn.metrics.pairwise import cosine_similarity
 
 # Get cpu, gpu or mps device for training.
 device = (
@@ -12,6 +11,10 @@ device = (
     else "cpu"
 )
 class CheckPointImageToVoice(nn.Module):
+    """
+    This class defines the model architecture for the image-to-voice checkpoint model used in the game.
+    It is a copy of the last most successful model trained in the training notebook.
+    """
     
     def __init__(self):
         super().__init__()

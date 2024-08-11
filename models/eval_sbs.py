@@ -15,8 +15,6 @@ coloredlogs.install()
 
 IMAGE_DIR = "data/test/images/"
 AUDIO_DIR = "data/test/audio/"
-# IMAGE_DIR = "data/yedidya_tal/images/"
-# AUDIO_DIR = "data/yedidya_tal/audio/"
 
 ROOT_DIR = "/cs/ep/120/Voice-Image-Classifier/"
 
@@ -30,7 +28,18 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def write_results(results: dict,args):
+def write_results(results: dict, args):
+    """
+    Write the evaluation results to a file.
+
+    Args:
+        results (dict): A dictionary containing the evaluation results.
+        args: The command-line arguments passed to the script.
+
+    Returns:
+        None
+    """
+    
     experiment_args = {
         "validation_size": args.validation_size,
         "model_checkpoint": args.model_checkpoint,
@@ -74,6 +83,12 @@ def write_results(results: dict,args):
 
 
 def main(args):
+    """
+    Load the model and evaluate it on the validation data.
+    Evaluation method: two-images-one-voice. Given two images and a voice of one of them,
+    check which one is more similar to the voice. If the model predicts the correct image, it is a success.
+    Calcualate the success rate of the model.
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = lib.load_model_by_checkpoint(f"{args.model_checkpoint}").to(device)
     model.eval()

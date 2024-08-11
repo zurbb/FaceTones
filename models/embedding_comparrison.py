@@ -6,6 +6,9 @@ from torch import nn
 import eval_lib as lib
 
 def compare_embed_audio_files(model, audio_path, N=100):
+    """
+    Sandbox function to compare different embeddings and learn about the model we are using.
+    """
     # Load the VoiceToVec model
     audio_files = list(os.listdir(audio_path))[:N]
     signals = []
