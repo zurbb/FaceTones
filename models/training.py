@@ -171,10 +171,6 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
         logger.info(f"Epoch: {epoch+1} done. [{current:>5d}/{len(images) * size:>5d}]")    
 
         save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
-        # logger.info("Running SBS evaluation")
-        # TODO: fix that 
-        # eval_args = argparse.Namespace(model_checkpoint=os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'), validation_size=300, batch_size=50)
-        # eval_sbs.main(eval_args, write_results=False)
 
 
 
@@ -194,10 +190,6 @@ def main():
     voices_dir = os.path.join(ROOT_DIR, "data/train/audio")
     test_images_dir = os.path.join(ROOT_DIR, "data/test/images")
     test_voices_dir = os.path.join(ROOT_DIR, "data/test/audio")
-    # images_dir = os.path.join(ROOT_DIR, "data/evaluation/images")
-    # voices_dir = os.path.join(ROOT_DIR, "data/evaluation/audio")
-    # test_images_dir = os.path.join(ROOT_DIR, "data/evaluation/images")
-    # test_voices_dir = os.path.join(ROOT_DIR, "data/evaluation/audio")
     logger.info("Creating train data loader")
     train_dataloader = get_train_loader(images_dir, voices_dir, batch_size=BATCH_SIZE, limit_size=LIMIT_SIZE, num_workers=NUM_WORKERS)
     logger.info("Creating test data loader")

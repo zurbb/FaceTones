@@ -24,14 +24,8 @@ class ImageToVoice(nn.Module):
             nn.AvgPool2d(kernel_size=2, stride=4, ceil_mode=True),
             nn.GELU(),
             nn.Flatten(),
-            nn.Linear(65 * 128, 2048),
-            nn.GELU(),
-            nn.Linear(2048, 1024),
-            nn.Dropout(0.2),
-            nn.LayerNorm(1024), 
-            nn.GELU(),
-            nn.Linear(1024, 512)
-        )
+            )
+           
         self.loss_func = CrossEntropyCosineLoss()
         
     def forward(self, x):
@@ -56,25 +50,6 @@ class CosineTripletLoss(nn.Module):
         neg_distance = nn.CosineEmbeddingLoss(anchor, negative, torch.ones(anchor.size(0)).to(anchor.device)) # far ==> 1
         losses = F.relu(pos_distance - neg_distance + self.margin)
         return losses.mean()
-
-
-class ContrastiveCosineLoss(nn.Module):
-    def __init__(self):
-        super(ContrastiveCosineLoss, self).__init__()
-        self.k = 20
-
-    def forward(self, outputs, voices):
-        sim_vector = F.cosine_similarity(outputs, voices)
-        numerator = torch.exp(sim_vector)
-        sum_negatives = torch.zeros(outputs.size(0)).to(outputs.device)
-        for i in range(1, self.k+1):
-            shifted_voices = torch.roll(voices, shifts=i, dims=0)
-            sum_negatives += torch.exp(F.cosine_similarity(outputs, shifted_voices))
-
-        denominator = numerator + sum_negatives
-        log_sim_loss = -torch.log(numerator / denominator)
-        # loss = 1 - numerator / denominator
-        return torch.mean(log_sim_loss)
 
 class CrossEntropyCosineLoss(nn.Module):
     def __init__(self):
