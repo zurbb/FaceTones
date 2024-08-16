@@ -11,7 +11,7 @@ opencv-python
 transformers
 torch
 torchvision
-sklearn
+scikit-learn
 matplotlib
 absl-py
 tensorboard
