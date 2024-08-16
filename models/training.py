@@ -202,10 +202,6 @@ def train(train_data_loader, validation_loader, model, optimizer, num_epochs):
         logger.info(f"Epoch: {epoch+1} done. [{current:>5d}/{len(images) * size:>5d}]")    
 
         save_checkpoint(model, optimizer, epoch, loss, os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'))
-        # logger.info("Running SBS evaluation")
-        # TODO: fix that 
-        # eval_args = argparse.Namespace(model_checkpoint=os.path.join(ROOT_DIR, 'trained_models', RUN_NAME,f'checkpoint_{epoch}.pth'), validation_size=300, batch_size=50)
-        # eval_sbs.main(eval_args, write_results=False)
 
 
 

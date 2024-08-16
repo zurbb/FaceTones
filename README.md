@@ -1,8 +1,35 @@
-# FaceTones, a co-modal NN that matches images to voices 
+# FaceTones, a Multimodal NN that matches images to voices 
 
-This project aims to create a voice-image representation that matches voice embeddings with corresponding images.
-Read more here:
-https://engproj.cs.huji.ac.il/page/9804
+**Voice-image representation that matches voice embeddings with corresponding images.**
+
+[Uni Project Page](https://engproj.cs.huji.ac.il/page/9804) | [Video Presentation](https://youtu.be/my4OlTlVjPg).
+
+For more information, you can reach us at:
+- Zur Binyamini: [zur993@gmail.com](mailto:zur993@gmail.com) | [LinkedIn](https://www.linkedin.com/in/zur-binyamini/)
+- Yedidya Toberman: [yedidyat@gmail.com](mailto:yedidyat@gmail.com) | [LinkedIn](https://www.linkedin.com/in/yedidya-toberman-361b71225/)
+
+
+
+## Quality Evaluation
+
+### Two-Image-One-Voice Classification Test
+
+We evaluate our model by taking two images and one voice sample, then determining which image has a higher similarity to the voice. The formula for this test is:
+
+$$
+\frac{1}{N} \sum_{i=1}^{N} \left( \frac{1}{N-1} \sum_{j \neq i} \mathbb{I} \{ \text{similarity}(p_i, v_i) > \text{similarity}(p_j, v_i) \} \right)
+$$
+
+Where:
+- \(p_i\) is the model's output for sample \(i\)
+- \(v_i\) is the embedding of voice \(i\)
+- \(N\) is the size of the validation set
+
+This metric helps us understand how well the model contrasts between the matching image and other images.
+
+We achieved **88% accuracy** on this test, running on 10 batches of \(N=50\), resulting in 50*49 pairs per batch. This totals to 24,500 pairs from the validation set, which were randomly picked and include noisy data.
+
+
 
 ## Dataset
 
