@@ -4,15 +4,38 @@ import streamlit as st
 import random
 import os
 import sys
+import gspread
+from google.oauth2.service_account import Credentials
+import uuid
+
 
 ROOT_DIR = os.getcwd()
 sys.path.append(os.path.abspath(ROOT_DIR))
 
 from gui.gui_api import GuiBackend
 
+# Google Sheets API
+def log_results_to_google_sheet(data):
+        client = st.session_state["client"]
+        # Open the Google Sheet by its name
+        sheet = client.open('FaceTones Log').sheet1
+
+        # Append data to the sheet
+        sheet.append_row(data)
+
+
 # Game State Management
 if 'score' not in st.session_state:
     st.session_state['score'] = {'player': 0, 'model': 0, 'turn': 0}
+
+# Define the scope for Google Sheets API
+scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+
+# Authenticate using the credentials file
+credentials = Credentials.from_service_account_info(st.secrets['google_auth'], scopes=scope)
+st.session_state["client"] = gspread.authorize(credentials)
+if 'uuid' not in st.session_state:
+    st.session_state['uuid'] = str(uuid.uuid4())
 
 def reset_game():
     """
@@ -209,6 +232,11 @@ def play_turn():
                     result_message = "<div class='result' style='color: gray; font-size: 20px;'><strong>😢 Both Wrong!</strong></div>"
 
                 st.markdown(result_message, unsafe_allow_html=True)
+                true_image_id = true_image.split("/")[-1].split(".")[0][:-2]
+                false_image_id = false_image.split("/")[-1].split(".")[0][:-2]
+                player_choice_id = player_choice.split("/")[-1].split(".")[0][:-2]
+                model_choice_id = model_choice.split("/")[-1].split(".")[0][:-2]
+                log_results_to_google_sheet([st.session_state['uuid'], true_image_id, false_image_id, model_choice_id, player_choice_id])
 
                 # Automatically proceed to the next turn after 2 seconds
                 time.sleep(2)

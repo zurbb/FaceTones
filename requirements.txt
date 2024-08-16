@@ -17,3 +17,5 @@ absl-py
 tensorboard
 streamlit
 streamlit_player
+gspread
+oauth2client

@@ -69,9 +69,9 @@ class GuiBackend:
     def __init__(self):
         self.male_path =os.path.join(ROOT_DIR, 'gui/male.txt')
         self.female_path = os.path.join(ROOT_DIR, 'gui/females.txt')
-        self.model =  load_model_by_checkpoint(CHECKPOINT, hard_checkpoint=True)
-        self.male_items = self.make_data_items_list(self.female_path,Gender.MALE)
-        self.female_items = self.make_data_items_list(self.male_path,Gender.FEMALE)
+        # self.model =  load_model_by_checkpoint(CHECKPOINT, hard_checkpoint=True)
+        self.male_items = self.make_data_items_list(self.male_path,Gender.MALE)
+        self.female_items = self.make_data_items_list(self.female_path,Gender.FEMALE)
         self.voice_embedder = VoiceToVec()
         self.dino = DinoEmbedding()
         self.seen = set()
@@ -183,18 +183,52 @@ class GuiBackend:
             tuple[str, str, str, torch.Tensor, torch.Tensor]: A tuple containing the file paths to the true image,
             false image, and voice clip, followed by the cosine similarity scores between the voice clip and each of the images.
         """
-        self.model.eval()
+        # self.model.eval()
         with torch.inference_mode():
             while True:
                 item1, item2 = self.get_two_random_items(dificulty_level)
                 true_image_file_path = item1.image_path
                 false_image_file_path = item2.image_path
                 true_voice_file_path = item1.voice_path
-                true_image = self.get_image(true_image_file_path).clone()
-                false_image = self.get_image(false_image_file_path).clone()
-                true_voice = self.get_voice(true_voice_file_path).clone()
-                true_image_prediction = self.model(true_image)
-                false_image_prediction = self.model(false_image)
+                # true_image = self.get_image(true_image_file_path).clone()
+                # false_image = self.get_image(false_image_file_path).clone()
+                # true_voice = self.get_voice(true_voice_file_path).clone()
+                # true_image_prediction = self.model(true_image)
+                # false_image_prediction = self.model(false_image)
+                true_image_prediction = torch.load(f"{ROOT_DIR}/gui/embeddings/images/{true_image_file_path.split('/')[-1].split('.')[0]}.pth")
+                false_image_prediction = torch.load(f"{ROOT_DIR}/gui/embeddings/images/{false_image_file_path.split('/')[-1].split('.')[0]}.pth")
+                true_voice = torch.load(f"{ROOT_DIR}/gui/embeddings/audio/{true_voice_file_path.split('/')[-1].split('.')[0]}.pth")
                 true_smilarity = torch.nn.functional.cosine_similarity(true_image_prediction, true_voice)
                 false_similarity = torch.nn.functional.cosine_similarity(false_image_prediction, true_voice)
                 yield true_image_file_path, false_image_file_path, true_voice_file_path, true_smilarity, false_similarity
+
+    
+if __name__ == "__main__":
+    from tqdm import tqdm
+
+    def check_saved_embeddings(items_list):
+        for item in tqdm(items_list, desc="Saving embeddings"):
+            image = gui.get_image(item.image_path)
+            image_prediction = gui.model(image)
+            print(f"image prediction shape: {image_prediction.shape}")
+            voice_prediction = gui.get_voice(item.voice_path)
+            # compare embeddings to gui/embeddings
+            saved_image = torch.load(f"{ROOT_DIR}/gui/embeddings/images/{item.image_path.split('/')[-1].split('.')[0]}.pth")
+            print(f"saved image shape: {saved_image.shape}")
+            print(f"Checking {item.image_path}")
+            # print(saved_image)
+            saved_voice = torch.load(f"{ROOT_DIR}/gui/embeddings/audio/{item.voice_path.split('/')[-1].split('.')[0]}.pth")
+            print("checking voice")
+            # print(saved_voice)
+            print(image_prediction.detach().numpy()[0, :10])
+            print(saved_image.detach().numpy()[0, :10])
+            assert torch.allclose(image_prediction, saved_image, rtol=0.1, atol=0.1), f"Image embeddings do not match for {item.image_path}"
+            assert torch.allclose(voice_prediction, saved_voice), f"Voice embeddings do not match for {item.voice_path}"
+    
+    gui = GuiBackend()
+    print("checking male embeddings")
+    check_saved_embeddings(gui.male_items)
+    print("checking female embeddings")
+    check_saved_embeddings(gui.female_items)
+    print("Embeddings saved successfully.")
+        
