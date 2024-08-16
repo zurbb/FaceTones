@@ -1,4 +1,5 @@
 import base64
+import datetime
 import time
 import streamlit as st
 import random
@@ -236,7 +237,7 @@ def play_turn():
                 false_image_id = false_image.split("/")[-1].split(".")[0][:-2]
                 player_choice_id = player_choice.split("/")[-1].split(".")[0][:-2]
                 model_choice_id = model_choice.split("/")[-1].split(".")[0][:-2]
-                log_results_to_google_sheet([st.session_state['uuid'], true_image_id, false_image_id, model_choice_id, player_choice_id])
+                log_results_to_google_sheet([st.session_state['uuid'], true_image_id, false_image_id, model_choice_id, player_choice_id, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
 
                 # Automatically proceed to the next turn after 2 seconds
                 time.sleep(2)
