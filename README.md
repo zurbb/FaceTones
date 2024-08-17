@@ -2,8 +2,7 @@
 
 **Voice-image representation that matches voice embeddings with corresponding images.**
 
-[Uni Project Page](https://engproj.cs.huji.ac.il/page/9804) | [Video Presentation](https://youtu.be/my4OlTlVjPg).
-For more details on the loss, evaluation, and training pipeline, see the [project book](https://docs.google.com/document/d/1fgbt-1N5M1hWdRPAosM356PDXYrbSswYyxSKB5OV4nM/edit?usp=sharing).
+[Uni Project Page](https://engproj.cs.huji.ac.il/page/9804) | [Video Presentation](https://youtu.be/my4OlTlVjPg) | For more details on the loss, evaluation, and training pipeline, see the [project book](https://docs.google.com/document/d/1fgbt-1N5M1hWdRPAosM356PDXYrbSswYyxSKB5OV4nM/edit?usp=sharing).
 
 For more information, you can reach us at:
 - Zur Binyamini: [zur993@gmail.com](mailto:zur993@gmail.com) | [LinkedIn](https://www.linkedin.com/in/zur-binyamini/)
