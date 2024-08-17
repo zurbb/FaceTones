@@ -10,6 +10,7 @@ For more information, you can reach us at:
 - Yedidya Toberman: [yedidyat@gmail.com](mailto:yedidyat@gmail.com) | [LinkedIn](https://www.linkedin.com/in/yedidya-toberman-361b71225/)
 
 
+![Alt text](loss_function_diagram.png)
 
 ## Quality Evaluation
 
@@ -33,7 +34,7 @@ We achieved **88% accuracy** on this test, running on 10 batches of \(N=50\), re
 
 
 ## Dataset
-
+![Alt text](data_pipeline.png)
 To utilize this project, you will need to download the AVSpeech dataset. The dataset and download instructions can be found on the [AVSpeech website](https://looking-to-listen.github.io/avspeech/download.html).
 The csv files are too large to add to github, so make sure to download them to the paths:
 data/avspeech_test.csv
