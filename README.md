@@ -10,8 +10,6 @@ For more information, you can reach us at:
 - Yedidya Toberman: [yedidyat@gmail.com](mailto:yedidyat@gmail.com) | [LinkedIn](https://www.linkedin.com/in/yedidya-toberman-361b71225/)
 
 
-![Alt text](loss_function_diagram.png)
-
 ## Quality Evaluation
 
 ### Two-Image-One-Voice Classification Test
@@ -51,6 +49,8 @@ python3 data/youtube_downloader.py
 remember to set the constant TEST_OR_TRAIN at the head of the file.
 
 ## Training
+![Alt text](loss_function_diagram.png)
+
 ```bash
 pip install -r requirements.txt
 python3 models/training.py --limit_size=<num_samples_for_training> --validation_size=<num_samples_for_validation> --batch_size=<batch_size> --run_name=<run_name> --epochs=<num_epochs> --description="<description>"
