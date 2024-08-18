@@ -249,6 +249,12 @@ def play_turn():
         reset_game()
 
 if not st.session_state['game_started']:
+    st.markdown(
+    """
+    Link to our [Github Repo](https://github.com/zurbb/Voice-Image)
+    """,
+    unsafe_allow_html=True
+    )
     st.session_state['difficulty_level'] = st.slider(label="Select Difficulty Level:", min_value=1, max_value=5, value=3)
     if st.button("Start Game", key='start_button'):
         st.session_state['gui_backend'] = load_model_and_data(st.session_state['difficulty_level'])
